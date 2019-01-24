@@ -1,0 +1,25 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.1.42</VERSION>
+ <DEVICE>AT90S4414</DEVICE>
+ <WORKING_DIR>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:\Program Files (x86)\Atmel\AVR Tools\AvrAssembler2\Appnotes</DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:\Program Files (x86)\Atmel\AVR Tools\AvrAssembler2\Appnotes\4414def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.map</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <AVR_Processor_Testing><FILE>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.asm</FILE><LINE>35</LINE></AVR_Processor_Testing>
+  <Finish__Testing><FILE>C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.asm</FILE><LINE>67</LINE></Finish__Testing>
+ </LABELS>
+</ASSEMBLER_INFO>
