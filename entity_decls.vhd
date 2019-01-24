@@ -23,7 +23,7 @@ entity ALU is
 	generic(
 		-- TODO need better name
 		constant NUM_BITS: integer := 8;
-		constant NUM_ADDRESS_BITS: integer := 16;
+		constant NUM_ADDRESS_BITS: integer := 16
 		);
 	
 	port(
@@ -68,7 +68,7 @@ entity ALU is
 		-- ALU result (from F Block, Adder/Subtractor, or Shifter/Rotater)
 		Result: out std_logic_vector(NUM_BITS - 1 downto 0);
 		-- updated status register
-		Status_Register: out std_logic_vector(NUM_BITS - 1 downto 0);
+		Status_Register: out std_logic_vector(NUM_BITS - 1 downto 0)
         );
 end entity;
 
@@ -124,7 +124,7 @@ entity Data_Memory_Access is
 		Data_Read: out std_logic;
 		-- active low control line indicating data memory is being written
 		-- active only during 2nd half of the clock in the 2nd cycle
-		Data_Write: out std_logic;
+		Data_Write: out std_logic
         );
 end entity;
 
@@ -140,7 +140,7 @@ entity Program_Memory_Access is
 		-- program address bus
 		Program_Address_Bus: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		-- program data bus 
-		Program_Data_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		Program_Data_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
         );
 end entity;
 
