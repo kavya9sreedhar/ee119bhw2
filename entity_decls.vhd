@@ -133,13 +133,25 @@ end entity;
 --
 entity Program_Memory_Access is
 	port(
-		-- control signals
-		Load
-		Program_Address_Source_Select
-		Program_Counter
+		-- control signal inputs
+		-- whether or not to load the current program counter value
+		Load: in std_logic;
+		-- what to add to either the current program counter value or 0
+		-- 000 select instruction register
+		-- 001 select 1 (advance to next instruction)
+		-- 010 select 2 (skip 1 instruction)
+		-- 011 select 3 (skip 2 instructions)
+		-- 100 select register Z and PC <- Z
+		Program_Address_Source_Select: in std_logic_vector(TODO downto 0);
+		
+		-- inputs
+		-- program counter: contains address of current instruction
+		Program_Counter: in std_logic_vector(15 downto 0);
 		-- program address bus
 		Program_Address_Bus: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
-		-- program data bus 
+		
+		-- outputs
+		-- program data bus
 		Program_Data_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
         );
 end entity;
@@ -149,5 +161,36 @@ end entity;
 --
 entity Control_Unit is
 	port(
+		-- control signal outputs
+		
+		-- to ALU
+		-- selects ALU operation to perform
+		ALU_result_select: out std_logic_vector(1 downto 0);
+		-- selects what to update lowest bit of shifter / rotater with
+		Shifter_low_bit_select: out std_logic_vector(1 downto 0);
+		-- when ALU_result_select indicates F Block operation
+		--	F Block inputs to mux for F Block operations
+		-- when ALU_result_select indicates Adder/Subtractor operation
+		--	lowest bit of this vector is the Subtract control signal (all others
+		-- 	bits are ignored)
+		-- when ALU_result_select indicates Shifter/Rotater operation
+		-- 	bits 3 downto 1 selects high bit value
+		--	bit 0 selects value for middle bits
+		Shift_mid_high_bits_FBlock_Subtract: out std_logic_vector(3 downto 0);
+		
+		-- to Data_Memory_Access
+		-- selects address source
+		Address_Source_Select: in std_logic_vector(2 downto 0);
+		-- selects offset source
+		Offset_Source_Select: in std_logic_vector(TODO downto 0);
+		-- indicates whether or not pre/post-increment/decrement was 
+		-- part of instruction
+		Pre_or_Post_Select: in std_logic;
+		
+		-- to Program_Memory_Access
+		-- whether or not to load the current program counter value
+		Load: in std_logic;
+		-- what to add to either the current program counter value or 0
+		Program_Address_Source_Select: in std_logic_vector(TODO downto 0);
         );
 end entity;
