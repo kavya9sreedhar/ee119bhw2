@@ -6,26 +6,31 @@
 --
 ----------------------------------------------------------------------------
 
+package CPU_CONSTANTS is
+	-- number of general purpose registers
+	constant NUM_REGISTERS: integer := 32;
+	constant NUM_DATA_BITS: integer := 8;
+	constant NUM_ADDRESS_BITS: integer := 16;
+	constant NUM_BITS_PER_REGISTER: integer := 8;
+end package;
+
 --
 -- declaration of libraries used
 --
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 library opcodes;
 use opcodes.opcodes.all;
+
+use CPU_CONSTANTS.all;
 
 --
 -- ALU entity declaration
 --
 entity ALU is
-	generic(
-		-- TODO need better name
-		constant NUM_BITS: integer := 8;
-		constant NUM_ADDRESS_BITS: integer := 16
-		);
-	
 	port(
 		-- control signal inputs
 		-- selects ALU operation to perform
@@ -60,15 +65,15 @@ entity ALU is
 		
 		-- other inputs
 		-- first operand
-		OperandA: in std_logic_vector(NUM_BITS - 1 downto 0);
+		OperandA: in std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 		-- second operand
-		OperandB: in std_logic_vector(NUM_BITS - 1 downto 0);
+		OperandB: in std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 		
 		-- outputs
 		-- ALU result (from F Block, Adder/Subtractor, or Shifter/Rotater)
-		Result: out std_logic_vector(NUM_BITS - 1 downto 0);
+		Result: out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 		-- updated status register
-		Status_Register: out std_logic_vector(NUM_BITS - 1 downto 0)
+		Status_Register: out std_logic_vector(NUM_DATA_BITS - 1 downto 0)
         );
 end entity;
 
@@ -77,10 +82,6 @@ end entity;
 --
 entity Registers is
 	generic(
-		-- number of general purpose registers
-		constant NUM_REGISTERS: integer := 32;
-		-- number of bits in each general purpose register
-		constant NUM_BITS_PER_REGISTER: integer := 8
 	);
 	port(
 		-- array containing contents of all bits of all NUM_REGISTERS registers
@@ -176,7 +177,6 @@ end entity;
 --
 entity Control_Unit is
 	port(
-	
 		-- inputs
 		-- program data bus
 		Program_Data_Bus: in opcode_word;
@@ -218,6 +218,14 @@ entity Control_Unit is
 		Program_Address_Source_Select: out std_logic_vector(TODO downto 0);
 		
 		-- to Registers
-		Register_val_select: out std_logic_vector(1 downto 0);
+		-- selects what value to load into general-purpose registers or IO space
+		Register_IO_val_select: out std_logic_vector(1 downto 0)
+		-- enable writing to general purpose registers
+		Register_Write_Enable: out std_logic;
+		-- enable writing to IO registers
+		IO_Write_Enable: out std_logic
+		-- select register
+		-- TODO magic number
+		Register_select: out std_logic_vector(log2(NUM_REGISTERS) - 1 downto 0);
         );
 end entity;
