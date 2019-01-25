@@ -55,10 +55,10 @@ entity ALU is
 		--		0 select bit to the immediate right
 		--		1 select bit to the immediate left
 		Shift_mid_high_bits_FBlock_Subtract: in std_logic_vector(3 downto 0);
+		-- flag mask indicating which flag values to update after ALU operation
+		Status_Register_Mask: in std_logic_vector(7 downto 0);
 		
 		-- other inputs
-		-- instruction register
-		IR: in opcode_word;
 		-- first operand
 		OperandA: in std_logic_vector(NUM_BITS - 1 downto 0);
 		-- second operand
@@ -73,10 +73,30 @@ entity ALU is
 end entity;
 
 --
--- Registers entity declaration
+-- Registers entity declaration: used for general purpose registers and IO Space
 --
 entity Registers is
+	generic(
+		-- number of general purpose registers
+		constant NUM_REGISTERS: integer := 32;
+		-- number of bits in each general purpose register
+		constant NUM_BITS_PER_REGISTER: integer := 8
+	);
 	port(
+		-- array containing contents of all bits of all NUM_REGISTERS registers
+		-- individual registers can be accessed by indexing according to the
+		-- register number * NUM_BITS_PER_REGISTER appropriately
+		Register_contents: buffer std_logic_vector(NUM_REGISTERS * 
+			NUM_BITS_PER_REGISTER - 1 downto 0);
+		
+		-- if general purpose registers:
+		--	00 IO Register
+		-- 	01 Data_Data_Bus
+		--	10 Output from ALU
+		-- if IO Space:
+		--	00 Data Data Bus
+		--	01 Status Register Output from ALU
+		Register_val_select: in std_logic_vector(1 downto 0)
         );
 end entity;
 
@@ -104,8 +124,6 @@ entity Data_Memory_Access is
 		Pre_or_Post_Select: in std_logic;
 		
 		-- other inputs
-		-- instruction register
-		IR: in opcode_word;
 		-- second word of instruction
 		Program_Data_Bus: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		-- TODO fix magic numbers
@@ -142,17 +160,14 @@ entity Program_Memory_Access is
 		-- 010 select 2 (skip 1 instruction)
 		-- 011 select 3 (skip 2 instructions)
 		-- 100 select register Z and PC <- Z
-		Program_Address_Source_Select: in std_logic_vector(TODO downto 0);
+		Program_Address_Source_Select: in std_logic_vector(2 downto 0);
 		
-		-- inputs
-		-- program counter: contains address of current instruction
-		Program_Counter: in std_logic_vector(15 downto 0);
-		-- program address bus
-		Program_Address_Bus: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- program counter: contains address of current instruction, updated by entity
+		Program_Counter: buffer std_logic_vector(NUM_ADDRESS_BITS downto 0);
 		
 		-- outputs
-		-- program data bus
-		Program_Data_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
+		-- program address bus
+		Program_Address_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
         );
 end entity;
 
@@ -161,6 +176,13 @@ end entity;
 --
 entity Control_Unit is
 	port(
+	
+		-- inputs
+		-- program data bus
+		Program_Data_Bus: in opcode_word;
+		-- instruction register
+		-- IR: in opcode_word;
+		
 		-- control signal outputs
 		
 		-- to ALU
@@ -177,20 +199,25 @@ entity Control_Unit is
 		-- 	bits 3 downto 1 selects high bit value
 		--	bit 0 selects value for middle bits
 		Shift_mid_high_bits_FBlock_Subtract: out std_logic_vector(3 downto 0);
+		-- flag mask indicating which flag values to update after ALU operation
+		Status_Register_Mask: out std_logic_vector(7 downto 0);
 		
 		-- to Data_Memory_Access
 		-- selects address source
-		Address_Source_Select: in std_logic_vector(2 downto 0);
+		Address_Source_Select: out std_logic_vector(2 downto 0);
 		-- selects offset source
-		Offset_Source_Select: in std_logic_vector(TODO downto 0);
+		Offset_Source_Select: out std_logic_vector(TODO downto 0);
 		-- indicates whether or not pre/post-increment/decrement was 
 		-- part of instruction
-		Pre_or_Post_Select: in std_logic;
+		Pre_or_Post_Select: out std_logic;
 		
 		-- to Program_Memory_Access
 		-- whether or not to load the current program counter value
-		Load: in std_logic;
+		Load: out std_logic;
 		-- what to add to either the current program counter value or 0
-		Program_Address_Source_Select: in std_logic_vector(TODO downto 0);
+		Program_Address_Source_Select: out std_logic_vector(TODO downto 0);
+		
+		-- to Registers
+		Register_val_select: out std_logic_vector(1 downto 0);
         );
 end entity;
