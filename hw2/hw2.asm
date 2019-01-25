@@ -3,34 +3,15 @@
 
 ; AVR Processor Test Code 
 ;
-;
-; Description:
-;
-; Operation:
-;
-; Arguments:
-; Return Values:
-;
-; Local Variables:
-; Shared Variables:
-; Global Variables:
-;
-; Input:
-; Output:
-;
-; Error Handling:
-;
-; Registers Changed:
-; Stack Depth:
-;
-; Algorithms:
-; Data Structures:
-;
-; Known Bugs:
-; Limitations:
+; This file contains the test suite for the AVR
+; Processor testing the Control Unit, Program Memory
+; Access Unit, Data Memory Access Unit, Registers, and
+; ALU instructions.
 ;
 ; Revision History:
-;
+;	24 Jan 2019		Kavya Sreedhar & Dan Xu Initial Revision
+;	24 Jan 2019		Kavya Sreedhar & Dan Xu Data & Program Memory Access Unit
+;	
 
 AVR_Processor_Testing:
 
@@ -42,7 +23,7 @@ AVR_Processor_Testing:
 	RJMP 	6
 	NOP
 	ADC		R25, R27
-	BRCC	9
+	BRBC	0, 1
 	NOP
 	ADD		R27, R25
 	NEG		R27
@@ -50,8 +31,6 @@ AVR_Processor_Testing:
 	NEG		R24
 
 	LDI		R27, 55
-	;ST		R25+, R27
-	;ST 		Y+, Y
 	LDI		R26, 55
 	CP		R26, R27
 	DEC		R26
@@ -62,10 +41,14 @@ AVR_Processor_Testing:
 	CP		R26, R27
 	SUB		R26, R27
 	; check zero flag set
-	;JMP 	TestLoadsandStores
+	;JMP 	TestDataMemoryAccessUnit	; test unconditional JMP instruction,
+										;  should skip subsequent NOP instruction
 	NOP	
 
-TestLoadsandStores:	
+; test loads and stores, push and pop
+TestDataMemoryAccessUnit:
+
+	; test basic loading and MOV
 	LDI		R27, 55		; set X to 5555
 	MOV		R26, R27	; test MOV instruction
 	; check zero flag is set
@@ -89,6 +72,8 @@ TestLoadsandStores:
 						;  to reflect that these registers
 						;  have the same value
 
+	; check X, Y, Z register load instructions using register
+	;  operations on registers corresponding to those registers
 	LD		R13, X		; load indirect with X
 	LD		R14, X+		; load indirect with X and post-increment
 	CP		R13, R14	; R13 and R14 should have the same value
@@ -106,6 +91,9 @@ TestLoadsandStores:
 						; some unsigned displacement
 	LDD		R19, Z + 5	; load indirect with Z and 
 						; some unsigned displacement
+
+	; check X register load instructions with store instructions
+	;  to test store instructions
 	ST		X+, R19		; store indirect with X and post increment
 	LD		R14, -X		; load indirect with X and pre decrement
 	CP		R14, R19	; R14 and R19 should have the same value
@@ -121,6 +109,8 @@ TestLoadsandStores:
 						;  the values of X and X + 1 are different
 						;  values now and should not be equal
 	
+	; check Y register load instructions with store instructions
+	;  to test store instructions
 	ST		Y+, R19		; store indirect with Y and post increment
 	LD		R20, -Y		; load indirect with Y and pre decrement
 	CP		R20, R19	; R14 and R19 should have the same value
@@ -136,6 +126,8 @@ TestLoadsandStores:
 						;  the values of Y and Y + 1 are different
 						;  values now and should not be equal
 
+	; check Z register load instructions with store instructions
+	;  to test store instructions
 	ST		Z+, R19		; store indirect with Z and post increment
 	LD		R14, -Z		; load indirect with Z and pre decrement
 	CP		R14, R19	; R14 and R19 should have the same value
@@ -170,9 +162,102 @@ TestLoadsandStores:
 	LDS		R19, 65530
 	POP		R19			; check that R19 value when previously
 						;  pushed was correctly preserved
-	LDI		R20, 156
+	LDI		R20, 156	; 
 	CP		R19, R20
 	; check zero flag is set
 
+
+TestProgramMemoryAccessUnit:
+	; test function call and return instructions
+	; CALL	Test_Func
+
+	; test skip instructions
+	LDI		R20, 1		; load two registers with the same value
+	MOV		R13, R20
+	CPSE	R20, R13	; since they are equal, the NOP instruction
+						;  should be skipped
+	NOP
+	INC		R20
+	CPSE	R13, R20	; since these registers are no longer equal,
+						;  the NOP instruction should be executed
+	NOP
+	SBRC	R20, 5		; this bit is clear, so the NOP instruction
+						;  should be skipped
+	NOP
+	SBRC	R20, 2		; this bit is set, so the NOP instruction
+						;  should be executed
+	NOP
+	SBRS	R20, 7		; this bit is set, so the NOP instruction
+	  					;  should be skipped
+	NOP
+	SBRS	R20, 3		; this bit is clear, so the NOP instruction
+	  					;  should be executed
+	NOP
+
+	; test conditional branches
+	LDI		R20, 255	; add FF + FF
+	MOV		R21, R20
+	ADD		R20, R21
+	BRBC	0, NOP1		; there is a carry, so following NOP should be executed
+	NOP1: NOP
+	BRBS	0, NOP2		; there is a carry, so following NOP should be skipped
+	NOP2: NOP
+	BRBC	1, NOP3		; result is not zero, so following NOP should be skipped
+	NOP3: NOP
+	BRBS	1, NOP4		; result is not zero, so following NOP should be executed
+	NOP4: NOP
+	BRBC	2, NOP5		; sign bit is set, so following NOP should be executed
+	NOP5: NOP
+	BRBS	2, NOP6		; sign bit is set, so following NOP should be skipped
+	NOP6: NOP	
+	BRBC	3, NOP7		; there is signed overflow, so following NOP should be executed
+	NOP7: NOP
+	BRBS	3, NOP8		; there is signed overflow, so following NOP should be skipped
+	NOP8: NOP
+	BRBC	4, NOP9		; corrected sign is clear, so following NOP should be skipped
+	NOP9: NOP
+	BRBS	4, NOP10	; corrected sign is clear, so following NOP should be executed
+	NOP10: NOP
+	BRBC	5, NOP11	; there is half carry, so following NOP should be executed
+	NOP11: NOP
+	BRBS	5, NOP12	; there is half carry, so following NOP should be skipped
+	NOP12: NOP
+	
+	LDI		R20, 0		; add 0 + 0
+	MOV		R21, R20
+	ADD		R21, R20
+	BRBC	0, NOP13		; there is no carry, so following NOP should be skipped
+	NOP13: NOP
+	BRBS	0, NOP14		; there is no carry, so following NOP should be executed
+	NOP14: NOP
+	BRBC	1, NOP15		; result is zero, so following NOP should be executed
+	NOP15: NOP
+	BRBS	1, NOP16		; result is zero, so following NOP should be skipped
+	NOP16: NOP
+	BRBC	2, NOP17		; sign bit is not set, so following NOP should be skipped
+	NOP17: NOP
+	BRBS	2, NOP18		; sign bit is not set, so following NOP should be executed
+	NOP18: NOP	
+	BRBC	3, NOP19		; there is not signed overflow, so following NOP should be skipped
+	NOP19: NOP
+	BRBS	3, NOP20		; there is not signed overflow, so following NOP should be executed
+	NOP20: NOP
+	BRBC	4, NOP21		; corrected sign is clear, so following NOP should be skipped
+	NOP21: NOP
+	BRBS	4, NOP22		; corrected sign is clear, so following NOP should be executed
+	NOP22: NOP
+	BRBC	5, NOP23		; there is not half carry, so following NOP should be skipped
+	NOP23: NOP
+	BRBS	5, NOP24		; there is not half carry, so following NOP should be executed
+	NOP24: NOP
+
 Finish__Testing:
 	RET
+
+Test_Func:
+	NOP
+	RET
+
+Test_Interrupt_Func:
+	NOP
+	RETI

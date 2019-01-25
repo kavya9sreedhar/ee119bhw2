@@ -11,6 +11,7 @@
 --
 --  Revision History:
 --	23 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+--  23 Jan 19	Kavya Sreedhar & Dan Xu		Modified registers unit, added IO
 --  24 Jan 19	Kavya Sreedhar & Dan Xu 	Updated Comments
 ----------------------------------------------------------------------------
 
