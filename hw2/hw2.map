@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.42  C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.asm Fri Jan 25 03:46:22 2019
+AVRASM ver. 2.1.42  C:\Users\ksreedhar\Desktop\Kavya\EE119b\HW2\ee119bhw2\hw2\hw2.asm Thu Jan 24 20:39:58 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -342,4 +342,5 @@ EQU  UTXCaddr     0000000b
 EQU  ACIaddr      0000000c
 EQU  INT_VECTORS_SIZE 0000000d
 CSEG AVR_Processor_Testing 00000000
-CSEG Finish__Testing 00000017
+CSEG TestLoadsandStores 00000018
+CSEG Finish__Testing 00000048

@@ -101,8 +101,6 @@ end entity;
 -- Registers entity declaration: used for general purpose registers and IO Space
 --
 entity Registers is
-	generic(
-	);
 	port(
 		-- array containing contents of all bits of all NUM_REGISTERS registers
 		-- individual registers can be accessed by indexing according to the
@@ -282,6 +280,6 @@ entity Control_Unit is
 		-- select register
 		Register_select: out std_logic_vector(log2(NUM_REGISTERS) - 1 downto 0);
 		-- indicates nibbles of a register should be swapped
-		Swap: out std_logic;
+		Swap: out std_logic
         );
 end entity;
