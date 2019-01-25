@@ -112,25 +112,25 @@ TestLoadsandStores:
 						;  so confirm zero flag is set
 	; check zero flag is set
 	LD		R12, X		; get current value of X
-	LDI		R14, 532
-	ST		-X, R14		; store indirect with X and pre-decrement
+	LDI		R20, 232
+	ST		-X, R20		; store indirect with X and pre-decrement
 	LD		R13, X		; check whether value was correctly stored
-	CP		R13, R14
+	CP		R13, R20
 	; check zero flag is set
 	CP		R13, R12	; check that X was properly decremented as
 						;  the values of X and X + 1 are different
 						;  values now and should not be equal
 	
 	ST		Y+, R19		; store indirect with Y and post increment
-	LD		R14, -Y		; load indirect with Y and pre decrement
-	CP		R14, R19	; R14 and R19 should have the same value
+	LD		R20, -Y		; load indirect with Y and pre decrement
+	CP		R20, R19	; R14 and R19 should have the same value
 						;  so confirm zero flag is set
 	; check zero flag is set
 	LD		R12, Y		; get current value of Y
-	LDI		R14, 532
+	LDI		R20, 232
 	ST		-Y, R14		; store indirect with Y and pre-decrement
 	LD		R13, X		; check whether value was correctly stored
-	CP		R13, R14
+	CP		R13, R20
 	; check zero flag is set
 	CP		R13, R12	; check that Y was properly decremented as
 						;  the values of Y and Y + 1 are different
@@ -142,17 +142,17 @@ TestLoadsandStores:
 						;  so confirm zero flag is set
 	; check zero flag is set
 	LD		R12, Z		; get current value of Z
-	LDI		R14, 532
-	ST		-Z, R14		; store indirect with Z and pre-decrement
+	LDI		R20, 232
+	ST		-Z, R20		; store indirect with Z and pre-decrement
 	LD		R13, Z		; check whether value was correctly stored
-	CP		R13, R14
+	CP		R13, R20
 	; check zero flag is set
 	CP		R13, R12	; check that Z was properly decremented as
 						;  the values of Z and Z + 1 are different
 						;  values now and should not be equal
 
 	; check zero flag is not set
-	LDI		R19, 384	; check push and pop instructions
+	LDI		R19, 156	; check push and pop instructions
 	PUSH	R19			; push R19 value and check if operation
 						;  worked correctly with pop instruction
 						;  after several other instructions
@@ -170,8 +170,8 @@ TestLoadsandStores:
 	LDS		R19, 65530
 	POP		R19			; check that R19 value when previously
 						;  pushed was correctly preserved
-	MOV		R18, 384
-	CP		R19, R18
+	LDI		R20, 156
+	CP		R19, R20
 	; check zero flag is set
 
 Finish__Testing:
