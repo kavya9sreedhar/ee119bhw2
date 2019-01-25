@@ -3,15 +3,20 @@
 
 ; AVR Processor Test Code 
 ;
-; This file contains the test suite for the AVR
+; Description: This file contains the test suite for the AVR
 ; Processor testing the Control Unit, Program Memory
 ; Access Unit, Data Memory Access Unit, Registers, and
-; ALU instructions.
+; ALU instructions with the AT90S4414 device.
+;
+; Please note that some instructions including JMP and CALL
+; were reported to be unsupported on the AT90S4414, so those
+; instruction tests have been included but commented out for
+; simulation purposes with AVR Studio.
 ;
 ; Revision History:
 ;	24 Jan 2019		Kavya Sreedhar & Dan Xu Initial Revision
 ;	24 Jan 2019		Kavya Sreedhar & Dan Xu Data & Program Memory Access Unit
-;	
+;	24 Jan 2019		Kavya Sreedhar & Dan Xu ALU
 
 AVR_Processor_Testing:
 
@@ -23,7 +28,7 @@ AVR_Processor_Testing:
 	RJMP 	6
 	NOP
 	ADC		R25, R27
-	BRBC	0, 1
+	BRBC	0, 9
 	NOP
 	ADD		R27, R25
 	NEG		R27
@@ -170,6 +175,16 @@ TestDataMemoryAccessUnit:
 TestProgramMemoryAccessUnit:
 	; test function call and return instructions
 	; CALL	Test_Func
+	; CALL  Test_Interrupt_Func
+	; LDI		R20, 134		; load address values in registers to use with Z
+	; LDI		R21, 124
+	; ST		-Z, R20		; store indirect with Z and pre-decrement
+	; ST		Z+, R20
+	; IJMP				; PC should not change between the next two instructions
+	; ICALL
+	; ST		-Z, R21		; store indirect with Z and pre-decrement
+	; IJMP
+
 
 	; test skip instructions
 	LDI		R20, 1		; load two registers with the same value
@@ -199,65 +214,105 @@ TestProgramMemoryAccessUnit:
 	MOV		R21, R20
 	ADD		R20, R21
 	BRBC	0, NOP1		; there is a carry, so following NOP should be executed
+	NOP
 	NOP1: NOP
 	BRBS	0, NOP2		; there is a carry, so following NOP should be skipped
+	NOP
 	NOP2: NOP
 	BRBC	1, NOP3		; result is not zero, so following NOP should be skipped
+	NOP
 	NOP3: NOP
 	BRBS	1, NOP4		; result is not zero, so following NOP should be executed
+	NOP
 	NOP4: NOP
 	BRBC	2, NOP5		; sign bit is set, so following NOP should be executed
+	NOP
 	NOP5: NOP
 	BRBS	2, NOP6		; sign bit is set, so following NOP should be skipped
+	NOP
 	NOP6: NOP	
 	BRBC	3, NOP7		; there is signed overflow, so following NOP should be executed
+	NOP
 	NOP7: NOP
 	BRBS	3, NOP8		; there is signed overflow, so following NOP should be skipped
+	NOP
 	NOP8: NOP
 	BRBC	4, NOP9		; corrected sign is clear, so following NOP should be skipped
+	NOP
 	NOP9: NOP
 	BRBS	4, NOP10	; corrected sign is clear, so following NOP should be executed
+	NOP
 	NOP10: NOP
 	BRBC	5, NOP11	; there is half carry, so following NOP should be executed
+	NOP
 	NOP11: NOP
 	BRBS	5, NOP12	; there is half carry, so following NOP should be skipped
+	NOP
 	NOP12: NOP
 	
 	LDI		R20, 0		; add 0 + 0
 	MOV		R21, R20
 	ADD		R21, R20
 	BRBC	0, NOP13		; there is no carry, so following NOP should be skipped
+	NOP
 	NOP13: NOP
 	BRBS	0, NOP14		; there is no carry, so following NOP should be executed
+	NOP
 	NOP14: NOP
 	BRBC	1, NOP15		; result is zero, so following NOP should be executed
+	NOP
 	NOP15: NOP
 	BRBS	1, NOP16		; result is zero, so following NOP should be skipped
+	NOP
 	NOP16: NOP
 	BRBC	2, NOP17		; sign bit is not set, so following NOP should be skipped
+	NOP
 	NOP17: NOP
 	BRBS	2, NOP18		; sign bit is not set, so following NOP should be executed
+	NOP
 	NOP18: NOP	
 	BRBC	3, NOP19		; there is not signed overflow, so following NOP should be skipped
+	NOP
 	NOP19: NOP
 	BRBS	3, NOP20		; there is not signed overflow, so following NOP should be executed
+	NOP
 	NOP20: NOP
 	BRBC	4, NOP21		; corrected sign is clear, so following NOP should be skipped
+	NOP
 	NOP21: NOP
 	BRBS	4, NOP22		; corrected sign is clear, so following NOP should be executed
+	NOP
 	NOP22: NOP
 	BRBC	5, NOP23		; there is not half carry, so following NOP should be skipped
+	NOP
 	NOP23: NOP
 	BRBS	5, NOP24		; there is not half carry, so following NOP should be executed
+	NOP
 	NOP24: NOP
 
+		
+
 Finish__Testing:
+	RET						; conclude testing
+
+
+; helper functions
+
+Test_Func:	; test function to test CALL, RCALL,
+			; and RET instructions
+	NOP
+	; test RCALL by calling Test_Interrupt_Func
+	RCALL	2
 	RET
 
-Test_Func:
+Test_RCALL_Func:	; test function to test
+					; RCALL by calling this function
+					; from Test_Func
 	NOP
 	RET
 
-Test_Interrupt_Func:
+Test_Interrupt_Func: ; test function to test interrupt
+					 ; return
 	NOP
 	RETI
+
