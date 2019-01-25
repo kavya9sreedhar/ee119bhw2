@@ -44,22 +44,27 @@ entity ALU is
 		-- 	10 select current bit 1
 		-- 	11 select current carry flag bit
 		Shifter_low_bit_select: in std_logic_vector(1 downto 0);
-		-- when ALU_result_select indicates F Block operation
-		--	F Block inputs to mux for F Block operations
+		
 		-- when ALU_result_select indicates Adder/Subtractor operation
 		--	lowest bit of this vector is the Subtract control signal (all others
 		-- 	bits are ignored)
 		-- when ALU_result_select indicates Shifter/Rotater operation
+		--	bit 0 selects value for middle bits:
+		--		0 select bit to the immediate right
+		--		1 select bit to the immediate left
+		Shifter_middle_bit_select: in std_logic;
 		-- 	bits 3 downto 1 selects high bit value:
 		--		000 select current second highest bit
 		--		001	select current highest bit
 		--		010	select current lowest bit
 		--		011	select 0
 		--		100	select current carry flag bit
-		--	bit 0 selects value for middle bits:
-		--		0 select bit to the immediate right
-		--		1 select bit to the immediate left
-		Shift_mid_high_bits_FBlock_Subtract: in std_logic_vector(3 downto 0);
+		Shifter_high_bit_select: in std_logic_vector(2 downto 0);
+		-- when ALU_result_select indicates F Block operation
+		--	F Block inputs to mux for F Block operations
+		F_Block_Select: in std_logic_vector(3 downto 0);
+		-- indicates whether an addition or subtraction operation should occur
+		Subtract: in std_logic;
 		-- flag mask indicating which flag values to update after ALU operation
 		Status_Register_Mask: in std_logic_vector(7 downto 0);
 		
