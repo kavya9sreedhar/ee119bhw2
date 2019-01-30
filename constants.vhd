@@ -1,3 +1,6 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
 package CPU_CONSTANTS is
 	-- number of general purpose registers
 	constant NUM_REGISTERS: 		integer := 32;
@@ -7,42 +10,6 @@ package CPU_CONSTANTS is
 	constant NUM_ADDRESS_BITS: 		integer := 16;
 	-- number of bits in each general-purpose register
 	constant NUM_BITS_PER_REGISTER: integer := 8;
-end package;
-
-package INSTRUCTION_CONSTANTS is
-	constant NUM_INSTRUCTION_BITS: integer := 16;
-	constant ADC_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "000111----------";
-	constant ADD_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "000011----------";
-	-- 2 clocks
-	constant ADIW_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "10010110--------";
-	constant AND_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "10010110--------";
-	constant ANDI_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "0111------------";
-	constant ASR_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "1001010-----0101";
-	constant BCLR_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "100101001---1000";
-	constant BLD_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "1111100-----0---";
-	constant BSET_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "100101000---1000";
-	constant BST_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "1001010-----0101";
-	constant COM_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "1001010-----0000";
-	constant CP_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "000101----------";
-	constant CPC_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "000001----------";
-	constant CPI_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "0011------------";
-	constant DEC_instruction: 	unsigned(NUM_INSTRUCTION_BITS - 1 downto 0)
-		:= "1001010-----1010";
-	
 end package;
 	
 package ALU_constants is 
@@ -78,7 +45,11 @@ package ALU_constants is
 	constant Subtraction: std_logic := '1';
 	constant Addition: std_logic := '0';
 	
-	constant AddSub_Op_Select_0: std_logic_vector(1 downto 0) := "00";
-	constant AddSub_Op_Select_1: std_logic_vector(1 downto 0) := "01";
-	constant AddSub_Op_Select_OperandB: std_logic_vector(1 downto 0) := "10";
+	constant AddSub_Op_2_Select_0: std_logic_vector(1 downto 0) := "00";
+	constant AddSub_Op_2_Select_1: std_logic_vector(1 downto 0) := "01";
+	constant AddSub_Op_2_Select_OperandB: std_logic_vector(1 downto 0) := "10";
+	
+	constant AddSub_Op_1_Select_OperandA: std_logic := "00";
+	constant AddSub_Op_1_Select_FF: std_logic := "01";
+	constant AddSub_Op_1_Select_0: std_logic := "10";
 end package;

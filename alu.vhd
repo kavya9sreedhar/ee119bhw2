@@ -6,11 +6,11 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
-library opcodes;
-use opcodes.opcodes.all;
-
+library CPU_CONSTANTS;
 use CPU_CONSTANTS.all;
-use INSTRUCTION_CONSTANTS.all;
+
+library ALU_CONSTANTS;
+use ALU_CONSTANTS.all;
 
 --
 -- ALU entity declaration
@@ -60,11 +60,12 @@ entity ALU is
 		-- indicating whether performing ALU operation involving current carry / 
 		-- borrow bit
 		ALU_op_with_carry: in std_logic;
+		AddSub_Op_1_Select: in std_logic;
 		-- chooses value of second operand for addition / subtraction
 		-- 	00 select 0
 		--  01 select 1
 		--  10 select OperandB
-		AddSub_Op_Select: in std_logic_vector(1 downto 0);
+		AddSub_Op_2_Select: in std_logic_vector(1 downto 0);
 		-- flag mask indicating which flag values to update after ALU operation
 		Status_Register_Mask: in std_logic_vector(7 downto 0);
 		
@@ -105,24 +106,27 @@ begin
 			'1' 							when F_Block_Select = "1111";
 	end generate get_F_block_result;
 	
-	Operand2 <= "00000000" when AddSub_Op_Select = "00" else
-				"00000001" when AddSub_Op_Select = "01" else
+	Operand1 <= OperandA 	when AddSub_Op_1_Select = '0' else
+				"11111111" when AddSub_Op_1_Select = '1';
+				
+	Operand2 <= "00000000" 	when AddSub_Op_2_Select = "00" else
+				"00000001" 	when AddSub_Op_2_Select = "01" else
 				OperandB;
 				
 	carry_borrow_for_ALU_op <= 	'0' when ALU_op_with_carry = '0' else
 								current_status_register(0);
 								
 	adder_subtractor_result(0) <= 
-		OperandA(0) xor (Operand2(0) xor Subtract) xor 
+		Operand1(0) xor (Operand2(0) xor Subtract) xor 
 		(Subtract xor carry_borrow_for_ALU_op);
 	carry_outs(0) <= Subtract;
 	
 	get_adder_subtractor_bits: for i in range 1 to NUM_DATA_BITS - 1 generate
 		adder_subtractor_result(i) <=
-			OperandA(i) xor (Operand2(i) xor Subtract) xor carry_outs(i - 1);
+			Operand1(i) xor (Operand2(i) xor Subtract) xor carry_outs(i - 1);
 		carry_outs(i) <= 
-			(OperandA(i) and (Operand2(i) xor Subtract)) or 
-			(carry_outs(i - 1) and (OperandA(i) xor (Operand2(i) xor Subtract)));
+			(Operand1(i) and (Operand2(i) xor Subtract)) or 
+			(carry_outs(i - 1) and (Operand1(i) xor (Operand2(i) xor Subtract)));
 	end generate get_adder_subtractor_bits;
 
 	shift_rotate_result(0) <= 	

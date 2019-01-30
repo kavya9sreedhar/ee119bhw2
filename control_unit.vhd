@@ -1,3 +1,17 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.math_real.all;
+
+library opcodes;
+use opcodes.opcodes.all;
+
+library CPU_CONSTANTS;
+use CPU_CONSTANTS.all;
+
+library ALU_CONSTANTS;
+use ALU_CONSTANTS.all;
+
 --
 -- Control Unit entity declaration
 --
@@ -53,11 +67,12 @@ architecture control_arch of Control_Unit
 		-- indicating whether performing ALU operation involving current carry / 
 		-- borrow bit
 		ALU_op_with_carry: in std_logic;
+		AddSub_Op_1_Select: in std_logic;
 		-- chooses value of second operand for addition / subtraction
 		-- 	00 select 0
 		--  01 select 1
 		--  10 select OperandB
-		AddSub_Op_Select: in std_logic_vector(1 downto 0);
+		AddSub_Op_2_Select: in std_logic_vector(1 downto 0);
 		-- flag mask indicating which flag values to update after ALU operation
 		Status_Register_Mask: in std_logic_vector(7 downto 0);
 		
@@ -75,11 +90,292 @@ architecture control_arch of Control_Unit
 		);
 	end component;
 	
+	signal Result: std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+	signal second_clock_flag: std_logic;
+	
 begin
 	process (clk)
 	begin
+		
 		if rising_edge(clk) then
-			if std_match(Program_Data_Bus, ADC_instruction) then
+			if std_match(Program_Data_Bus, OpADC) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Addition,
+					ALU_op_with_carry => '1',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpADD) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Addition,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			-- 2 clocks
+			if std_match(Program_Data_Bus, OpADIW) then
+				if second_clock_flag = '0' then
+					ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Addition,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					-- Rd
+					OperandA => ,
+					-- K
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+					);
+				
+					second_clock_flag = '1';
+					
+				else
+					ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Addition,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_0,
+					Status_Register_Mask => ,
+					--Rd + 1
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+					);
+					
+					second_clock_flag = '0';
+				end if;
+			end if;
+
+			if std_match(Program_Data_Bus, OpAND) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => F_Block_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => F_Block_Select_and,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpANDI) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => F_Block_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => F_Block_Select_and,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpASR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Shifter_Rotater_Operation,
+					Shifter_low_bit_select => Shifter_low_bit_bit_1,
+					Shifter_middle_bits_select => 
+						Shifter_middle_bits_select_immediate_left,
+					Shifter_high_bit_select => Shifter_high_bit_select_highest_bit,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+
+			if std_match(Program_Data_Bus, OpBCLR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => ,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpBLD) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => ,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpBSET) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => ,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpBST) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => ,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpCOM) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_FF,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpCP) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+				-- do not store result back in registers
+			end if;
+			
+			if std_match(Program_Data_Bus, OpCPC) then
 				ALU_operation: ALU port map (
 					clk => clk,
 					ALU_result_select => Adder_Subtractor_Operation,
@@ -89,7 +385,50 @@ begin
 					F_Block_Select => ,
 					Subtract => Subtraction,
 					ALU_op_with_carry => '1',
-					AddSub_Op_Select => AddSub_Op_Select_OperandB,
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+				-- do not store result back in registers
+			end if;
+			
+			if std_match(Program_Data_Bus, OpCPI) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+				-- do not store result back in registers
+			end if;
+			
+			if std_match(Program_Data_Bus, OpDEC) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_1,
 					Status_Register_Mask => ,
 					OperandA => ,
 					OperandB => ,
@@ -98,61 +437,341 @@ begin
 				);
 			end if;
 			
-			if std_match(Program_Data_Bus, ADD_instruction) then
-			
+			if std_match(Program_Data_Bus, OpEOR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => F_Block_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => F_Block_Select_xor,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
 			end if;
 			
-			if std_match(Program_Data_Bus, ADC_instruction) then
-			
+			if std_match(Program_Data_Bus, OpINC) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Addition,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_1,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
 			end if;
 			
-			if std_match(Program_Data_Bus, ADIW_instruction) then
+			if std_match(Program_Data_Bus, OpLSR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Shifter_Rotater_Operation,
+					Shifter_low_bit_select => Shifter_low_bit_bit_1,
+					Shifter_middle_bits_select => 
+						Shifter_middle_bits_select_immediate_left,
+					Shifter_high_bit_select => Shifter_high_bit_select_0,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
 			
+			if std_match(Program_Data_Bus, OpNEG) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Shifter_Rotater_Operation,
+					Shifter_low_bit_select => Shifter_low_bit_bit_1,
+					Shifter_middle_bits_select => 
+						Shifter_middle_bits_select_immediate_left,
+					Shifter_high_bit_select => Shifter_high_bit_select_0,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpNEG) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_0,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpOR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => F_Block_Select,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => F_Block_Select_or,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpOR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => F_Block_Select,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => F_Block_Select_or,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpROR) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Shifter_Rotater_Operation,
+					Shifter_low_bit_select => Shifter_low_bit_bit_1,
+					Shifter_middle_bits_select => 	
+						Shifter_middle_bits_select_immediate_left,
+					Shifter_high_bit_select => Shifter_high_bit_select_lowest_bit,
+					F_Block_Select => ,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpSBC) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '1',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			if std_match(Program_Data_Bus, OpSBCI) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '1',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
+			end if;
+			
+			-- 2 clocks
+			if std_match(Program_Data_Bus, OpSBIW) then
+				if second_clock_flag = '0' then
+					ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					-- Rd
+					OperandA => ,
+					-- K
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+					);
+				
+					second_clock_flag = '1';
+					
+				else
+					ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Addition,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_0,
+					Status_Register_Mask => ,
+					--Rd + 1
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+					);
+					
+					second_clock_flag = '0';
+				end if;
 			end if;
 
-			if std_match(Program_Data_Bus, AND_instruction) then
-			
+			if std_match(Program_Data_Bus, OpAND) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => F_Block_Operation,
+					-- values do not matter
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => F_Block_Select_and,
+					Subtract => ,
+					ALU_op_with_carry => ,
+					AddSub_Op_1_Select => ,
+					AddSub_Op_2_Select => ,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
 			end if;
 			
-			if std_match(Program_Data_Bus, ANDI_instruction) then
-			
+			if std_match(Program_Data_Bus, OpSUB) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
 			end if;
 			
-			if std_match(Program_Data_Bus, ASR_instruction) then
-			
-			end if;
-
-			if std_match(Program_Data_Bus, BCLR_instruction) then
-			
-			end if;
-			
-			if std_match(Program_Data_Bus, BSET_instruction) then
-			
-			end if;
-			
-			if std_match(Program_Data_Bus, BST_instruction) then
-			
-			end if;
-			
-			if std_match(Program_Data_Bus, COM_instruction) then
-			
-			end if;
-			
-			if std_match(Program_Data_Bus, CP_instruction) then
-			
+			if std_match(Program_Data_Bus, OpSUBI) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
 			end if;
 			
-			if std_match(Program_Data_Bus, CPC_instruction) then
-			
+			if std_match(Program_Data_Bus, OpSWAP) then
+				ALU_operation: ALU port map (
+					clk => clk,
+					ALU_result_select => Adder_Subtractor_Operation,
+					Shifter_low_bit_select => ,
+					Shifter_middle_bits_select => ,
+					Shifter_high_bit_select => ,
+					F_Block_Select => ,
+					Subtract => Subtraction,
+					ALU_op_with_carry => '0',
+					AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+					AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+					Status_Register_Mask => ,
+					OperandA => ,
+					OperandB => ,
+					Result => Result,
+					Status_Register =>
+				);
 			end if;
 			
-			if std_match(Program_Data_Bus, CPI_instruction) then
-			
-			end if;
-			
-			if std_match(Program_Data_Bus, DEC_instruction) then
-			
-			end if;
 		end if;
 	end process;
 end architecture;
