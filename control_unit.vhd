@@ -501,27 +501,6 @@ begin
 			if std_match(Program_Data_Bus, OpNEG) then
 				ALU_operation: ALU port map (
 					clk => clk,
-					ALU_result_select => Shifter_Rotater_Operation,
-					Shifter_low_bit_select => Shifter_low_bit_bit_1,
-					Shifter_middle_bits_select => 
-						Shifter_middle_bits_select_immediate_left,
-					Shifter_high_bit_select => Shifter_high_bit_select_0,
-					F_Block_Select => ,
-					Subtract => ,
-					ALU_op_with_carry => ,
-					AddSub_Op_1_Select => ,
-					AddSub_Op_2_Select => ,
-					Status_Register_Mask => ,
-					OperandA => ,
-					OperandB => ,
-					Result => Result,
-					Status_Register =>
-				);
-			end if;
-			
-			if std_match(Program_Data_Bus, OpNEG) then
-				ALU_operation: ALU port map (
-					clk => clk,
 					ALU_result_select => Adder_Subtractor_Operation,
 					Shifter_low_bit_select => ,
 					Shifter_middle_bits_select => ,
