@@ -27,9 +27,9 @@ end RegisterTester;
 architecture TestBench of RegisterTester is
 
     -- Number of bits for the register unit to test.
-    constant NUM_BITS             : positive := 8;
+    constant NUM_BITS            : positive := 8;
     -- Number of registers to test.
-    constant NUM_REGISTERS        : positive := 2;
+    constant NUM_REGISTERS       : positive := 5;
 
     -- Clock
     signal clk                   : std_logic;   
@@ -46,8 +46,9 @@ architecture TestBench of RegisterTester is
     signal Register_Dst_Select   : std_logic_vector(NUM_REGISTERS-1 downto 0);
     signal Register_Src_SelectA  : std_logic_vector(NUM_REGISTERS-1 downto 0);
     signal Register_Src_SelectB  : std_logic_vector(NUM_REGISTERS-1 downto 0);
-
-    signal current               : std_logic_vector(NUM_REGISTERS-1 downto 0);
+    
+    -- Signal used to stop clock signal generators
+    signal  END_SIM  :  BOOLEAN := FALSE;
 
     ---------------
     -- Functions --
@@ -79,29 +80,40 @@ begin
         port map(
 
             -- Hook up the clock
-            clk => clk,
+            clk                   => clk,
 
             -- Hook up the input
-            reg_in => reg_in,
+            reg_in                => reg_in,
 
             -- Hook up outputs
-            reg_outA => reg_outA,
-            reg_outB => reg_outB,
+            reg_outA              => reg_outA,
+            reg_outB              => reg_outB,
 
             -- Ctrl signals
-            Register_Write_Enable,
-            Register_Dst_Select,
-            Register_Src_SelectA,
-            Register_Src_SelectB
+            Register_Write_Enable => Register_Write_Enable,
+            Register_Dst_Select   => Register_Dst_Select,
+            Register_Src_SelectA  => Register_Src_SelectA,
+            Register_Src_SelectB  => Register_Src_SelectB
         );
 
     -----------------------
     --   START TESTING   --
     -----------------------
     test_main: process
+        variable current              : std_logic_vector(NUM_REGISTERS-1 downto 0);
     begin
-        report "-------- ALL TESTS DONE --------";
-        for i in 0 to NUM_REGISTERS - 1 loop
+        report "-------- START TESTS --------";
+        
+        -- Initialize all input values to 'X'
+        Register_Write_Enable <= 'X';
+        Register_Dst_Select   <= (others => 'X');
+        Register_Src_SelectA  <= (others => 'X');
+        Register_Src_SelectB  <= (others => 'X');
+        reg_in                <= (others => 'X');
+        
+        wait for 4*CLOCK_PERIOD;
+        
+        for i in 0 to 2 ** NUM_REGISTERS - 1 loop
 
             current               := std_logic_vector(to_unsigned(i, NUM_REGISTERS));
 
@@ -116,12 +128,12 @@ begin
 
         end loop;
 
-        for i in 0 to NUM_REGISTERS - 1 loop
+        for i in 0 to 2 ** NUM_REGISTERS - 1 loop
 
-            current := std_logic_vector(to_unsigned(i, NUM_REGISTERS));
+            current               := std_logic_vector(to_unsigned(i, NUM_REGISTERS));
 
             -- Load a value corresponding to the register
-            reg_in                <= (NUM_BITS-1 downto 1 => '0');
+            reg_in                <= (NUM_BITS-1 downto 0 => '0');
             
             -- Signals to not load it in.
             Register_Write_Enable <= '0';

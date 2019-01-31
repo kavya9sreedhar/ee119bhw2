@@ -16,12 +16,9 @@
 --  Revision History:
 --	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
 ----------------------------------------------------------------------------
-library work;
+library ieee;
 
-use ieee.math_real.all;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
-use ieee.std_logic_arith.ALL;
 use ieee.numeric_std.all;
 
 --
@@ -52,12 +49,11 @@ use ieee.numeric_std.all;
 -- Register_Src_SelectB
 --     The select for the second register output.
 entity Registers is
+
 	generic(
 		NUM_BITS              : positive := 8;
-		NUM_REGISTERS         : natural := 2
+		NUM_REGISTERS         : natural  := 5
 	);
-
-	constant NUM_OUTPUTS      : integer := 2;
 
 	port(
 		-- Clock
@@ -76,7 +72,7 @@ entity Registers is
 		Register_Src_SelectA  : in std_logic_vector(NUM_REGISTERS-1 downto 0);
 		Register_Src_SelectB  : in std_logic_vector(NUM_REGISTERS-1 downto 0)
 		
-        );
+     );
 end entity;
 
 -- Standard Register Architecture
@@ -84,12 +80,13 @@ architecture standard of Registers is
 
     -- Defined types
 	-- The register data type
-	type register_t is std_logic_vector(NUM_BITS-1 downto 0);
+	subtype register_t is std_logic_vector(NUM_BITS-1 downto 0);
 	-- The register bank data type
 	type reg_bank_t is array(integer range <>) of register_t;
 
 	-- The registers
-	signal register_file      : reg_bank_t(NUM_REGISTERS-1 downto 0)
+	signal register_file      : reg_bank_t((2**NUM_REGISTERS)-1 downto 0);
+
 begin
 
 	load : process(clk)
