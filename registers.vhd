@@ -8,8 +8,8 @@
 --  Allows for the specification of:
 --    NUM_BITS
 --        The number of bits in a register.
---    NUM_REGISTERS
---        The number of registers in the register file.
+--    LNUM_REGISTERS
+--        The number of registers in the register file. (LOG)
 --    NUM_OUTPUTS
 --        The number of register outputs for the register file.
 --
@@ -52,7 +52,7 @@ entity Registers is
 
 	generic(
 		NUM_BITS              : positive := 8;
-		NUM_REGISTERS         : natural  := 5
+		LNUM_REGISTERS        : natural  := 5
 	);
 
 	port(
@@ -68,9 +68,9 @@ entity Registers is
 
 		-- Ctrl signals
 		Register_Write_Enable : in std_logic;
-		Register_Dst_Select   : in std_logic_vector(NUM_REGISTERS-1 downto 0);
-		Register_Src_SelectA  : in std_logic_vector(NUM_REGISTERS-1 downto 0);
-		Register_Src_SelectB  : in std_logic_vector(NUM_REGISTERS-1 downto 0)
+		Register_Dst_Select   : in std_logic_vector(LNUM_REGISTERS-1 downto 0);
+		Register_Src_SelectA  : in std_logic_vector(LNUM_REGISTERS-1 downto 0);
+		Register_Src_SelectB  : in std_logic_vector(LNUM_REGISTERS-1 downto 0)
 		
      );
 end entity;
@@ -85,7 +85,7 @@ architecture standard of Registers is
 	type reg_bank_t is array(integer range <>) of register_t;
 
 	-- The registers
-	signal register_file      : reg_bank_t((2**NUM_REGISTERS)-1 downto 0);
+	signal register_file      : reg_bank_t((2**LNUM_REGISTERS)-1 downto 0);
 
 begin
 

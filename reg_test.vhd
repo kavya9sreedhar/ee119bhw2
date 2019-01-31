@@ -29,7 +29,7 @@ architecture TestBench of RegisterTester is
     -- Number of bits for the register unit to test.
     constant NUM_BITS            : positive := 8;
     -- Number of registers to test.
-    constant NUM_REGISTERS       : positive := 5;
+    constant LNUM_REGISTERS       : positive := 5;
 
     -- Clock
     signal clk                   : std_logic;   
@@ -43,9 +43,9 @@ architecture TestBench of RegisterTester is
 
     -- Ctrl signals
     signal Register_Write_Enable : std_logic;
-    signal Register_Dst_Select   : std_logic_vector(NUM_REGISTERS-1 downto 0);
-    signal Register_Src_SelectA  : std_logic_vector(NUM_REGISTERS-1 downto 0);
-    signal Register_Src_SelectB  : std_logic_vector(NUM_REGISTERS-1 downto 0);
+    signal Register_Dst_Select   : std_logic_vector(LNUM_REGISTERS-1 downto 0);
+    signal Register_Src_SelectA  : std_logic_vector(LNUM_REGISTERS-1 downto 0);
+    signal Register_Src_SelectB  : std_logic_vector(LNUM_REGISTERS-1 downto 0);
     
     -- Signal used to stop clock signal generators
     signal  END_SIM  :  BOOLEAN := FALSE;
@@ -100,7 +100,7 @@ begin
     --   START TESTING   --
     -----------------------
     test_main: process
-        variable current              : std_logic_vector(NUM_REGISTERS-1 downto 0);
+        variable current              : std_logic_vector(LNUM_REGISTERS-1 downto 0);
     begin
         report "-------- START TESTS --------";
         
@@ -113,9 +113,9 @@ begin
         
         wait for 4*CLOCK_PERIOD;
         
-        for i in 0 to 2 ** NUM_REGISTERS - 1 loop
+        for i in 0 to 2 ** LNUM_REGISTERS - 1 loop
 
-            current               := std_logic_vector(to_unsigned(i, NUM_REGISTERS));
+            current               := std_logic_vector(to_unsigned(i, LNUM_REGISTERS));
 
             -- Load a value corresponding to the register
             reg_in                <= std_logic_vector(to_unsigned(i, NUM_BITS));
@@ -128,9 +128,9 @@ begin
 
         end loop;
 
-        for i in 0 to 2 ** NUM_REGISTERS - 1 loop
+        for i in 0 to 2 ** LNUM_REGISTERS - 1 loop
 
-            current               := std_logic_vector(to_unsigned(i, NUM_REGISTERS));
+            current               := std_logic_vector(to_unsigned(i, LNUM_REGISTERS));
 
             -- Load a value corresponding to the register
             reg_in                <= (NUM_BITS-1 downto 0 => '0');
