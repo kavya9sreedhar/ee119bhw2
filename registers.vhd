@@ -1,32 +1,108 @@
+----------------------------------------------------------------------------
+--  Register
 --
--- Registers entity declaration: used for general purpose registers and IO Space
+--	This file contains an implementation of a single input, two output
+--  register file. Two was chosen because this was designed for a max
+--  two argument instruction set.
 --
+--  Allows for the specification of:
+--    NUM_BITS
+--        The number of bits in a register.
+--    NUM_REGISTERS
+--        The number of registers in the register file.
+--    NUM_OUTPUTS
+--        The number of register outputs for the register file.
+--
+--  Revision History:
+--	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+----------------------------------------------------------------------------
+library work;
+
+use ieee.math_real.all;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.std_logic_arith.ALL;
+use ieee.numeric_std.all;
+
+--
+-- Registers entity declarations
+-- Generics
+-- NUM_BITS
+--     The number of bits in a register.
+-- NUM_REGISTERS
+--     The number of registers as a power of 2.
+-- Ports
+-- clk
+--     The clock signal into the system.
+--
+-- reg_in [NUM_BITS-1..0]
+--     The input to the register file.
+--
+-- reg_outA [NUM_BITS-1..0]
+--     The first register output
+-- reg_outB [NUM_BITS-1..0]
+--     The second register output
+--
+-- Register_Write_Enable
+--     Enable writing to the registers.
+-- Register_Dst_Select
+--     The destination for the register input.
+-- Register_Src_SelectA
+--     The select for the first register output.
+-- Register_Src_SelectB
+--     The select for the second register output.
 entity Registers is
+	generic(
+		NUM_BITS              : positive := 8;
+		NUM_REGISTERS         : natural := 2
+	);
+
+	constant NUM_OUTPUTS      : integer := 2;
+
 	port(
-		-- array containing contents of all bits of all NUM_REGISTERS registers
-		-- individual registers can be accessed by indexing according to the
-		-- register number * NUM_BITS_PER_REGISTER appropriately
-		Register_contents: buffer std_logic_vector(NUM_REGISTERS * 
-			NUM_BITS_PER_REGISTER - 1 downto 0);
+		-- Clock
+		clk                   : in std_logic;   
 		
-		-- if general purpose registers:
-		--	00 IO Register
-		-- 	01 Data_Data_Bus
-		--	10 Output from ALU
-		-- if IO Space:
-		--	00 Data Data Bus
-		--	01 Status Register Output from ALU
-		Register_val_select: in std_logic_vector(1 downto 0);
-		-- enable writing to general purpose registers
-		Register_Write_Enable: out std_logic;
-		-- select which register
-		Register_select: out std_logic_vector(log2(NUM_REGISTERS) - 1 downto 0);
-		-- indicates nibbles of a register should be swapped
-		Swap: in std_logic;
-		-- bit in register to set transfer bit in status register to or vice versa
-		T_bit: in std_logic_vector(2 downto 0);
-		-- indicates that a bit in a register should be updated to transfer bit
-		-- or vice versa
-		Transfer: in std_logic
+		-- Input
+		reg_in                : in std_logic_vector(NUM_BITS-1 downto 0);
+
+		-- Outputs (Comes as a buffer with all bits)
+		reg_outA              : out std_logic_vector(NUM_BITS-1 downto 0);
+		reg_outB              : out std_logic_vector(NUM_BITS-1 downto 0);
+
+		-- Ctrl signals
+		Register_Write_Enable : in std_logic;
+		Register_Dst_Select   : in std_logic_vector(NUM_REGISTERS-1 downto 0);
+		Register_Src_SelectA  : in std_logic_vector(NUM_REGISTERS-1 downto 0);
+		Register_Src_SelectB  : in std_logic_vector(NUM_REGISTERS-1 downto 0)
+		
         );
 end entity;
+
+-- Standard Register Architecture
+architecture standard of Registers is
+
+    -- Defined types
+	-- The register data type
+	type register_t is std_logic_vector(NUM_BITS-1 downto 0);
+	-- The register bank data type
+	type reg_bank_t is array(integer range <>) of register_t;
+
+	-- The registers
+	signal register_file      : reg_bank_t(NUM_REGISTERS-1 downto 0)
+begin
+
+	load : process(clk)
+	begin
+		if (rising_edge(clk)) then
+			if (Register_Write_Enable = '1') then 
+				register_file(to_integer(unsigned(Register_Dst_Select))) <= reg_in;
+			end if;
+		end if;
+	end process load;
+
+	-- Output the proper register
+	reg_outA <= register_file(to_integer(unsigned(Register_Src_SelectA)));
+	reg_outB <= register_file(to_integer(unsigned(Register_Src_SelectB)));
+
+end architecture;
