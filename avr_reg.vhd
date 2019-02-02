@@ -90,7 +90,13 @@ begin
 
     -- IO Registers
     IOReg : entity work.Registers(standard)
-        port map(
+        generic map (
+			NUM_BITS              : positive := 8;
+			LNUM_REGISTERS        : natural  := 5
+		);
+
+		
+		port map(
 
             -- Hook up the clock
             clk                   => clk,
