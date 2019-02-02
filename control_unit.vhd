@@ -1,14 +1,30 @@
+----------------------------------------------------------------------------
+--  AVR Control Unit
+--
+--	This file contains an implementation of the control for an 8-bit
+--  AVR architecture. This implementation consists of a FSM and instruction
+--  decoder to process instructions from the program data bus.
+--
+--  Revision History:
+--	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+--  1  Feb 19	Kavya Sreedhar & Dan Xu		Updated revision history
+----------------------------------------------------------------------------
+
+-- declaration of libraries used
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
+-- import library containing all instructions supported with this AVR implementation
 library opcodes;
 use opcodes.opcodes.all;
 
+-- import library containing all general AVR CPU constants
 library CPU_CONSTANTS;
 use CPU_CONSTANTS.all;
 
+-- import library containing constants specific to the ALU
 library ALU_CONSTANTS;
 use ALU_CONSTANTS.all;
 
@@ -19,7 +35,7 @@ entity Control_Unit is
 	port(
 		-- inputs
 		-- program data bus
-		Program_Data_Bus: in opcode_word;
+		Program_Data_Bus: in opcode_word
 		-- instruction register
 		-- IR: in opcode_word;
 		
