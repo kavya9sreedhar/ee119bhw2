@@ -17,6 +17,15 @@
 --	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
 ----------------------------------------------------------------------------
 
+library ieee;
+library CPU_CONSTANTS;
+library FlagConstants;
+
+use CPU_CONSTANTS.all;
+use FlagConstants.all;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
 -- FlagGenerator entity declarations
 -- 
 -- Ports
