@@ -7,6 +7,8 @@
 --
 --  Revision History:
 --	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+--	31 Jan 19	Kavya Sreedhar & Dan Xu 	Bug Fixes
+--	01 Feb 19	Kavya Sreedhar & Dan Xu 	Added more documentation
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -21,8 +23,40 @@ use ieee.numeric_std.all;
 --
 -- AVR Registers entity declarations
 -- Ports
+--
+-- Inputs:
 -- clk
---     The clock signal into the system.
+--   The clock signal into the system.
+-- data_databus_in
+--   The data bus going into the registers
+-- ALU_in
+--   The ALU output going into the registers
+-- Updated_SREG [NUM_DATA_BITS-1..0]
+--   The updated status register.
+-- GP Reg Control lines.
+-- GP_Input_Select [NUM_GP_INP_SELECT_BITS-1..0]
+--   Select which input source to use (Data bus or ALU)
+-- GP_Write_Enable
+--   Enable write to the GP registers
+-- GP_Swap_Nibbles
+--   Ctrl signal to swap the nibbles for the GP register
+-- GP_Dst_Select [NUM_REG_LOG-1..0]
+--   Ctrl signal for which register to write to.
+-- GP_Src_SelectA [NUM_REG_LOG-1..0]
+--   Select for which GP register to output on A.
+-- GP_Src_SelectB [NUM_REG_LOG-1..0]
+--   Select for which GP register to output on B.
+-- IO Reg Control lines.
+-- IO_Input_Select
+--   The select for what IO input source to use.
+-- IO_Write_Enable
+--   The enable for writing to the IO registers.
+-- IO_Dst_Select [NUM_IO_LOG-1..0]
+--   The select for which IO reg. to write to.
+-- IO_Src_SelectA [NUM_IO_LOG-1..0]
+--   The select for what IO register to output on A.
+-- IO_Src_SelectB [NUM_IO_LOG-1..0]
+--   The select for what IO register to output on B.
 --
 
 entity AVRRegisters is

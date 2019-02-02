@@ -40,6 +40,8 @@ use ieee.numeric_std.all;
 library opcodes;
 use opcodes.opcodes.all;
 
+library work;
+
 
 entity  REG_TEST  is
 
@@ -52,3 +54,21 @@ entity  REG_TEST  is
     );
 
 end  REG_TEST;
+
+architecture structural of REG_TEST is
+
+
+    
+begin
+
+    ControlUnit : entity work.control_unit(control_arch)
+        port map (
+
+        );
+
+    Registers : entity work.AVRRegisters(standard) 
+        port map (
+
+        );
+
+end architecture;
