@@ -58,6 +58,15 @@ use ieee.numeric_std.all;
 -- IO_Src_SelectB [NUM_IO_LOG-1..0]
 --   The select for what IO register to output on B.
 --
+-- Outputs:
+-- GP_outA
+--   Output A from the GP registers
+-- GP_outB
+--   Output B from the GP registers
+-- IO_outA
+--   Output A from the IO registers
+-- IO_outB
+--   Output B from the IO registers
 
 entity AVRRegisters is
 	port(
