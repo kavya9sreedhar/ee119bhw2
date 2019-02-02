@@ -29,17 +29,12 @@ use ieee.numeric_std.all;
 -- NUM_REGISTERS
 --     The number of registers as a power of 2.
 -- Ports
+--
+-- Inputs:
 -- clk
 --     The clock signal into the system.
---
 -- reg_in [NUM_BITS-1..0]
 --     The input to the register file.
---
--- reg_outA [NUM_BITS-1..0]
---     The first register output
--- reg_outB [NUM_BITS-1..0]
---     The second register output
---
 -- Register_Write_Enable
 --     Enable writing to the registers.
 -- Register_Dst_Select
@@ -48,6 +43,12 @@ use ieee.numeric_std.all;
 --     The select for the first register output.
 -- Register_Src_SelectB
 --     The select for the second register output.
+--
+-- Outputs:
+-- reg_outA [NUM_BITS-1..0]
+--     The first register output
+-- reg_outB [NUM_BITS-1..0]
+--     The second register output
 entity Registers is
 
 	generic(
