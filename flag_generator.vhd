@@ -14,7 +14,8 @@
 --  C 0 Carry (carry out of bit 7), set for COM instruction
 --
 --  Revision History:
---	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+--	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
+--  1  Feb 19	Kavya Sreedhar & Dan Xu		Updated comments
 ----------------------------------------------------------------------------
 
 library ieee;

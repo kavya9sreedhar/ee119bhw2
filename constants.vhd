@@ -1,6 +1,19 @@
+----------------------------------------------------------------------------
+--  AVR Constants
+--
+--	This file contains contains general constants used for the 
+--	implementation of an 8-bit AVR architecture.
+--
+--  Revision History:
+--	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
+--	1  Feb 19	Kavya Sreedhar & Dan Xu		Updated revision history
+----------------------------------------------------------------------------
+
+-- declaration of libraries used
 library ieee;
 use ieee.std_logic_1164.all;
 
+-- general constants shared across all files
 package CPU_CONSTANTS is
 	-- number of general purpose registers
 	constant NUM_REGISTERS: 		integer := 32;
@@ -22,6 +35,7 @@ package CPU_CONSTANTS is
 
 end package;
 	
+-- constants for the ALU implementation only
 package ALU_constants is 
 	-- indicates various types of ALU operations
 	constant F_Block_Operation: std_logic_vector(1 downto 0) := "00";
@@ -85,6 +99,7 @@ package ALU_constants is
 	constant AddSub_Op_1_Select_0: std_logic := "10";
 end package;
 
+-- constants for the Registers implementation only
 package RegConstants is
 
 	-- Swap control values
@@ -111,6 +126,7 @@ package RegConstants is
 
 end package;
 
+-- constants for the Status Register implementation only
 package FlagConstants is
 
 	-- Number of flags

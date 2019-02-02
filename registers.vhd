@@ -14,8 +14,11 @@
 --        The number of register outputs for the register file.
 --
 --  Revision History:
---	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+--	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
+--  1  Feb 19	Kavya Sreedhar & Dan Xu		Updated comments
 ----------------------------------------------------------------------------
+
+-- library declarations
 library ieee;
 
 use ieee.std_logic_1164.all;

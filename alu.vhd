@@ -1,3 +1,16 @@
+----------------------------------------------------------------------------
+--  Arithmetic Logic Unit (ALU)
+--
+--	This file contains an implementation of the ALU for an 8-bit
+--  AVR architecture. The ALU consists of an 8-bit adder/subtractor, 
+-- 	F-Block, shifter, and rotater.
+--
+--  Revision History:
+--	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
+--	30 Jan 19	Kavya Sreedhar & Dan Xu		Updated comments
+--	1  Feb 19	Kavya Sreedhar & Dan Xu		Added file header
+----------------------------------------------------------------------------
+
 --
 -- declaration of libraries used
 --
