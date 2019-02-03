@@ -82,7 +82,7 @@ begin
 	
 	if rising_edge(clk) then
 	
-		-- add with carry
+		-- ADC: add with carry
 		if std_match(Program_Data_Bus, OpADC) then
 		
 			-- Control signals to register
@@ -150,7 +150,7 @@ begin
 			
 		end if;
 		
-		-- addition with two registers
+		-- ADD addition with registers
 		if std_match(Program_Data_Bus, OpADD) then
 		
 			-- Control signals to register
@@ -219,8 +219,7 @@ begin
 			
 		end if;
 		
-		-- 2 clocks
-		-- add immediate to word
+		-- ADIW add immediate to word
 		if std_match(Program_Data_Bus, OpADIW) then
 			if second_clock_flag = '0' then
 				-- choose which register to use depending on instruction decoding
@@ -260,8 +259,6 @@ begin
 				-- use operands passed in as arguments from Control Unit
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-				
-				
 				
 				-- Rd contents
 				OperandA <= GP_outA;
@@ -323,13 +320,10 @@ begin
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_0;
 				
-				
-				
 				-- Rd + 1 contents
 				OperandA <= GP_outA;
 				-- does not matter
 				OperandB <= GP_outB;
-				
 				
 				-- Control signals to Register to store result
 				-- get result from ALU
@@ -372,7 +366,7 @@ begin
 			
 		end if;
 
-		-- and instruction
+		-- AND with registers
 		if std_match(Program_Data_Bus, OpAND) then
 		
 			-- Control signals to register
@@ -440,6 +434,7 @@ begin
 		
 		end if;
 		
+		-- ANDI add immediate
 		if std_match(Program_Data_Bus, OpANDI) then
 			-- Control signals to register
 			GP_Src_SelectA <= '1' & Program_Data_Bus(7 downto 4);
@@ -507,6 +502,7 @@ begin
 			
 		end if;
 		
+		-- ASR arithmetic shift right a register
 		if std_match(Program_Data_Bus, OpASR) then
 			-- Control signals to register
 			GP_Src_SelectA <= Program_Data_Bus(8 downto 4);
@@ -574,22 +570,27 @@ begin
 			
 		end if;
 
+		-- BCLR bit clear in the status register
 		if std_match(Program_Data_Bus, OpBCLR) then
 		
 		end if;
 		
+		-- BLD bit load in a general purpose register
 		if std_match(Program_Data_Bus, OpBLD) then
 		
 		end if;
 		
+		-- BSET bit set in the status register
 		if std_match(Program_Data_Bus, OpBSET) then
 
 		end if;
 		
+		-- BST bit set in a general purpose register
 		if std_match(Program_Data_Bus, OpBST) then
 
 		end if;
 		
+		-- COM complement of a register (register <- not register)
 		if std_match(Program_Data_Bus, OpCOM) then
 			-- value does not matter
 			GP_Src_SelectA <= Program_Data_Bus(8 downto 4);
@@ -656,6 +657,7 @@ begin
 			
 		end if;
 		
+		-- CP compare registers
 		if std_match(Program_Data_Bus, OpCP) then
 		
 			-- Control signals to register
@@ -712,6 +714,7 @@ begin
 			
 		end if;
 		
+		-- CPC compare registers with carry
 		if std_match(Program_Data_Bus, OpCPC) then
 			
 			-- Control signals to register
@@ -768,6 +771,7 @@ begin
 			
 		end if;
 		
+		-- CPI compare register with immediate value
 		if std_match(Program_Data_Bus, OpCPI) then
 			
 			-- Control signals to register
@@ -825,6 +829,7 @@ begin
 
 		end if;
 		
+		-- DEC decrement a register
 		if std_match(Program_Data_Bus, OpDEC) then
 			
 			-- Control signals to register
@@ -892,6 +897,7 @@ begin
 			
 		end if;
 		
+		-- EOR xor registers
 		if std_match(Program_Data_Bus, OpEOR) then
 			
 			-- Control signals to register
@@ -959,6 +965,7 @@ begin
 		
 		end if;
 		
+		-- INC increment a register
 		if std_match(Program_Data_Bus, OpINC) then
 			
 			-- Control signals to register
@@ -1025,6 +1032,7 @@ begin
 			
 		end if;
 		
+		-- LSR logical shift right a register
 		if std_match(Program_Data_Bus, OpLSR) then
 
 			-- Control signals to register
@@ -1094,6 +1102,7 @@ begin
 			
 		end if;
 		
+		-- NEG negate a register
 		if std_match(Program_Data_Bus, OpNEG) then
 			-- value does not matter
 			GP_Src_SelectA <= Program_Data_Bus(8 downto 4);
@@ -1160,6 +1169,7 @@ begin
 			
 		end if;
 		
+		-- OR or registers
 		if std_match(Program_Data_Bus, OpOR) then
 			
 			-- Control signals to register
@@ -1227,6 +1237,7 @@ begin
 			
 		end if;
 		
+		-- ORI or register with an immediate value
 		if std_match(Program_Data_Bus, OpORI) then
 			
 			-- Control signals to register
@@ -1294,6 +1305,7 @@ begin
 			
 		end if;
 		
+		-- ROR rotate right a register
 		if std_match(Program_Data_Bus, OpROR) then
 			
 			-- Control signals to register
@@ -1363,6 +1375,7 @@ begin
 			
 		end if;
 		
+		-- SBC subtract registers with carry
 		if std_match(Program_Data_Bus, OpSBC) then
 			
 			-- Control signals to register
@@ -1429,6 +1442,7 @@ begin
 			
 		end if;
 		
+		-- SBCI subtract register and immediate value with carry
 		if std_match(Program_Data_Bus, OpSBCI) then
 			
 			-- Control signals to register
@@ -1496,7 +1510,7 @@ begin
 			
 		end if;
 		
-		-- 2 clocks
+		-- SBIW subtract immediate to word
 		if std_match(Program_Data_Bus, OpSBIW) then
 			if second_clock_flag = '0' then
 				-- choose which register to use depending on instruction decoding
@@ -1646,6 +1660,7 @@ begin
 			
 		end if;
 		
+		-- SUB subtract registers
 		if std_match(Program_Data_Bus, OpSUB) then
 			
 			-- Control signals to register
@@ -1714,6 +1729,7 @@ begin
 			
 		end if;
 		
+		-- SUBI subtract immediate value from register
 		if std_match(Program_Data_Bus, OpSUBI) then
 
 			-- Control signals to register
@@ -1781,6 +1797,7 @@ begin
 			
 		end if;
 		
+		-- SWAP swap nibbles of a register
 		if std_match(Program_Data_Bus, OpSWAP) then
 		
 			-- Control signals to register
