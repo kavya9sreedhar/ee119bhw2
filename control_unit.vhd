@@ -339,7 +339,7 @@ begin
 		
 		if std_match(Program_Data_Bus, OpANDI) then
 			-- Control signals to register
-			GP_Src_SelectA <= '1' & Program_Data_Bus(8 downto 4);
+			GP_Src_SelectA <= '1' & Program_Data_Bus(7 downto 4);
 			-- value does not matter
 			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
 			
@@ -367,192 +367,217 @@ begin
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- K, immediate value
-			OperandB <= GP_outB;
-			Result <= Result;
+			OperandB <= Program_Data_Bus(11 downto 8) & Program_Data_Bus(3 downto 0);
+			
+			-- Control signals to Register to store result
+			-- get result from ALU
+			ALU_in <= ALU_Result;
+			-- indicate register input is from ALU
+			GP_Input_Select <= GP_IN_SEL_ALU;
+			-- enable write to register
+			GP_Write_Enable <= '1';
+			-- indicate nibbles of register should not be swapped
+			GP_Swap_Nibbles <= '0';
+			-- store result in Register d
+			GP_Dst_Select <= GP_Src_SelectA;
 			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpASR) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Shifter_Rotater_Operation,
-		Shifter_low_bit_select => Shifter_low_bit_bit_1,
-		Shifter_middle_bits_select => 
-		Shifter_middle_bits_select_immediate_left,
-		Shifter_high_bit_select => Shifter_high_bit_select_highest_bit,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+			-- Control signals to register
+			GP_Src_SelectA <= Program_Data_Bus(8 downto 4);
+			-- value does not matter
+			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
+			
+			-- doing a shift operation
+			ALU_result_select <= Shifter_Rotater_Operation;
+			-- shifting to the right
+			Shifter_low_bit_select <= Shifter_low_bit_bit_1;
+			Shifter_middle_bits_select <=
+				Shifter_middle_bits_select_immediate_left;
+			-- arithmetic shift, preserve high bit
+			Shifter_high_bit_select <= Shifter_high_bit_select_highest_bit;
+			-- values do not matter
+			F_Block_Select <= F_Block_Select_0;
+			-- values do not matter
+			Subtract <= Addition;
+			-- values do not matter
+			ALU_op_with_carry <= ;
+			-- values do not matter
+			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+			-- values do not matter
+			AddSub_Op_2_Select <= AddSub_Op_1_Select_OperandB;
+			Status_Register_Mask <= ;
+			Status_Register <= ;
+			
+			-- Register d contents
+			OperandA <= GP_outA;
+			-- value does not matter
+			OperandB <= Program_Data_Bus(7 downto 0);
+			
+			-- Control signals to Register to store result
+			-- get result from ALU
+			ALU_in <= ALU_Result;
+			-- indicate register input is from ALU
+			GP_Input_Select <= GP_IN_SEL_ALU;
+			-- enable write to register
+			GP_Write_Enable <= '1';
+			-- indicate nibbles of register should not be swapped
+			GP_Swap_Nibbles <= '0';
+			-- store result in Register d
+			GP_Dst_Select <= GP_Src_SelectA;
+
 		end if;
 
 		if std_match(Program_Data_Bus, OpBCLR) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => ,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+		
 		end if;
 		
 		if std_match(Program_Data_Bus, OpBLD) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => ,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+		
 		end if;
 		
 		if std_match(Program_Data_Bus, OpBSET) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => ,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpBST) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => ,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCOM) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_FF,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+			-- value does not matter
+			GP_Src_SelectA <= Program_Data_Bus(8 downto 4);
+			-- Control signals to register
+			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
+			
+			-- subtraction operation
+			ALU_result_select <= Adder_Subtractor_Operation;
+			-- values does not matter
+			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
+			-- values does not matter
+			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
+			-- values does not matter
+			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
+			-- values does not matter
+			F_Block_Select <= F_Block_Select_0;
+			-- subtraction operation
+			Subtract <= Subtraction;
+			-- not subtract with carry
+			ALU_op_with_carry <= '0';
+			-- to not the register, do FF - register value
+			AddSub_Op_1_Select <= AddSub_Op_1_Select_FF;
+			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
+			Status_Register_Mask <= ;
+			Status_Register <= ;
+			
+			-- value does not matter
+			OperandA <= Program_Data_Bus(7 downto 0);
+			-- Register d contents
+			OperandB <= GP_outB;
+			
+			-- Control signals to Register to store result
+			-- get result from ALU
+			ALU_in <= ALU_Result;
+			-- indicate register input is from ALU
+			GP_Input_Select <= GP_IN_SEL_ALU;
+			-- enable write to register
+			GP_Write_Enable <= '1';
+			-- indicate nibbles of register should not be swapped
+			GP_Swap_Nibbles <= '0';
+			-- store result in Register d
+			GP_Dst_Select <= GP_Src_SelectB;
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCP) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
-		-- do not store result back in registers
+		
+			-- Control signals to register
+			GP_Src_SelectA <= Program_Data_Bus(8 downto 4);
+			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
+			
+			-- subtraction operation
+			ALU_result_select <= Adder_Subtractor_Operation;
+			-- values do not matter
+			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
+			-- values do not matter
+			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
+			-- values do not matter
+			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
+			-- values do not matter
+			F_Block_Select <= F_Block_Select_0;
+			-- subtraction operation
+			Subtract <= Subtraction;
+			-- no subtract with carry
+			ALU_op_with_carry <= '0';
+			-- use operands passed in as arguments from Control Unit
+			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
+			Status_Register_Mask <= ;
+			Status_Register <= ;
+			
+			-- Register d contents
+			OperandA <= GP_outA;
+			-- Register r contents
+			OperandB <= GP_outB;
+			
+			-- do not store result back in registers
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCPC) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '1',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
-		-- do not store result back in registers
+			-- Control signals to register
+			GP_Src_SelectA <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
+			
+			-- subtraction operation
+			ALU_result_select <= Adder_Subtractor_Operation;
+			-- values do not matter
+			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
+			-- values do not matter
+			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
+			-- values do not matter
+			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
+			-- values do not matter
+			F_Block_Select <= F_Block_Select_0;
+			-- subtraction operation
+			Subtract <= Subtraction;
+			-- subtract with carry
+			ALU_op_with_carry <= '1';
+			-- use operands passed in as arguments from Control Unit
+			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
+			Status_Register_Mask <= ;
+			Status_Register <= ;
+			
+			-- Register d contents
+			OperandA <= GP_outA;
+			-- Register r contents
+			OperandB <= GP_outB;
+			
+			-- do not store result back in registers
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCPI) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+			-- Control signals to register
+			GP_Src_SelectA <= '1' & Program_Data_Bus(7 downto 4);
+			-- value does not matter
+			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
+			
+			-- subtraction operation
+			ALU_result_select <= Adder_Subtractor_Operation;
+			-- 
+			Shifter_low_bit_select <= ;
+			Shifter_middle_bits_select <= ;
+			Shifter_high_bit_select <= ;
+			F_Block_Select <= ;
+			Subtract <= Subtraction;
+			ALU_op_with_carry <= '0';
+			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
+			Status_Register_Mask <= ;
+			Status_Register <= ;
+		
 		-- do not store result back in registers
 		end if;
 		
