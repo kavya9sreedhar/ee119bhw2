@@ -41,6 +41,7 @@ entity ALU is
 		-- system clk
 		clk: in std_logic;
 		
+		current_status_register: in std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 		-- control signal inputs
 		-- selects ALU operation to perform
 		-- 	00 F Block operation
@@ -188,7 +189,8 @@ begin
 		Operand1(0) xor (Operand2(0) xor Subtract) xor 
 		(Subtract xor carry_borrow_for_ALU_op);
 	-- carry out from bit 0 addition / subtraction
-	carry_outs(0) <= Subtract;
+	carry_outs(0) <= 	(Operand1(0) and (Operand2(0) xor Subtract)) or 
+						(Subtract and (Operand1(0) xor (Operand2(0) xor Subtract)));
 	
 	-- calculate bits 1 through n - 1 bits for addition / subtraction result
 	get_adder_subtractor_bits: for i in range 1 to NUM_DATA_BITS - 1 generate
