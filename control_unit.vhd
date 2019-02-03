@@ -57,7 +57,7 @@ entity Control_Unit is
 	GP_Src_SelectB:				out std_logic_vector(NUM_REG_LOG-1 downto 0);
 	
 	GP_outA: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0);
-	GP_outB: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+	GP_outB: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0)
 	
     );
 end entity;
