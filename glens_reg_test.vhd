@@ -55,9 +55,30 @@ entity  REG_TEST  is
 
 end  REG_TEST;
 
-architecture structural of REG_TEST is
+architecture structural of REG_TEST is 
+        
 
 
+        -- GP Register control
+        signal GP_Input_Select : std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0);
+        signal GP_Write_Enable : std_logic;
+        signal GP_Swap_Nibbles : std_logic;
+		signal GP_Dst_Select   : std_logic_vector(NUM_REG_LOG-1 downto 0);
+		signal GP_Src_SelectA  : std_logic_vector(NUM_REG_LOG-1 downto 0);
+        signal GP_Src_SelectB  : std_logic_vector(NUM_REG_LOG-1 downto 0);
+        
+        -- IO Register control
+        signal IO_Input_Select : std_logic;
+		signal IO_Write_Enable : std_logic;
+		signal IO_Dst_Select   : std_logic_vector(NUM_IO_LOG-1 downto 0);
+		signal IO_Src_SelectA  : std_logic_vector(NUM_IO_LOG-1 downto 0);
+        signal IO_Src_SelectB  : std_logic_vector(NUM_IO_LOG-1 downto 0);
+
+        -- Inputs (IOREG)
+        signal Updated_SREG    : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+        -- Outputs (IOREG)
+		signal IO_outA         : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+		signal IO_outB         : std_logic_vector(NUM_DATA_BITS-1 downto 0)
     
 begin
 
@@ -68,6 +89,37 @@ begin
 
     Registers : entity work.AVRRegisters(standard) 
         port map (
+            -- Connect up the clock
+            clk             => clock;
+
+            -- For now just connect both inputs to the Reg in
+            data_databus_in => RegIn;
+            ALU_in          => RegIn;
+
+            GP_Input_Select =>
+            GP_Write_Enable =>
+            GP_Swap_Nibbles =>
+            GP_Dst_Select   =>
+            GP_Src_SelectA  =>
+            GP_Src_SelectB  =>
+            
+            -- GP Outputs
+            GP_outA         => RegAOut,
+            GP_outB         => RegBOut,
+
+            -- IO Input (NOT CONNECTED TO ANY INPUT)
+            Updated_SREG    => Updated_SREG;
+
+            -- IO Control Signals (NOT CONNECTED TO ANY OUTPUT)
+            IO_Input_Select => IO_Input_Select,
+            IO_Write_Enable => IO_Write_Enable,
+            IO_Dst_Select   => IO_Dst_Select,
+            IO_Src_SelectA  => IO_Src_SelectA,
+            IO_Src_SelectB  => IO_Src_SelectB,
+
+            -- IO Outputs (NOT CONNECTED TO ANY OUTPUT)
+            IO_outA         => IO_outA,
+            IO_outB         => IO_outB
 
         );
 
