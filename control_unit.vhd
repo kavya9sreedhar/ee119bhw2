@@ -33,8 +33,9 @@ use ALU_CONSTANTS.all;
 --
 entity Control_Unit is
 	port(
+	
 	-- inputs
-	-- program data bus
+	-- program data bus, contains instruction to decode
 	Program_Data_Bus: in opcode_word
 	-- instruction register
 	-- IR: in opcode_word;
@@ -49,13 +50,15 @@ entity Control_Unit is
 	ALU_op_with_carry: 			out std_logic;
 	AddSub_Op_1_Select: 		out std_logic;
 	AddSub_Op_2_Select: 		out std_logic_vector(1 downto 0);
+	
 	-- flag mask indicating which flag values to update after ALU operation
 	Status_Register_Mask: 		out std_logic_vector(7 downto 0);
 	
 	-- Register control signals
+	-- indicates which register contents to get
 	GP_Src_SelectA: 			out std_logic_vector(NUM_REG_LOG-1 downto 0);
 	GP_Src_SelectB:				out std_logic_vector(NUM_REG_LOG-1 downto 0);
-	
+	-- register contents from registers to use to send to other units in control unit
 	GP_outA: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0);
 	GP_outB: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0)
 	
@@ -64,10 +67,16 @@ end entity;
 
 architecture control_arch of Control_Unit
 	
-	-- Control Unit Signals
+	-- indicates whether or not the second clock has occurred for 2 clock instructions
+	-- will be changed to a finite state machine or counter in future weeks
 	signal second_clock_flag: 	std_logic;
 	
 begin
+
+	-- instruction decoder process
+	-- depending on the instruction in the program data bus, appropriate control
+	-- signals are output and appropriate CPU operation performed with results 
+	-- returned and stored appropriately
 	process (clk)
 	begin
 	
