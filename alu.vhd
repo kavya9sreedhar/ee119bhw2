@@ -9,6 +9,7 @@
 --	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
 --	30 Jan 19	Kavya Sreedhar & Dan Xu		Updated comments
 --	1  Feb 19	Kavya Sreedhar & Dan Xu		Added file header
+--	2  Feb 19	Kavya Sreedhar & Dan Xu		Hooked up flag generator
 ----------------------------------------------------------------------------
 
 --
@@ -81,20 +82,31 @@ entity ALU is
 		--  01 select 1
 		--  10 select OperandB
 		AddSub_Op_2_Select: in std_logic_vector(1 downto 0);
-		-- flag mask indicating which flag values to update after ALU operation
-		Status_Register_Mask: in std_logic_vector(7 downto 0);
+		-- flag source controls indicating what and how to update after ALU operation
+		-- Descriptions of the selection line meanings ca be found in the constants.vhd file.
+        TBit_Select             : in std_logic_vector(DATA_BITS_LOG-1 downto 0);
+        Interrupt_Flag_Sel      : in std_logic_vector(NUM_I_FLAG_BITS-1 downto 0);
+        Transfer_Flag_Sel       : in std_logic_vector(NUM_T_FLAG_BITS-1 downto 0);
+        Half_Carry_Flag_Sel     : in std_logic_vector(NUM_H_FLAG_BITS-1 downto 0);
+        Corrected_Sign_Flag_Sel : in std_logic_vector(NUM_S_FLAG_BITS-1 downto 0);
+        Signed_OF_Flag_Sel      : in std_logic_vector(NUM_V_FLAG_BITS-1 downto 0);
+        Neg_Flag_Sel            : in std_logic_vector(NUM_N_FLAG_BITS-1 downto 0);
+        Zero_Flag_Sel           : in std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0);
+        Carry_Flag_Sel          : in std_logic_vector(NUM_C_FLAG_BITS-1 downto 0);
 		
 		-- other inputs
 		-- first operand
 		OperandA: in std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 		-- second operand
 		OperandB: in std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+		-- The old flags
+		old_flags               : in std_logic_vector(N_FLAGS-1 downto 0);
 		
 		-- outputs
 		-- ALU result (from F Block, Adder/Subtractor, or Shifter/Rotater)
 		Result: out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 		-- updated status register
-		Status_Register: out std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+		new_flags               : out std_logic_vector(N_FLAGS-1 downto 0)
         );
 end entity;
 
@@ -114,6 +126,8 @@ architecture ALU_arch of ALU is
 	-- indicates whether shift/rotate, F_block, or adder/subtracter calculation
 	-- should be taken for output from ALU
 	signal ALU_result:				std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+	-- The signed OF flag
+	signal Signed_OF:               std_logic;
 begin
 
 	-- F_BLOCK CALCULATION
@@ -231,12 +245,39 @@ begin
 		adder_subtractor_result when ALU_result_select = "01" else
 		shift_rotate_result 	when ALU_result_select = "10";
 		
-	-- store ALU result as output back to Control Unit on the clock (DFF for Result)
-	process(clk)
-	begin
-		if rising_edge(clk) then
-			Result <= ALU_result;
-		end if;
-	end process;
+	Result <= ALU_result;
+
+	-- Calculate signed overflow
+	Signed_OF <= carry_outs(NUM_DATA_BITS-1) xor carry_outs(NUM_DATA_BITS-2);
+
+	-- Flag generation
+	UUT: entity work.FlagGenerator(standard)
+	port map (
+		-- Connect up the old flags
+		old_flags               => old_flags,
+		-- Connect the new generated flags
+		new_flags               => new_flags,
+
+		-- Connect up ALU flags
+		ALU_Input_LSB           => OperandA(0),
+		ALU_OF                  => Signed_OF,
+		ALU_CF                  => carry_outs(NUM_DATA_BITS-1),
+		ALU_HF                  => carry_outs(NUM_DATA_BITS/2 - 1),
+
+		-- Connect up the ALU output
+		ALU_Output              => ALU_result,
+
+		-- Connect up all of the control signals for what to use for each flag.
+		TBit_Select             => TBit_Select,
+		Interrupt_Flag_Sel      => Interrupt_Flag_Sel,
+		Transfer_Flag_Sel       => Transfer_Flag_Sel,
+		Half_Carry_Flag_Sel     => Half_Carry_Flag_Sel,
+		Corrected_Sign_Flag_Sel => Corrected_Sign_Flag_Sel,
+		Signed_OF_Flag_Sel      => Signed_OF_Flag_Sel,
+		Neg_Flag_Sel            => Neg_Flag_Sel,
+		Zero_Flag_Sel           => Zero_Flag_Sel,
+		Carry_Flag_Sel          => Carry_Flag_Sel
+
+	);
 	
 end architecture;

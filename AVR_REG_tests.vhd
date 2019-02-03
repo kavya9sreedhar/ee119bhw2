@@ -9,6 +9,7 @@
 --
 --  Revision History:
 --     02/01/19  Daniel Xu and KAVYAAAA   Initial revision.
+--     02/02/19  Daniel Xu and KAVYAAAA   Finished writing tests.
 ----------------------------------------------------------------------------
 
 library ieee;
