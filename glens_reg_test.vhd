@@ -37,11 +37,11 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.numeric_std.all;
 
-library opcodes;
-use opcodes.opcodes.all;
-
 library work;
-
+use work.opcodes.all;
+use work.CPU_CONSTANTS.all;
+use work.FlagConstants.all;
+use work.RegConstants.all;
 
 entity  REG_TEST  is
 
@@ -65,7 +65,7 @@ architecture structural of REG_TEST is
         signal F_Block_Select:             std_logic_vector(3 downto 0);
         signal Subtract:                   std_logic;
         signal ALU_op_with_carry:          std_logic;
-        signal AddSub_Op_1_Select:         std_logic;
+        signal AddSub_Op_1_Select:         std_logic_vector(1 downto 0);
         signal AddSub_Op_2_Select:         std_logic_vector(1 downto 0);
 
         signal OperandA:                   std_logic_vector(NUM_DATA_BITS - 1 downto 0);
@@ -91,6 +91,10 @@ architecture structural of REG_TEST is
         signal GP_Src_SelectA          : std_logic_vector(NUM_REG_LOG-1 downto 0);
         signal GP_Src_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
         
+        -- GP Reg
+        signal GP_outA                 : std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+        signal GP_outB                 : std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+        
         -- IO Register control
         signal IO_Input_Select         : std_logic;
         signal IO_Write_Enable         : std_logic;
@@ -102,13 +106,16 @@ architecture structural of REG_TEST is
         signal Updated_SREG            : std_logic_vector(NUM_DATA_BITS-1 downto 0);
         -- Outputs (IOREG)
         signal IO_outA                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
-        signal IO_outB                 : std_logic_vector(NUM_DATA_BITS-1 downto 0)
+        signal IO_outB                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
     
 begin
 
+    RegAOut <= GP_outA;
+    RegBOut <= GP_outB;
+
     ControlUnit : entity work.control_unit(control_arch)
         port map (
-
+            clk => clock,
             -- program data bus
             Program_Data_Bus => IR,
             
@@ -146,8 +153,8 @@ begin
             GP_Src_SelectA             => GP_Src_SelectA,
             GP_Src_SelectB             => GP_Src_SelectB,
 
-            GP_outA                    => RegAOut,
-            GP_outB                    => RegBOut,
+            GP_outA                    => GP_outA,
+            GP_outB                    => GP_outB,
 
             IO_Input_Select            => IO_Input_Select,
             IO_Write_Enable            => IO_Write_Enable,
@@ -177,7 +184,7 @@ begin
             GP_outB         => RegBOut,
 
             -- IO Input
-            Updated_SREG    => Updated_SREG;
+            Updated_SREG    => Updated_SREG,
 
             -- IO Control Signals
             IO_Input_Select => IO_Input_Select,

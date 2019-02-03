@@ -65,16 +65,12 @@ package ALU_constants is
 	constant Addition: std_logic := '0';
 	
 	-- indicates possibilities for first operand for addition / subtraction operation
-	constant AddSub_Op_1_Select_OperandA: std_logic := "00";
-	constant AddSub_Op_1_Select_FF: std_logic := "01";
-	constant AddSub_Op_1_Select_0: std_logic := "10";
+	constant AddSub_Op_1_Select_OperandA: std_logic_vector(1 downto 0) := "00";
+	constant AddSub_Op_1_Select_FF: std_logic_vector(1 downto 0) := "01";
+	constant AddSub_Op_1_Select_0: std_logic_vector(1 downto 0) := "10";
 	
 	-- indicates possibilities for second operand for addition / subtraction operation
 	constant AddSub_Op_2_Select_0: std_logic_vector(1 downto 0) := "00";
 	constant AddSub_Op_2_Select_1: std_logic_vector(1 downto 0) := "01";
 	constant AddSub_Op_2_Select_OperandB: std_logic_vector(1 downto 0) := "10";
-	
-	constant AddSub_Op_1_Select_OperandA: std_logic := "00";
-	constant AddSub_Op_1_Select_FF: std_logic := "01";
-	constant AddSub_Op_1_Select_0: std_logic := "10";
 end package;

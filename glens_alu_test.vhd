@@ -39,8 +39,10 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.numeric_std.all;
 
-library opcodes;
-use opcodes.opcodes.all;
+library work;
+use work.opcodes.all;
+use work.CPU_CONSTANTS.all;
+use work.FlagConstants.all;
 
 
 entity  ALU_TEST  is

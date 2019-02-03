@@ -14,6 +14,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use work.CPU_CONSTANTS.all;
+
 -- constants for the Status Register implementation only
 package FlagConstants is
 
@@ -84,7 +87,7 @@ package FlagConstants is
 	constant N_HOLD_VALUE           : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "00";
 	constant N_SET_VALUE            : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "01";
 	constant N_CLEAR_VALUE          : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "10";
-	constant N_FROM_ALU             : std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0) := "11"; 
+	constant N_FROM_ALU             : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "11"; 
 
 	-- Zero
 	constant NUM_Z_FLAG_BITS        : integer := 2;
@@ -98,7 +101,7 @@ package FlagConstants is
 	constant C_HOLD_VALUE           : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "000";
 	constant C_SET_VALUE            : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "001";
 	constant C_CLEAR_VALUE          : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "010";
-	constant C_FROM_ALU             : std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0) := "011";
-	constant C_FROM_LSB             : std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0) := "100";
+	constant C_FROM_ALU             : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "011";
+	constant C_FROM_LSB             : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "100";
 
 end package;
