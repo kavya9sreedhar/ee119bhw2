@@ -18,17 +18,23 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
--- import library containing all instructions supported with this AVR implementation
-library opcodes;
-use opcodes.opcodes.all;
-
--- import library containing all general AVR CPU constants
+-- contains constants used for all CPU units
 library CPU_CONSTANTS;
 use CPU_CONSTANTS.all;
 
--- import library containing constants specific to the ALU
+-- contains ALU specific constants
 library ALU_CONSTANTS;
 use ALU_CONSTANTS.all;
+
+-- import library containing all instructions supported with this AVR implementation
+library opcodes;
+use opcodes.all;
+
+library FlagConstants;
+use FlagConstants.all;
+
+library RegConstants;
+use RegConstants.all;
 
 --
 -- Control Unit entity declaration
@@ -37,7 +43,7 @@ entity Control_Unit is
     port(
     -- inputs
     -- program data bus
-    Program_Data_Bus: in opcode_word;
+    Program_Data_Bus: in std_logic_vector(15 downto 0);
     -- instruction register
     -- IR: in opcode_word;
     
