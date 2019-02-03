@@ -49,15 +49,38 @@ entity Control_Unit is
 	ALU_op_with_carry: 			out std_logic;
 	AddSub_Op_1_Select: 		out std_logic;
 	AddSub_Op_2_Select: 		out std_logic_vector(1 downto 0);
-	-- flag mask indicating which flag values to update after ALU operation
-	Status_Register_Mask: 		out std_logic_vector(7 downto 0);
+
+	OperandA:                   out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+	-- second operand
+	OperandB:                   out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+
+	-- Flag update control
+	TBit_Select             : out std_logic_vector(DATA_BITS_LOG-1 downto 0);
+	Interrupt_Flag_Sel      : out std_logic_vector(NUM_I_FLAG_BITS-1 downto 0);
+	Transfer_Flag_Sel       : out std_logic_vector(NUM_T_FLAG_BITS-1 downto 0);
+	Half_Carry_Flag_Sel     : out std_logic_vector(NUM_H_FLAG_BITS-1 downto 0);
+	Corrected_Sign_Flag_Sel : out std_logic_vector(NUM_S_FLAG_BITS-1 downto 0);
+	Signed_OF_Flag_Sel      : out std_logic_vector(NUM_V_FLAG_BITS-1 downto 0);
+	Neg_Flag_Sel            : out std_logic_vector(NUM_N_FLAG_BITS-1 downto 0);
+	Zero_Flag_Sel           : out std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0);
+	Carry_Flag_Sel          : out std_logic_vector(NUM_C_FLAG_BITS-1 downto 0);
 	
 	-- Register control signals
-	GP_Src_SelectA: 			out std_logic_vector(NUM_REG_LOG-1 downto 0);
-	GP_Src_SelectB:				out std_logic_vector(NUM_REG_LOG-1 downto 0);
-	
-	GP_outA: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0);
-	GP_outB: 					in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+	GP_Input_Select         : out std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0);
+	GP_Write_Enable         : out std_logic;
+	GP_Swap_Nibbles         : out std_logic;
+	GP_Dst_Select           : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+	GP_Src_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+	GP_Src_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+
+	GP_outA                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+	GP_outB                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);	
+
+	IO_Input_Select         : out std_logic;
+	IO_Write_Enable         : out std_logic;
+	IO_Dst_Select           : out std_logic_vector(NUM_IO_LOG-1 downto 0);
+	IO_Src_SelectA          : out std_logic_vector(NUM_IO_LOG-1 downto 0);
+	IO_Src_SelectB          : out std_logic_vector(NUM_IO_LOG-1 downto 0)
 	
     );
 end entity;
@@ -98,12 +121,11 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			Status_Register_Mask <= ;
+
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
-			OperandB <= GP_outB;
+			OperandB <= GP_outB;			
 			
 			-- Control signals to Register to store result
 			-- get result from ALU
@@ -116,6 +138,31 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update arithmetic flags since adding
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+
 		end if;
 		
 		-- addition
@@ -143,12 +190,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			Status_Register_Mask <= ;
-			-- Register d contents
-			OperandA <= GP_outA;
-			-- Register r contents
-			OperandB <= GP_outB;
-			
 			-- Control signals to Register to store result
 			-- get result from ALU
 			ALU_in <= ALU_Result;
@@ -160,6 +201,36 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+
+			-- Register d contents
+			OperandA <= GP_outA;
+			-- Register r contents
+			OperandB <= GP_outB;
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update arithmetic flags since adding
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+
+
 		end if;
 		
 		-- 2 clocks
@@ -203,12 +274,10 @@ begin
 				-- use operands passed in as arguments from Control Unit
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-				Status_Register_Mask <= ;
 				-- Rd contents
 				OperandA <= GP_outA;
 				-- K, immediate value from Program_Data_Bus
 				OperandB <= Program_Data_Bus(7 downto 6) & Program_Data_Bus(3 downto 0);
-				Status_Register <= ;
 				
 				-- Control signals to Register to store result
 				-- get result from ALU
@@ -265,12 +334,10 @@ begin
 				-- add nothing to the next register
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_0;
-				Status_Register_Mask <= ;
 				-- Rd + 1 contents
 				OperandA <= GP_outA;
 				-- does not matter
 				OperandB <= GP_outA;
-				Status_Register <= ;
 				
 				-- Control signals to Register to store result
 				-- get result from ALU
@@ -282,8 +349,31 @@ begin
 				-- indicate nibbles of register should not be swapped
 				GP_Swap_Nibbles <= '0';
 				-- store result in Register d
-				GP_Dst_Select <= GP_Src_SelectA;
+				GP_Dst_Select <= GP_Src_SelectA;			
 			);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates (need to do both times to do properly)
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			-- Update arithmetic flags since adding
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;				
 			
 			-- reset clock flag for next instruction
 			second_clock_flag <= '0';
@@ -318,11 +408,6 @@ begin
 			Status_Register_Mask <= ;
 			Status_Register <= ;
 			
-			-- Register d contents
-			OperandA <= GP_outA;
-			-- Register r contents
-			OperandB <= GP_outB;
-			
 			-- Control signals to Register to store result
 			-- get result from ALU
 			ALU_in <= ALU_Result;
@@ -334,6 +419,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates (need to do both times to do properly)
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;	
+			-- Update the flags needed from ANDing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;	
 		
 		end if;
 		
@@ -380,6 +488,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;	
+			-- Update the flags needed from ANDing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;	
 			
 		end if;
 		
@@ -407,8 +538,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- values do not matter
 			AddSub_Op_2_Select <= AddSub_Op_1_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -426,6 +555,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			-- Update the flags needed from shifting right
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_C_XOR_N;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_LSB;			
 
 		end if;
 
@@ -468,9 +620,7 @@ begin
 			-- to not the register, do FF - register value
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_FF;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
-			
+
 			-- value does not matter
 			OperandA <= Program_Data_Bus(7 downto 0);
 			-- Register d contents
@@ -487,6 +637,30 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectB;
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			-- Update the flags needed for complement
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_SET_VALUE;
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCP) then
@@ -521,7 +695,29 @@ begin
 			OperandB <= GP_outB;
 			
 			-- do not store result back in registers
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
 			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCPC) then
@@ -555,7 +751,29 @@ begin
 			OperandB <= GP_outB;
 			
 			-- do not store result back in registers
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
 			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;		
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCPI) then
@@ -579,6 +797,30 @@ begin
 			Status_Register <= ;
 		
 		-- do not store result back in registers
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpDEC) then
@@ -599,6 +841,29 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for decrementing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;				
 		end if;
 		
 		if std_match(Program_Data_Bus, OpEOR) then
@@ -619,6 +884,30 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for doing XOR
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpINC) then
@@ -639,6 +928,30 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for incrementing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpLSR) then
@@ -660,6 +973,29 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			-- Update the flags needed for rotating
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_C_XOR_N;
+			Neg_Flag_Sel            <= N_CLEAR_VALUE;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_LSB;
 		end if;
 		
 		if std_match(Program_Data_Bus, OpNEG) then
@@ -680,6 +1016,29 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for negation
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 		end if;
 		
 		if std_match(Program_Data_Bus, OpOR) then
@@ -700,9 +1059,32 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for doing OR
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
 		end if;
 		
-		if std_match(Program_Data_Bus, OpOR) then
+		if std_match(Program_Data_Bus, OpORI) then
 		ALU_operation: ALU port map (
 		clk => clk,
 		ALU_result_select => F_Block_Select,
@@ -720,6 +1102,29 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+		
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for doing OR
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
 		end if;
 		
 		if std_match(Program_Data_Bus, OpROR) then
@@ -741,6 +1146,29 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			-- Update the flags needed for rotating
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_C_XOR_N;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_LSB;
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSBC) then
@@ -760,6 +1188,29 @@ begin
 		OperandB => ,
 		Result => Result,
 		Status_Register =>
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 		);
 		end if;
 		
@@ -780,79 +1231,104 @@ begin
 		OperandB => ,
 		Result => Result,
 		Status_Register =>
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 		);
 		end if;
 		
 		-- 2 clocks
 		if std_match(Program_Data_Bus, OpSBIW) then
-		if second_clock_flag = '0' then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		-- values do not matter
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		-- Rd
-		OperandA => ,
-		-- K
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
-		
-		second_clock_flag = '1';
-		
-		else
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		-- values do not matter
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Addition,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_0,
-		Status_Register_Mask => ,
-		--Rd + 1
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
-		
-		second_clock_flag = '0';
-		end if;
-		end if;
-
-		if std_match(Program_Data_Bus, OpAND) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => F_Block_Operation,
-		-- values do not matter
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => F_Block_Select_and,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
+			if second_clock_flag = '0' then
+			ALU_operation: ALU port map (
+			clk => clk,
+			ALU_result_select => Adder_Subtractor_Operation,
+			-- values do not matter
+			Shifter_low_bit_select => ,
+			Shifter_middle_bits_select => ,
+			Shifter_high_bit_select => ,
+			F_Block_Select => ,
+			Subtract => Subtraction,
+			ALU_op_with_carry => '0',
+			AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+			AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
+			Status_Register_Mask => ,
+			-- Rd
+			OperandA => ,
+			-- K
+			OperandB => ,
+			Result => Result,
+			Status_Register =>
+			);
+			
+			second_clock_flag = '1';
+			
+			else
+			ALU_operation: ALU port map (
+			clk => clk,
+			ALU_result_select => Adder_Subtractor_Operation,
+			-- values do not matter
+			Shifter_low_bit_select => ,
+			Shifter_middle_bits_select => ,
+			Shifter_high_bit_select => ,
+			F_Block_Select => ,
+			Subtract => Addition,
+			ALU_op_with_carry => '0',
+			AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
+			AddSub_Op_2_Select => AddSub_Op_2_Select_0,
+			Status_Register_Mask => ,
+			--Rd + 1
+			OperandA => ,
+			OperandB => ,
+			Result => Result,
+			Status_Register =>
+			);
+			
+			second_clock_flag = '0';
+			end if;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates (Need to do beween calculation finishing)
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSUB) then
@@ -872,6 +1348,29 @@ begin
 		OperandB => ,
 		Result => Result,
 		Status_Register =>
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 		);
 		end if;
 		
@@ -892,6 +1391,29 @@ begin
 		OperandB => ,
 		Result => Result,
 		Status_Register =>
+
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 		);
 		end if;
 		
@@ -913,6 +1435,27 @@ begin
 		Result => Result,
 		Status_Register =>
 		);
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Corrected_Sign_Flag_Sel <= S_HOLD_VALUE;
+			Signed_OF_Flag_Sel      <= V_HOLD_VALUE;
+			Neg_Flag_Sel            <= N_HOLD_VALUE;
+			Zero_Flag_Sel           <= Z_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
 		end if;
 	
 	end if;

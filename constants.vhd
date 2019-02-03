@@ -129,6 +129,9 @@ end package;
 -- constants for the Status Register implementation only
 package FlagConstants is
 
+	-- Location in IO Regs
+	constant IO_REG_LOC             : std_logic_vector(5 downto 0) := "111111";
+
 	-- Number of flags
 	constant N_FLAGS                : integer := NUM_DATA_BITS;
 
