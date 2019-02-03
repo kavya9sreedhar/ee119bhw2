@@ -40,8 +40,7 @@ entity ALU is
 	
 		-- system clk
 		clk: in std_logic;
-		
-		current_status_register: in std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+	
 		-- control signal inputs
 		-- selects ALU operation to perform
 		-- 	00 F Block operation
