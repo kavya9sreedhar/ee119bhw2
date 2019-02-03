@@ -108,7 +108,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			Status_Register_Mask <= ;
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
@@ -152,7 +151,7 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			Status_Register_Mask <= ;
+			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
@@ -212,8 +211,8 @@ begin
 				-- use operands passed in as arguments from Control Unit
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-				Status_Register_Mask <= ;
-				Status_Register <= ;
+				
+				
 				
 				-- Rd contents
 				OperandA <= GP_outA;
@@ -274,8 +273,8 @@ begin
 				-- add nothing to the next register
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_0;
-				Status_Register_Mask <= ;
-				Status_Register <= ;
+				
+				
 				
 				-- Rd + 1 contents
 				OperandA <= GP_outA;
@@ -325,8 +324,8 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- values do not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -371,8 +370,8 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- values do not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -417,8 +416,8 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- values do not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -478,8 +477,8 @@ begin
 			-- to not the register, do FF - register value
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_FF;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- value does not matter
 			OperandA <= Program_Data_Bus(7 downto 0);
@@ -522,8 +521,8 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -556,8 +555,8 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -591,8 +590,8 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -626,8 +625,8 @@ begin
 			-- use Register d and 1 as the operands
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_1;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -671,8 +670,8 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- values do not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -716,8 +715,8 @@ begin
 			-- Register d and 1 are operands for increment
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_1;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -764,8 +763,8 @@ begin
 			-- values do not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			-- values do not matter
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -809,8 +808,8 @@ begin
 			-- subtract Register d from 0 for negate
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_0;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- value does not matter
 			OperandA <= GP_outA;
@@ -855,8 +854,8 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -901,8 +900,8 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -992,8 +991,8 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -1038,8 +1037,8 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -1102,8 +1101,8 @@ begin
 				-- use operands passed in as arguments from Control Unit
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-				Status_Register_Mask <= ;
-				Status_Register <= ;
+				
+				
 				
 				-- Rd contents
 				OperandA <= GP_outA;
@@ -1165,8 +1164,8 @@ begin
 				-- add nothing to the next register
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_0;
-				Status_Register_Mask <= ;
-				Status_Register <= ;
+				
+				
 				
 				--Rd + 1 contents
 				OperandA <= GP_outA;
@@ -1259,8 +1258,8 @@ begin
 			-- use operands passed in as arguments from Control Unit
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -1307,8 +1306,8 @@ begin
 			ALU_op_with_carry <= '0';
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			Status_Register_Mask <= ;
-			Status_Register <= ;
+			
+			
 
 		end if;
 	
