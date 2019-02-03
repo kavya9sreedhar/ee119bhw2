@@ -124,10 +124,35 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update arithmetic flags since adding
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+			
 		end if;
 		
 		-- addition with two registers
 		if std_match(Program_Data_Bus, OpADD) then
+		
 			-- Control signals to register
 			GP_Src_SelectA <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
 			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
@@ -135,13 +160,13 @@ begin
 			-- Control signals to ALU
 			-- addition operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- addition operation
 			Subtract <= Addition;
@@ -168,6 +193,30 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update arithmetic flags since adding
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+			
 		end if;
 		
 		-- 2 clocks
@@ -196,13 +245,13 @@ begin
 			
 				-- addition operation
 				ALU_result_select <= Adder_Subtractor_Operation;
-				-- values do not matter
+				-- value does not matter
 				Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-				-- values do not matter
+				-- value does not matter
 				Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-				-- values do not matter
+				-- value does not matter
 				Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-				-- values do not matter
+				-- value does not matter
 				F_Block_Select <= F_Block_Select_0;
 				-- addition
 				Subtract <= Addition;
@@ -258,13 +307,13 @@ begin
 				
 				-- addition operation
 				ALU_result_select <= Adder_Subtractor_Operation;
-				-- values do not matter
+				-- value does not matter
 				Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-				-- values do not matter
+				-- value does not matter
 				Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-				-- values do not matter
+				-- value does not matter
 				Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-				-- values do not matter
+				-- value does not matter
 				F_Block_Select <= F_Block_Select_0;
 				-- addition operation
 				Subtract <= Addition;
@@ -297,6 +346,30 @@ begin
 				-- reset clock flag for next instruction
 				second_clock_flag <= '0';
 			end if;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates (need to do both times to do properly)
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			-- Update arithmetic flags since adding
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+			
 		end if;
 
 		-- and instruction
@@ -308,24 +381,22 @@ begin
 			
 			-- F Block operation
 			ALU_result_select <= F_Block_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
 			-- and operation on F-block
 			F_Block_Select <= F_Block_Select_and;
-			-- values do not matter
+			-- value does not matter
 			Subtract <= Addition;
-			-- values do not matter
+			-- value does not matter
 			ALU_op_with_carry <= '0';
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -343,6 +414,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates (need to do both times to do properly)
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;	
+			-- Update the flags needed from ANDing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;	
 		
 		end if;
 		
@@ -354,24 +448,22 @@ begin
 			
 			-- F Block operation
 			ALU_result_select <= F_Block_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
 			-- and operation on F-block
 			F_Block_Select <= F_Block_Select_and;
-			-- values do not matter
+			-- value does not matter
 			Subtract <= Addition;
-			-- values do not matter
+			-- value does not matter
 			ALU_op_with_carry <= '0';
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -390,6 +482,29 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;	
+			-- Update the flags needed from ANDing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;	
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpASR) then
@@ -406,18 +521,16 @@ begin
 				Shifter_middle_bits_select_immediate_left;
 			-- arithmetic shift, preserve high bit
 			Shifter_high_bit_select <= Shifter_high_bit_select_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
-			-- values do not matter
+			-- value does not matter
 			Subtract <= Addition;
-			-- values do not matter
+			-- value does not matter
 			ALU_op_with_carry <= ;
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -436,6 +549,29 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			-- Update the flags needed from shifting right
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_C_XOR_N;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_LSB;	
+			
 		end if;
 
 		if std_match(Program_Data_Bus, OpBCLR) then
@@ -478,8 +614,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_FF;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- value does not matter
 			OperandA <= Program_Data_Bus(7 downto 0);
 			-- Register d contents
@@ -496,6 +630,30 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectB;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			-- Update the flags needed for complement
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_SET_VALUE;
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCP) then
@@ -506,13 +664,13 @@ begin
 			
 			-- subtraction operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- subtraction operation
 			Subtract <= Subtraction;
@@ -522,8 +680,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
@@ -531,22 +687,46 @@ begin
 			
 			-- do not store result back in registers
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;	
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCPC) then
+			
 			-- Control signals to register
 			GP_Src_SelectA <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
 			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
 			
 			-- subtraction operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- subtraction operation
 			Subtract <= Subtraction;
@@ -556,8 +736,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
@@ -565,9 +743,33 @@ begin
 			
 			-- do not store result back in registers
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;		
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpCPI) then
+			
 			-- Control signals to register
 			GP_Src_SelectA <= '1' & Program_Data_Bus(7 downto 4);
 			-- value does not matter
@@ -575,13 +777,13 @@ begin
 			
 			-- subtraction operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- subtraction operation
 			Subtract <= Subtraction;
@@ -591,8 +793,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-		
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
@@ -600,9 +800,33 @@ begin
 			
 			-- do not store result back in registers
 
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpDEC) then
+			
 			-- Control signals to register
 			GP_Src_SelectA <= '1' & Program_Data_Bus(7 downto 4);
 			-- value does not matter
@@ -610,13 +834,13 @@ begin
 			
 			-- subtraction operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- subtraction operation
 			Subtract <= Subtraction;
@@ -626,8 +850,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_1;
 			
-			
-		
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- value does not matter
@@ -645,33 +867,55 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for decrementing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;		
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpEOR) then
+			
 			-- Control signals to register
 			GP_Src_SelectA <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
 			GP_Src_SelectB <= Program_Data_Bus(8 downto 4);
 			
 			-- F Block operation
 			ALU_result_select <= F_Block_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
 			-- F Block xor operation
 			F_Block_Select <= F_Block_Select_xor;
-			-- values do not matter
+			-- value does not matter
 			Subtract <= Addition;
-			-- values do not matter
+			-- value does not matter
 			ALU_op_with_carry <= '0';
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			
 			
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -689,6 +933,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for doing XOR
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
 		
 		end if;
 		
@@ -700,13 +967,13 @@ begin
 			
 			-- addition operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- addition operation
 			Subtract <= Addition;
@@ -715,8 +982,6 @@ begin
 			-- Register d and 1 are operands for increment
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_1;
-			
-			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -734,6 +999,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for incrementing
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
 			
 		end if;
 		
@@ -752,23 +1040,21 @@ begin
 				Shifter_middle_bits_select_immediate_left;
 			-- logical shift does not preserve high bit
 			Shifter_high_bit_select <= Shifter_high_bit_select_0;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
-			-- values do not matter
+			-- value does not matter
 			Subtract <= Addition;
-			-- values do not matter
+			-- value does not matter
 			ALU_op_with_carry <= '0';
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
-			-- values do not matter
+			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			-- values do not matter
-			
-			
+			-- value does not matter
 		
 			-- Register d contents
 			OperandA <= GP_outA;
-			-- values do not matter
+			-- value does not matter
 			OperandB <= GP_outB;
 			
 			-- Control signals to Register to store result
@@ -783,6 +1069,29 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			-- Update the flags needed for rotating
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_C_XOR_N;
+			Neg_Flag_Sel            <= N_CLEAR_VALUE;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_LSB;
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpNEG) then
@@ -793,13 +1102,13 @@ begin
 			
 			-- subtraction operation
 			ALU_result_select <= Adder_Subtractor_Operation;
-			-- values do not matter
+			-- value does not matter
 			Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-			-- values do not matter
+			-- value does not matter
 			Shifter_high_bit_select <= Shifter_high_bit_select_second_highest_bit;
-			-- values do not matter
+			-- value does not matter
 			F_Block_Select <= F_Block_Select_0;
 			-- subtraction operation
 			Subtract <= Subtraction;
@@ -808,8 +1117,6 @@ begin
 			-- subtract Register d from 0 for negate
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_0;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			
 			
 			-- value does not matter
 			OperandA <= GP_outA;
@@ -827,6 +1134,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectB;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for negation
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 			
 		end if;
 		
@@ -854,8 +1184,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
-			
-			
 		
 			-- Register d contents
 			OperandA <= GP_outA;
@@ -873,6 +1201,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for doing OR
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
 			
 		end if;
 		
@@ -901,8 +1252,6 @@ begin
 			-- value does not matter
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- K, immediate value
@@ -919,6 +1268,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
+			-- Update the flags needed for doing OR
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_CLEAR_VALUE;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
 			
 		end if;
 		
@@ -966,6 +1338,29 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			-- Update the flags needed for rotating
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_C_XOR_N;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_LSB;
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSBC) then
@@ -992,8 +1387,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- Register r contents
@@ -1010,6 +1403,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 			
 		end if;
 		
@@ -1038,8 +1454,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- K, immediate value
@@ -1056,6 +1470,29 @@ begin
 			GP_Swap_Nibbles <= '0';
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
 			
 		end if;
 		
@@ -1102,8 +1539,6 @@ begin
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 				
-				
-				
 				-- Rd contents
 				OperandA <= GP_outA;
 				-- K, immediate value from Program_Data_Bus
@@ -1148,14 +1583,14 @@ begin
 				
 				-- subtraction operation
 				ALU_result_select <= Adder_Subtractor_Operation;
-				-- values do not matter
+				-- value does not matter
 				Shifter_low_bit_select <= Shifter_low_bit_highest_bit;
-				-- values do not matter
+				-- value does not matter
 				Shifter_middle_bits_select <= Shifter_middle_bits_select_immediate_right;
-				-- values do not matter
+				-- value does not matter
 				Shifter_high_bit_select <= 
 					Shifter_high_bit_select_second_highest_bit;
-				-- values do not matter
+				-- value does not matter
 				F_Block_Select <= F_Block_Select_0;
 				-- subtraction operation
 				Subtract <= Subtraction;
@@ -1164,8 +1599,6 @@ begin
 				-- add nothing to the next register
 				AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 				AddSub_Op_2_Select <= AddSub_Op_2_Select_0;
-				
-				
 				
 				--Rd + 1 contents
 				OperandA <= GP_outA;
@@ -1187,6 +1620,30 @@ begin
 				-- reset clock flag for next instruction
 				second_clock_flag <= '0';
 			end if;
+			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates (Need to do beween calculation finishing)
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSUB) then
@@ -1232,6 +1689,29 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 		
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSUBI) then
@@ -1259,8 +1739,6 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
-			
-			
 			-- Register d contents
 			OperandA <= GP_outA;
 			-- value does not matter
@@ -1278,6 +1756,29 @@ begin
 			-- store result in Register d
 			GP_Dst_Select <= GP_Src_SelectA;
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
+			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			-- Update the flags needed for subtraction
+			Half_Carry_Flag_Sel     <= H_FROM_ALU;
+			Corrected_Sign_Flag_Sel <= S_FROM_ALU;
+			Signed_OF_Flag_Sel      <= V_FROM_ALU;
+			Neg_Flag_Sel            <= N_FROM_ALU;
+			Zero_Flag_Sel           <= Z_FROM_ALU;
+			Carry_Flag_Sel          <= C_FROM_ALU;
+			
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSWAP) then
@@ -1294,7 +1795,6 @@ begin
 			
 			-- indicate nibbles of register should be swapped
 			GP_Swap_Nibbles <= '1';
-			-- TODO
 			
 			-- the following ALU signal values do not matter
 			ALU_result_select <= Adder_Subtractor_Operation;
@@ -1307,7 +1807,27 @@ begin
 			AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
 			AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
 			
+			-- IO Register Control
+			-- Update from the ALU
+			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
+			-- Allow Write
+			IO_Write_Enable         <= '1';
+			-- Read/Write from status regs
+			IO_Dst_Select           <= IO_REG_LOC;
+			IO_Src_SelectA          <= IO_REG_LOC;
 			
+			-- Flag updates
+			-- Unused
+			TBit_Select             <= (DATA_BITS_LOG-1 downto 0 => '-');
+			-- Hold current values
+			Interrupt_Flag_Sel      <= I_HOLD_VALUE;
+			Transfer_Flag_Sel       <= T_HOLD_VALUE;
+			Half_Carry_Flag_Sel     <= H_HOLD_VALUE;
+			Corrected_Sign_Flag_Sel <= S_HOLD_VALUE;
+			Signed_OF_Flag_Sel      <= V_HOLD_VALUE;
+			Neg_Flag_Sel            <= N_HOLD_VALUE;
+			Zero_Flag_Sel           <= Z_HOLD_VALUE;
+			Carry_Flag_Sel          <= C_HOLD_VALUE;
 
 		end if;
 	
