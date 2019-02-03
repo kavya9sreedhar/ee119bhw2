@@ -11,6 +11,7 @@
 --     22 Apr 02  Glen George       Updated comments.
 --     18 Apr 04  Glen George       Updated comments and formatting.
 --     21 Jan 06  Glen George       Updated comments.
+--     03 Jan 19  Dan and Kavya     Linked stuff together.
 --
 ----------------------------------------------------------------------------
 
@@ -180,8 +181,8 @@ begin
             GP_Src_SelectB  => GP_Src_SelectB,
             
             -- GP Outputs
-            GP_outA         => RegAOut,
-            GP_outB         => RegBOut,
+            GP_outA         => GP_outA,
+            GP_outB         => GP_outB,
 
             -- IO Input
             Updated_SREG    => Updated_SREG,

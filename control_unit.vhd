@@ -88,19 +88,15 @@ entity Control_Unit is
 end entity;
 
 architecture control_arch of Control_Unit is
-    
-    -- Control Unit Signals
-    signal second_clock_flag:     std_logic;
-    signal GP_Src_SelectA_Inter: std_logic_vector(NUM_REG_LOG-1 downto 0);
-    signal GP_Src_SelectB_Inter: std_logic_vector(NUM_REG_LOG-1 downto 0);
-    
+    signal  second_clock_flag:     std_logic;
 begin
 
-	-- Connect to intermediate signal.
-	GP_Src_SelectA <= GP_Src_SelectA_Inter;
-	GP_Src_SelectB <= GP_Src_SelectB_Inter;
-
     process (clk)
+    
+        -- Control Unit Signals
+        variable GP_Src_SelectA_Inter: std_logic_vector(NUM_REG_LOG-1 downto 0);
+        variable GP_Src_SelectB_Inter: std_logic_vector(NUM_REG_LOG-1 downto 0);
+    
     begin
     
     if rising_edge(clk) then
@@ -109,8 +105,8 @@ begin
         if std_match(Program_Data_Bus, OpADC) then
         
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- Control signals to ALU
             -- addition operation
@@ -144,7 +140,7 @@ begin
             -- indicate nibbles of register should not be swapped
             GP_Swap_Nibbles <= '0';
             -- store result in Register d
-            GP_Dst_Select <= GP_Src_SelectA_Inter;
+            GP_Dst_Select <= GP_Src_SelectB_Inter;
             
             -- IO Register Control
             -- Update from the ALU
@@ -175,8 +171,8 @@ begin
         if std_match(Program_Data_Bus, OpADD) then
         
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- Control signals to ALU
             -- addition operation
@@ -243,23 +239,23 @@ begin
             if second_clock_flag = '0' then
                 -- choose which register to use depending on instruction decoding
                 if Program_Data_Bus(5 downto 4) = "00" then
-                    GP_Src_SelectA_Inter <= "11000";
+                    GP_Src_SelectA_Inter := "11000";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "01" then
-                    GP_Src_SelectA_Inter <= "11010";
+                    GP_Src_SelectA_Inter := "11010";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "10" then
-                    GP_Src_SelectA_Inter <= "11100";
+                    GP_Src_SelectA_Inter := "11100";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "11" then
-                    GP_Src_SelectA_Inter <= "11110";
+                    GP_Src_SelectA_Inter := "11110";
                 end if;
                 
                 -- value does not matter
-                GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+                GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
                 -- addition operation
                 ALU_result_select <= Adder_Subtractor_Operation;
@@ -301,23 +297,23 @@ begin
                 -- choose which register to use depending on instruction decoding, use next
                 -- register for second clock of operation
                 if Program_Data_Bus(5 downto 4) = "00" then
-                    GP_Src_SelectA_Inter <= "11001";
+                    GP_Src_SelectA_Inter := "11001";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "01" then
-                    GP_Src_SelectA_Inter <= "11011";
+                    GP_Src_SelectA_Inter := "11011";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "10" then
-                    GP_Src_SelectA_Inter <= "11101";
+                    GP_Src_SelectA_Inter := "11101";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "11" then
-                    GP_Src_SelectA_Inter <= "11111";
+                    GP_Src_SelectA_Inter := "11111";
                 end if;
                 
                 -- value does not matter
-                GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+                GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
                 
                 -- addition operation
                 ALU_result_select <= Adder_Subtractor_Operation;
@@ -408,8 +404,8 @@ begin
         if std_match(Program_Data_Bus, OpAND) then
         
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- F Block operation
             ALU_result_select <= F_Block_Operation;
@@ -468,9 +464,9 @@ begin
         -- ANDI add immediate
         if std_match(Program_Data_Bus, OpANDI) then
             -- Control signals to register
-            GP_Src_SelectA_Inter <= '1' & Program_Data_Bus(7 downto 4);
+            GP_Src_SelectA_Inter := '1' & Program_Data_Bus(7 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- F Block operation
             ALU_result_select <= F_Block_Operation;
@@ -557,9 +553,9 @@ begin
         -- ASR arithmetic shift right a register
         if std_match(Program_Data_Bus, OpASR) then
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- doing a shift operation
             ALU_result_select <= Shifter_Rotater_Operation;
@@ -643,9 +639,9 @@ begin
         -- COM complement of a register (register <- not register)
         if std_match(Program_Data_Bus, OpCOM) then
             -- value does not matter
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
             -- Control signals to register
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -709,8 +705,8 @@ begin
         if std_match(Program_Data_Bus, OpCP) then
         
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -766,8 +762,8 @@ begin
         if std_match(Program_Data_Bus, OpCPC) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -823,9 +819,9 @@ begin
         if std_match(Program_Data_Bus, OpCPI) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= '1' & Program_Data_Bus(7 downto 4);
+            GP_Src_SelectA_Inter := '1' & Program_Data_Bus(7 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -879,9 +875,9 @@ begin
         if std_match(Program_Data_Bus, OpDEC) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= '1' & Program_Data_Bus(7 downto 4);
+            GP_Src_SelectA_Inter := '1' & Program_Data_Bus(7 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -945,8 +941,8 @@ begin
         if std_match(Program_Data_Bus, OpEOR) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- F Block operation
             ALU_result_select <= F_Block_Operation;
@@ -1011,8 +1007,8 @@ begin
         if std_match(Program_Data_Bus, OpINC) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- addition operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -1076,9 +1072,9 @@ begin
         if std_match(Program_Data_Bus, OpLSR) then
 
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- shifter operation
             ALU_result_select <= Shifter_Rotater_Operation;
@@ -1143,9 +1139,9 @@ begin
         -- NEG negate a register
         if std_match(Program_Data_Bus, OpNEG) then
             -- value does not matter
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
             -- Control signals to register
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -1209,8 +1205,8 @@ begin
         if std_match(Program_Data_Bus, OpOR) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- F Block operation
             ALU_result_select <= F_Block_Operation;
@@ -1275,8 +1271,8 @@ begin
         if std_match(Program_Data_Bus, OpORI) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= '1' & Program_Data_Bus(7 downto 4);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(4 downto 0);
+            GP_Src_SelectA_Inter := '1' & Program_Data_Bus(7 downto 4);
+            GP_Src_SelectB_Inter := Program_Data_Bus(4 downto 0);
             
             -- F Block operation
             ALU_result_select <= F_Block_Operation;
@@ -1341,9 +1337,9 @@ begin
         if std_match(Program_Data_Bus, OpROR) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(4 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(4 downto 0);
             
             -- rotate operation
             ALU_result_select <= Shifter_Rotater_Operation;
@@ -1407,8 +1403,8 @@ begin
         if std_match(Program_Data_Bus, OpSBC) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -1472,9 +1468,9 @@ begin
         if std_match(Program_Data_Bus, OpSBCI) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= '1' & Program_Data_Bus(7 downto 4);
+            GP_Src_SelectA_Inter := '1' & Program_Data_Bus(7 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(4 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(4 downto 0);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -1539,23 +1535,23 @@ begin
             if second_clock_flag = '0' then
                 -- choose which register to use depending on instruction decoding
                 if Program_Data_Bus(5 downto 4) = "00" then
-                    GP_Src_SelectA_Inter <= "11000";
+                    GP_Src_SelectA_Inter := "11000";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "01" then
-                    GP_Src_SelectA_Inter <= "11010";
+                    GP_Src_SelectA_Inter := "11010";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "10" then
-                    GP_Src_SelectA_Inter <= "11100";
+                    GP_Src_SelectA_Inter := "11100";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "11" then
-                    GP_Src_SelectA_Inter <= "11110";
+                    GP_Src_SelectA_Inter := "11110";
                 end if;
                 
                 -- value does not matter
-                GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+                GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
                 
                 -- subtract operation
                 ALU_result_select <= Adder_Subtractor_Operation;
@@ -1599,23 +1595,23 @@ begin
                 -- choose which register to use depending on instruction decoding, use next
                 -- register for second clock of operation
                 if Program_Data_Bus(5 downto 4) = "00" then
-                    GP_Src_SelectA_Inter <= "11001";
+                    GP_Src_SelectA_Inter := "11001";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "01" then
-                    GP_Src_SelectA_Inter <= "11011";
+                    GP_Src_SelectA_Inter := "11011";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "10" then
-                    GP_Src_SelectA_Inter <= "11101";
+                    GP_Src_SelectA_Inter := "11101";
                 end if;
                 
                 if Program_Data_Bus(5 downto 4) = "11" then
-                    GP_Src_SelectA_Inter <= "11111";
+                    GP_Src_SelectA_Inter := "11111";
                 end if;
                 
                 -- value does not matter
-                GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+                GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
                 
                 -- subtraction operation
                 ALU_result_select <= Adder_Subtractor_Operation;
@@ -1684,8 +1680,8 @@ begin
         if std_match(Program_Data_Bus, OpSUB) then
             
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
-            GP_Src_SelectB_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(9) & Program_Data_Bus(3 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(8 downto 4);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -1749,9 +1745,9 @@ begin
         if std_match(Program_Data_Bus, OpSUBI) then
 
             -- Control signals to register
-            GP_Src_SelectA_Inter <= '1' & Program_Data_Bus(7 downto 4);
+            GP_Src_SelectA_Inter := '1' & Program_Data_Bus(7 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(4 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(4 downto 0);
             
             -- subtraction operation
             ALU_result_select <= Adder_Subtractor_Operation;
@@ -1815,9 +1811,9 @@ begin
         if std_match(Program_Data_Bus, OpSWAP) then
         
             -- Control signals to register
-            GP_Src_SelectA_Inter <= Program_Data_Bus(8 downto 4);
+            GP_Src_SelectA_Inter := Program_Data_Bus(8 downto 4);
             -- value does not matter
-            GP_Src_SelectB_Inter <= Program_Data_Bus(4 downto 0);
+            GP_Src_SelectB_Inter := Program_Data_Bus(4 downto 0);
             
             -- Register d contents
             OperandA <= GP_outA;
@@ -1862,5 +1858,10 @@ begin
         end if;
     
     end if;
+    
+    -- Connect to intermediate signal.
+    GP_Src_SelectA <= GP_Src_SelectA_Inter;
+    GP_Src_SelectB <= GP_Src_SelectB_Inter;
+    
     end process;
 end architecture;

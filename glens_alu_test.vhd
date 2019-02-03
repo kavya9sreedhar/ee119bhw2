@@ -10,6 +10,7 @@
 --     20 Apr 98  Glen George       Fixed minor syntax bugs.
 --     18 Apr 04  Glen George       Updated comments and formatting.
 --     21 Jan 06  Glen George       Updated comments.
+--     03 Jan 19  Dan and Kavya     Linked stuff together.
 --
 ----------------------------------------------------------------------------
 
@@ -43,6 +44,8 @@ library work;
 use work.opcodes.all;
 use work.CPU_CONSTANTS.all;
 use work.FlagConstants.all;
+use work.ALU_CONSTANTS.all;
+use work.RegConstants.all;
 
 
 entity  ALU_TEST  is
@@ -72,12 +75,8 @@ architecture standard of ALU_TEST is
         signal F_Block_Select:             std_logic_vector(3 downto 0);
         signal Subtract:                   std_logic;
         signal ALU_op_with_carry:          std_logic;
-        signal AddSub_Op_1_Select:         std_logic;
+        signal AddSub_Op_1_Select:         std_logic_vector(1 downto 0);
         signal AddSub_Op_2_Select:         std_logic_vector(1 downto 0);
-
-        -- Operands
-        signal OperandA:                   std_logic_vector(NUM_DATA_BITS - 1 downto 0);
-        signal OperandB:                   std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 
         -- Flag update control
         signal TBit_Select             : std_logic_vector(DATA_BITS_LOG-1 downto 0);
@@ -109,12 +108,14 @@ architecture standard of ALU_TEST is
         signal Updated_SREG            : std_logic_vector(NUM_DATA_BITS-1 downto 0);
         -- Outputs (IOREG)
         signal IO_outA                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
-        signal IO_outB                 : std_logic_vector(NUM_DATA_BITS-1 downto 0)
+        signal IO_outB                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
 begin
 
     ControlUnit : entity work.control_unit(control_arch)
     port map (
+
+        clk                        => clock,
 
         -- program data bus
         Program_Data_Bus => IR,
