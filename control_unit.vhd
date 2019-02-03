@@ -824,23 +824,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpDEC) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_1,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -867,23 +850,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpEOR) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => F_Block_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => F_Block_Select_xor,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -911,23 +877,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpINC) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Addition,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_1,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -955,24 +904,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpLSR) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Shifter_Rotater_Operation,
-		Shifter_low_bit_select => Shifter_low_bit_bit_1,
-		Shifter_middle_bits_select => 
-		Shifter_middle_bits_select_immediate_left,
-		Shifter_high_bit_select => Shifter_high_bit_select_0,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -999,23 +930,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpNEG) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_0,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -1042,24 +956,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpOR) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => F_Block_Select,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => F_Block_Select_or,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
-
 			-- IO Register Control
 			-- Update from the ALU
 			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
@@ -1085,23 +981,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpORI) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => F_Block_Select,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => F_Block_Select_or,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 		
 			-- IO Register Control
 			-- Update from the ALU
@@ -1128,25 +1007,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpROR) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Shifter_Rotater_Operation,
-		Shifter_low_bit_select => Shifter_low_bit_bit_1,
-		Shifter_middle_bits_select => 	
-		Shifter_middle_bits_select_immediate_left,
-		Shifter_high_bit_select => Shifter_high_bit_select_lowest_bit,
-		F_Block_Select => ,
-		Subtract => ,
-		ALU_op_with_carry => ,
-		AddSub_Op_1_Select => ,
-		AddSub_Op_2_Select => ,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
-
 			-- IO Register Control
 			-- Update from the ALU
 			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
@@ -1172,22 +1032,6 @@ begin
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSBC) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '1',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -1211,26 +1055,9 @@ begin
 			Neg_Flag_Sel            <= N_FROM_ALU;
 			Zero_Flag_Sel           <= Z_FROM_ALU;
 			Carry_Flag_Sel          <= C_FROM_ALU;
-		);
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSBCI) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '1',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -1254,58 +1081,10 @@ begin
 			Neg_Flag_Sel            <= N_FROM_ALU;
 			Zero_Flag_Sel           <= Z_FROM_ALU;
 			Carry_Flag_Sel          <= C_FROM_ALU;
-		);
 		end if;
 		
 		-- 2 clocks
 		if std_match(Program_Data_Bus, OpSBIW) then
-			if second_clock_flag = '0' then
-			ALU_operation: ALU port map (
-			clk => clk,
-			ALU_result_select => Adder_Subtractor_Operation,
-			-- values do not matter
-			Shifter_low_bit_select => ,
-			Shifter_middle_bits_select => ,
-			Shifter_high_bit_select => ,
-			F_Block_Select => ,
-			Subtract => Subtraction,
-			ALU_op_with_carry => '0',
-			AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-			AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-			Status_Register_Mask => ,
-			-- Rd
-			OperandA => ,
-			-- K
-			OperandB => ,
-			Result => Result,
-			Status_Register =>
-			);
-			
-			second_clock_flag = '1';
-			
-			else
-			ALU_operation: ALU port map (
-			clk => clk,
-			ALU_result_select => Adder_Subtractor_Operation,
-			-- values do not matter
-			Shifter_low_bit_select => ,
-			Shifter_middle_bits_select => ,
-			Shifter_high_bit_select => ,
-			F_Block_Select => ,
-			Subtract => Addition,
-			ALU_op_with_carry => '0',
-			AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-			AddSub_Op_2_Select => AddSub_Op_2_Select_0,
-			Status_Register_Mask => ,
-			--Rd + 1
-			OperandA => ,
-			OperandB => ,
-			Result => Result,
-			Status_Register =>
-			);
-			
-			second_clock_flag = '0';
-			end if;
 			
 			-- IO Register Control
 			-- Update from the ALU
@@ -1329,25 +1108,10 @@ begin
 			Neg_Flag_Sel            <= N_FROM_ALU;
 			Zero_Flag_Sel           <= Z_FROM_ALU;
 			Carry_Flag_Sel          <= C_FROM_ALU;
+
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSUB) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
 
 			-- IO Register Control
 			-- Update from the ALU
@@ -1371,27 +1135,9 @@ begin
 			Neg_Flag_Sel            <= N_FROM_ALU;
 			Zero_Flag_Sel           <= Z_FROM_ALU;
 			Carry_Flag_Sel          <= C_FROM_ALU;
-		);
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSUBI) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-
 			-- IO Register Control
 			-- Update from the ALU
 			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
@@ -1414,27 +1160,9 @@ begin
 			Neg_Flag_Sel            <= N_FROM_ALU;
 			Zero_Flag_Sel           <= Z_FROM_ALU;
 			Carry_Flag_Sel          <= C_FROM_ALU;
-		);
 		end if;
 		
 		if std_match(Program_Data_Bus, OpSWAP) then
-		ALU_operation: ALU port map (
-		clk => clk,
-		ALU_result_select => Adder_Subtractor_Operation,
-		Shifter_low_bit_select => ,
-		Shifter_middle_bits_select => ,
-		Shifter_high_bit_select => ,
-		F_Block_Select => ,
-		Subtract => Subtraction,
-		ALU_op_with_carry => '0',
-		AddSub_Op_1_Select => AddSub_Op_1_Select_OperandA,
-		AddSub_Op_2_Select => AddSub_Op_2_Select_OperandB,
-		Status_Register_Mask => ,
-		OperandA => ,
-		OperandB => ,
-		Result => Result,
-		Status_Register =>
-		);
 			-- IO Register Control
 			-- Update from the ALU
 			IO_Input_Select         <= IO_IN_SEL_SREG_ALU;
