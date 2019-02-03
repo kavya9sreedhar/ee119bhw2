@@ -1,15 +1,8 @@
 ----------------------------------------------------------------------------
 --  AVR Constants
 --
---	This file contains contains constants used for the 
---	implementation of an 8-bit AVR architecture. The constants are split
---  into the following packages for use with different units part of 
---  the architecture:
---	
---	CPU_CONSTANTS 	- general CPU constants
---	ALU_constants 	- ALU specific constants
---	RegConstants 	- Register specific constants
---	FlagConstants 	- Flag specific constants
+--	This file contains contains general constants used for the 
+--	implementation of an 8-bit AVR architecture.
 --
 --  Revision History:
 --	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision

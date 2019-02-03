@@ -6,11 +6,8 @@
 --  decoder to process instructions from the program data bus.
 --
 --  Revision History:
---	28 Jan 19   Kavya Sreedhar & Dan Xu    Initial revision
--- 	30 Jan 19   Kavya Sreedhar & Dan Xu    Updated more control signals 
---  1  Feb 19   Kavya Sreedhar & Dan Xu    Updated revision history
---  2  Feb 19   Kavya Sreedhar & Dan Xu    Fixed syntax errors, updated comments
-
+--	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
+--  1  Feb 19	Kavya Sreedhar & Dan Xu	Updated revision history
 ----------------------------------------------------------------------------
 
 -- declaration of libraries used
@@ -39,7 +36,7 @@ entity Control_Unit is
 	
 	-- inputs
 	-- program data bus, contains instruction to decode
-	Program_Data_Bus: in opcode_word
+	Program_Data_Bus: in opcode_word;
 	-- instruction register
 	-- IR: in opcode_word;
 	
@@ -68,7 +65,7 @@ entity Control_Unit is
     );
 end entity;
 
-architecture control_arch of Control_Unit
+architecture control_arch of Control_Unit is
 	
 	-- indicates whether or not the second clock has occurred for 2 clock instructions
 	-- will be changed to a finite state machine or counter in future weeks
