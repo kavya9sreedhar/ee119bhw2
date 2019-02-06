@@ -48,8 +48,8 @@ entity Data_Memory_Access is
 		Pre_Post_Sel: in std_logic;
 		
 		-- other inputs
-		-- second word of instruction
-		Program_Data_Bus: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- 8 bits of data, zero padded upper bits
+		Immediate_Data_Address: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		X_register: in std_logic_vector(15 downto 0);
 		Y_register: in std_logic_vector(15 downto 0);
 		Z_register: in std_logic_vector(15 downto 0);
@@ -68,25 +68,39 @@ entity Data_Memory_Access is
 end entity;
 
 architecture Data_arch of Data_Memory_Access is
+
+	-- signal that contains the offset value to add to the data address to update
 	signal offset: std_logic_vector(15 downto 0);
+	-- signal that contains the data address value to update with the offset value
 	signal data_addr_src: std_logic_vector(15 downto 0);
+	-- contains the sum of the data address value and offset i.e. the updated data 
+	-- address value
 	signal adder_subtractor_result: std_logic_vector(15 downto 0);
 	
 begin
-	data_addr_src <= --TODO when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Imm_Addr else
-					X_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_X else
-					Y_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Y else
-					Z_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Z else
-					SP_register;
+	-- choose which data address to update (immediate address versus register value)
+	data_addr_src <= 	Immediate_Data_Address 
+							when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Imm_Addr
+						X_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_X else
+						Y_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Y else
+						Z_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Z else
+						SP_register;
 					
+	-- choose what offset to add to data address depending on instruction
 	offset <= 
+		-- add or subtract 1
 		(0 => '1', others => '0') when 	Offset_Src_Sel = Offset_Src_Sel_pos_1 or
 										Offset_Src_Sel = Offset_Src_Sel_neg_1 else
+		-- do not change current data address value
 		(others => '0');
 	
+	-- depending on whether offset is positive or negative, add or subtract the
+	-- magnitude of the offset value to the data address
 	Subtract <= '1' when Offset_Src_Sel_neg_1 else
 				'0';
 				
+	-- set operands for addition / subtraction operation between 
+	-- data address and offset
 	Operand1 <= data_addr_src;
 	Operand2 <= offset;
 			
@@ -109,6 +123,8 @@ begin
 			(carry_outs(i - 1) and (Operand1(i) xor (Operand2(i) xor Subtract)));
 	end generate get_adder_subtractor_bits;
 	
+	-- choose whether or not to update address depending on whether pre or post
+	-- select was indicated as part of instruction
 	Data_Address_Bus <= data_addr_src when Pre_Post_Sel = Pre_Post_Sel_Pre else
 						adder_subtractor_result;
 	
