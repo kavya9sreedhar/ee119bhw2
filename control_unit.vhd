@@ -1875,46 +1875,74 @@ begin
 			if std_match(Program_Data_Bus, OpLDX) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				Offset_Src_Sel <= Offset_Src_Sel_0;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDI) then
@@ -1933,46 +1961,74 @@ begin
 			if std_match(Program_Data_Bus, OpSTX) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				Offset_Src_Sel <= Offset_Src_Sel_0;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYI) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYD) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDY) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZI) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZD) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDZ) then
 				DataRd <= '1';
 				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTS) then

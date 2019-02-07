@@ -38,11 +38,8 @@ entity Data_Memory_Access is
 		-- 	111 selects Z with a 6-bit unsigned offset
 		Data_Addr_Src_Sel: in std_logic_vector(2 downto 0);
 		-- selects offset source
-		--  00 select 0
-		--  01 select +1
-		--  10 select -1
-		--  11 select q (for Y and Z registers with q unsigned offset)
-		Offset_Src_Sel: in std_logic_vector(3 downto 0);
+		Offset_Src_Sel: in std_logic_vector(2 downto 0);
+		unsigned_displacement: in std_logic_vector(15 downto 0);
 		-- indicates whether or not pre/post-increment/decrement was 
 		-- part of instruction
 		Pre_Post_Sel: in std_logic;
@@ -92,7 +89,8 @@ begin
 		(0 => '1', others => '0') when 	Offset_Src_Sel = Offset_Src_Sel_pos_1 or
 										Offset_Src_Sel = Offset_Src_Sel_neg_1 else
 		-- do not change current data address value
-		(others => '0');
+		(others => '0') when Offset_Src_Sel = Offset_Src_Sel_0 else
+		unsigned_displacement when Offset_Src_Sel = Offset_Src_Sel_unsigned_q;
 	
 	-- depending on whether offset is positive or negative, add or subtract the
 	-- magnitude of the offset value to the data address
