@@ -1873,39 +1873,48 @@ begin
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1
 		
 			if std_match(Program_Data_Bus, OpLDX) then
-				
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDI) then
@@ -1913,7 +1922,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDS) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpMOV) then
@@ -1921,43 +1931,53 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTX) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDY) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDZ) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTS) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 		when Clock2 =>
@@ -1966,90 +1986,114 @@ begin
 		
 			if std_match(Program_Data_Bus, OpLDX) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
 				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDI) then
 				-- 1 clock instruction, nothing here
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDS) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpMOV) then
 				-- 1 clock instruction, nothing here
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTX) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYI) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYD) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDY) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZI) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZD) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDZ) then
+				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTS) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 		when Clock3 =>
@@ -2057,87 +2101,109 @@ begin
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 3
 		
 			if std_match(Program_Data_Bus, OpLDX) then
-	
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDI) then
 				-- 1 clock instruction, nothing here
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDS) then
-			
+
 			end if;
 			
 			if std_match(Program_Data_Bus, OpMOV) then
 				-- 1 clock instruction, nothing here
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTX) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDY) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZI) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZD) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDZ) then
-			
+				DataRd <= '1';
+				DataWr <= '1';
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTS) then
