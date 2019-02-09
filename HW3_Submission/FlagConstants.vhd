@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------
---  AVR Constants
+--  Flag Constants
 --
---	This file contains contains general constants used for the 
---	implementation of an 8-bit AVR architecture.
+--	This file contains contains constants used for the 
+--	flags implementation specifically for an 8-bit AVR architecture.
 --
 --  Revision History:
 --	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
@@ -14,54 +14,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
--- general constants shared across all files
-package CPU_CONSTANTS is
-	-- number of general purpose registers
-	constant NUM_REGISTERS: 		integer := 32;
-	-- number of IO Registers
-	constant NUM_IO_REG:            integer := 64;
-
-	-- number of bits in data busses
-	constant NUM_DATA_BITS: 		integer := 8;
-	-- number of bits in address busses
-	constant NUM_ADDRESS_BITS: 		integer := 16;
-	-- number of bits in each general-purpose register
-	constant NUM_BITS_PER_REGISTER: integer := 8;
-
-	-- Log of numbers
-	constant NUM_REG_LOG:           integer := 5;
-	constant NUM_IO_LOG:            integer := 6;
-	constant DATA_BITS_LOG:         integer := 3;
-	constant ADDR_BITS_LOG:         integer := 4;
-
-end package;
-
--- constants for the Registers implementation only
-package RegConstants is
-
-	-- Swap control values
-	constant SWAP_EN                : std_logic := '1';
-	constant SWAP_DIS               : std_logic := '0';
-
-	-- GP Reg input control values
-	constant NUM_GP_INP_SELECT_BITS : integer := 2;
-	-- Use one of GP register outputs.
-	constant GP_IN_SEL_GP_A         : std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0) := "00";
-	-- Use one of IO register outputs.
-	constant GP_IN_SEL_IO_A         : std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0) := "01";
-	-- Use the data bus
-	constant GP_IN_SEL_DATA_DATABUS : std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0) := "10";
-	-- Use the ALU
-	constant GP_IN_SEL_ALU          : std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0) := "11";
-
-	-- GP Reg input control values
-	constant NUM_IO_INP_SELECT_BITS : integer := 1;
-	-- Use a GP register
-	constant IO_IN_SEL_GP_A         : std_logic := '1';
-	-- Use the SREG update from ALU
-	constant IO_IN_SEL_SREG_ALU     : std_logic := '0';
-
-end package;
+library work;
+use work.CPU_CONSTANTS.all;
 
 -- constants for the Status Register implementation only
 package FlagConstants is
@@ -133,7 +87,7 @@ package FlagConstants is
 	constant N_HOLD_VALUE           : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "00";
 	constant N_SET_VALUE            : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "01";
 	constant N_CLEAR_VALUE          : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "10";
-	constant N_FROM_ALU             : std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0) := "11"; 
+	constant N_FROM_ALU             : std_logic_vector(NUM_N_FLAG_BITS-1 downto 0) := "11"; 
 
 	-- Zero
 	constant NUM_Z_FLAG_BITS        : integer := 2;
@@ -147,7 +101,7 @@ package FlagConstants is
 	constant C_HOLD_VALUE           : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "000";
 	constant C_SET_VALUE            : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "001";
 	constant C_CLEAR_VALUE          : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "010";
-	constant C_FROM_ALU             : std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0) := "011";
-	constant C_FROM_LSB             : std_logic_vector(NUM_Z_FLAG_BITS-1 downto 0) := "100";
+	constant C_FROM_ALU             : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "011";
+	constant C_FROM_LSB             : std_logic_vector(NUM_C_FLAG_BITS-1 downto 0) := "100";
 
 end package;

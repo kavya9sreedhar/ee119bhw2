@@ -12,14 +12,12 @@
 ----------------------------------------------------------------------------
 
 library ieee;
+library work;
+
+use work.CPU_CONSTANTS.all;
+use work.RegConstants.all;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
-library CPU_CONSTANTS;
-use CPU_CONSTANTS.all;
-
-library RegConstants;
-use RegConstants.all;
 
 --
 -- AVR Registers entity declarations
@@ -107,13 +105,24 @@ end entity;
 -- Architecture for the AVR registers
 architecture standard of AVRRegisters is
 
-    signal GPReg_in : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
-    signal IOReg_in : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    signal GPReg_in       : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    signal IOReg_in       : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    
+    signal GP_A_intermed  : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    signal IO_A_intermed  : std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
 begin
 
+    -- Connect up the signals
+    GP_outA <= GP_A_intermed;
+    IO_outA <= IO_A_intermed;
+
     -- GP registers
     GPReg : entity work.Registers(standard)
+        generic map (
+            NUM_BITS              =>  NUM_DATA_BITS,
+            LNUM_REGISTERS        =>  NUM_REG_LOG
+        )
         port map(
 
             -- Hook up the clock
@@ -123,7 +132,7 @@ begin
             reg_in                => GPReg_in,
 
             -- Hook up outputs
-            reg_outA              => GP_outA,
+            reg_outA              => GP_A_intermed,
             reg_outB              => GP_outB,
 
             -- Ctrl signals
@@ -136,11 +145,9 @@ begin
     -- IO Registers
     IOReg : entity work.Registers(standard)
         generic map (
-			NUM_BITS              : positive := 8;
-			LNUM_REGISTERS        : natural  := 5
-		);
-
-		
+			NUM_BITS              =>  NUM_DATA_BITS,
+			LNUM_REGISTERS        =>  NUM_IO_LOG
+		)
 		port map(
 
             -- Hook up the clock
@@ -150,7 +157,7 @@ begin
             reg_in                => IOReg_in,
 
             -- Hook up outputs
-            reg_outA              => IO_outA,
+            reg_outA              => IO_A_intermed,
             reg_outB              => IO_outB,
 
             -- Ctrl signals
@@ -161,10 +168,10 @@ begin
     );
 
     -- Process to determint the input to the GP registers
-    GP_input_determine : process(GP_Input_Select, GP_Swap_Nibbles, GP_outA, IO_outA, data_databus_in, ALU_in)
+    GP_input_determine : process(GP_Input_Select, GP_Swap_Nibbles, GP_A_intermed, IO_A_intermed, data_databus_in, ALU_in)
 
         -- Selection before swapping
-        signal intermediate_select : std_logic_vector(NUM_IO_LOG-1 downto 0);
+        variable intermediate_select : std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
     begin
 
@@ -172,10 +179,10 @@ begin
         case GP_Input_Select is
             -- Use one of GP register outputs.
             when GP_IN_SEL_GP_A => 
-                intermediate_select := GP_outA;
+                intermediate_select := GP_A_intermed;
             -- Use one of IO register outputs.
             when GP_IN_SEL_IO_A =>
-                intermediate_select := IO_outA;
+                intermediate_select := IO_A_intermed;
             -- Use the data bus
             when GP_IN_SEL_DATA_DATABUS =>
                 intermediate_select := data_databus_in;
@@ -184,13 +191,13 @@ begin
                 intermediate_select := ALU_in;
             -- Error value -> should not occur
             when others =>
-                intermediate_select := (NUM_IO_LOG-1 downto 0 => 'X');
+                intermediate_select := (NUM_DATA_BITS-1 downto 0 => 'X');
         end case;
         
         -- Check for swap, and swap if so
         if (GP_Swap_Nibbles = SWAP_EN) then
-            GPReg_in <= intermediate_select((NUM_IO_LOG/2)-1 downto 0) & 
-              intermediate_select(NUM_IO_LOG-1 downto (NUM_IO_LOG/2));
+            GPReg_in <= intermediate_select((NUM_DATA_BITS/2)-1 downto 0) & 
+              intermediate_select(NUM_DATA_BITS-1 downto (NUM_DATA_BITS/2));
         else
             GPReg_in <= intermediate_select;
         end if;
@@ -198,20 +205,20 @@ begin
     end process GP_input_determine;
 
     -- Process to determint the input to the IO registers
-    IO_input_determine : process(IO_Input_Select, GP_outA, Updated_SREG)
+    IO_input_determine : process(IO_Input_Select, GP_A_intermed, Updated_SREG)
     begin
 
         -- Figure out which input to use for IO registers
         case IO_Input_Select is
             -- Use one of GP register outputs.
             when IO_IN_SEL_GP_A => 
-                IOReg_in := GP_outA;
+                IOReg_in <= GP_A_intermed;
             -- Use one of IO register outputs.
             when IO_IN_SEL_SREG_ALU =>
-                IOReg_in := Updated_SREG;
+                IOReg_in <= Updated_SREG;
             -- Error value -> should not occur
             when others =>
-                IOReg_in := 'X';
+                IOReg_in <= (NUM_DATA_BITS-1 downto 0 => 'X');
         end case;
 
     end process IO_input_determine;    

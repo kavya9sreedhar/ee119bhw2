@@ -8,21 +8,23 @@
 --  The test bench entity is called Register_Tester.
 --
 --  Revision History:
---     02/01/19  Daniel Xu and KAVYAAAA   Initial revision.
---     02/02/19  Daniel Xu and KAVYAAAA   Finished writing tests.
+--     02/01/19  Daniel Xu and Kavya Sreedhar   Initial revision.
+--     02/02/19  Daniel Xu and Kavya Sreedhar   Finished writing tests.
 ----------------------------------------------------------------------------
 
 library ieee;
 library work;
-library CPU_CONSTANTS;
-library opcodes;
 
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 use ieee.std_logic_arith.ALL;
-use opcodes.opcodes.all;
-use CPU_CONSTANTS.all;
+
+use work.ALU_CONSTANTS.all;
+use work.opcodes.all;
+use work.FlagConstants.all;
+use work.RegConstants.all;
+use work.CPU_CONSTANTS.all;
 
 entity Register_Tester is
     -- 1MHz Clock
@@ -46,7 +48,7 @@ architecture TB of Register_Tester is
     signal RegBOut   : std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
     -- Signal used to stop clock signal generators
-    signal  END_SIM  :  BOOLEAN := FALSE
+    signal  END_SIM  :  BOOLEAN := FALSE;
 
     -- Array of operations
     type op_lst_t is array (integer range <>) of opcode_word;
@@ -67,6 +69,7 @@ architecture TB of Register_Tester is
             representation(i+1) := std_logic'image(vec((i)))(2);
         end loop;
     return representation;
+    end std_logic_vec_to_string;
 
     -- form_two_reg_ALU_opcode
     -- Takes in an ALU OP code that has two reg args and returns the
@@ -79,7 +82,8 @@ architecture TB of Register_Tester is
     --     The first register. (5 bit select)
     --   Register2
     --     The second register. (5 bit select)
-    function form_two_reg_ALU_opcode (OPcode : opcode_word, Register1: integer, Register2: integer) 
+    
+    function form_two_reg_ALU_opcode (OPcode : opcode_word; Register1:  integer; Register2 : integer) 
       return opcode_word is
 
         variable reg1           : std_logic_vector(NUM_REG_LOG-1 downto 0);
@@ -92,6 +96,7 @@ architecture TB of Register_Tester is
 
         FormedOPcode := OPcode(15 downto 10) & reg2(4) & reg1(4 downto 0) & reg2(3 downto 0);
     return FormedOPcode;
+    end form_two_reg_ALU_opcode;
 
     -- form_one_reg_ALU_opcode
     -- Takes in an ALU OP code that has one reg args and returns the
@@ -103,7 +108,7 @@ architecture TB of Register_Tester is
     --   Register1
     --     The first register. (5 bit select)
     --
-    function form_one_reg_ALU_opcode (OPcode : opcode_word, Register1: integer) 
+    function form_one_reg_ALU_opcode (OPcode : opcode_word; Register1: integer) 
       return opcode_word is
 
         variable reg1           : std_logic_vector(NUM_REG_LOG-1 downto 0);
@@ -114,6 +119,7 @@ architecture TB of Register_Tester is
 
         FormedOPcode := OPcode(15 downto 9) & reg1(4 downto 0) & OPcode(3 downto 0);
     return FormedOPcode;
+    end form_one_reg_ALU_opcode;
 
 
     -- form_reg8_imm_ALU_opcode
@@ -127,7 +133,7 @@ architecture TB of Register_Tester is
     --     4-bit reg select
     --   Imm
     --     8 bit imm value
-    function form_reg8_imm_ALU_opcode (OPcode : opcode_word, Register1: integer, Imm: integer) 
+    function form_reg8_imm_ALU_opcode (OPcode : opcode_word; Register1: integer; Immediate: integer) 
       return opcode_word is
 
         variable reg1           : std_logic_vector(3 downto 0);
@@ -136,10 +142,11 @@ architecture TB of Register_Tester is
         variable FormedOPcode   : opcode_word;
     begin
         reg1 := std_logic_vector(to_unsigned(Register1, NUM_REG_LOG));
-        imm  := std_logic_vector(to_unsigned(Imm, 4));
+        imm  := std_logic_vector(to_unsigned(Immediate, 8));
 
         FormedOPcode := OPcode(15 downto 12) & imm(7 downto 4) & reg1(3 downto 0) & imm(3 downto 0);
     return FormedOPcode;
+    end form_reg8_imm_ALU_opcode;
 
     -- form_reg16_imm_ALU_opcode
     -- Takes in an ALU OP code that has one 16bit reg arg and an imm and returns the
@@ -152,7 +159,7 @@ architecture TB of Register_Tester is
     --     4-bit reg select
     --   Imm
     --     8 bit imm value
-    function form_reg16_imm_ALU_opcode (OPcode : opcode_word, Register1: integer, Imm: integer) 
+    function form_reg16_imm_ALU_opcode (OPcode : opcode_word; Register1: integer; Immediate: integer) 
       return opcode_word is
 
         variable reg1           : std_logic_vector(1 downto 0);
@@ -161,10 +168,11 @@ architecture TB of Register_Tester is
         variable FormedOPcode   : opcode_word;
     begin
         reg1 := std_logic_vector(to_unsigned(Register1, 2));
-        imm  := std_logic_vector(to_unsigned(Imm, 6));
+        imm  := std_logic_vector(to_unsigned(Immediate, 6));
 
         FormedOPcode := OPcode(15 downto 8) & imm(5 downto 4) & reg1(1 downto 0) & imm(3 downto 0);
     return FormedOPcode;
+    end form_reg16_imm_ALU_opcode;
     
     -- form_bitop_ALU_opcode
     -- Takes in an ALU OP code that has one reg arg and a bit and returns the
@@ -177,7 +185,7 @@ architecture TB of Register_Tester is
     --     5-bit reg select
     --   BitToOp
     --     3-bit bit to op
-    function form_bitop_ALU_opcode (OPcode : opcode_word, Register1: integer, BitToOp: integer) 
+    function form_bitop_ALU_opcode (OPcode : opcode_word; Register1: integer; BitToOp: integer) 
       return opcode_word is
 
         variable reg1           : std_logic_vector(4 downto 0);
@@ -186,10 +194,11 @@ architecture TB of Register_Tester is
         variable FormedOPcode   : opcode_word;
     begin
         reg1 := std_logic_vector(to_unsigned(Register1, 5));
-        imm  := std_logic_vector(to_unsigned(Imm, 3));
+        imm  := std_logic_vector(to_unsigned(BitToOp, 3));
 
         FormedOPcode := OPcode(15 downto 9) & reg1(4 downto 0) & OPcode(3) & imm(2 downto 0);
-    return FormedOPcode;        
+    return FormedOPcode;     
+    end form_bitop_ALU_opcode;
 
     -- form_SREG_bitop_ALU_opcode
     -- Takes in an ALU OP code that has one reg arg and a bit and returns the
@@ -200,25 +209,18 @@ architecture TB of Register_Tester is
     --     The SREG bit operation opcode
     --   BitToOp
     --     3-bit bit to op
-    function form_SREG_bitop_ALU_opcode (OPcode : opcode_word, BitToOp: integer) 
+    function form_SREG_bitop_ALU_opcode (OPcode : opcode_word; BitToOp: integer) 
       return opcode_word is
 
         variable imm            : std_logic_vector(2 downto 0);
 
         variable FormedOPcode   : opcode_word;
     begin
-        imm  := std_logic_vector(to_unsigned(Imm, 3));
+        imm  := std_logic_vector(to_unsigned(BitToOp, 3));
 
         FormedOPcode := OPcode(15 downto 7) & imm(2 downto 0) & OPcode(3 downto 0);
-    return FormedOPcode; 
-
-end function;
-
-variable two_reg_ops     : op_lst_t(0 to 8);
-variable one_reg_ops     : op_lst_t(0 to 6);
-variable one_reg_imm_ops : op_lst_t(0 to 5);
-variable one_16_reg_ops  : op_lst_t(0 to 1);
-variable bit_set_ops     : op_lst_t(0 to 1);
+    return FormedOPcode;
+    end form_SREG_bitop_ALU_opcode;
 
 begin
 
@@ -241,7 +243,12 @@ begin
     -----------------------
     --   START TESTING   --
     -----------------------
-    test_main: process
+    test_main: process  
+        variable two_reg_ops     : op_lst_t(0 to 8);
+        variable one_reg_ops     : op_lst_t(0 to 6);
+        variable one_reg_imm_ops : op_lst_t(0 to 4);
+        variable one_16_reg_ops  : op_lst_t(0 to 1);
+        variable bit_set_ops     : op_lst_t(0 to 1);
     begin
 
         -- Opcode lists
@@ -374,7 +381,7 @@ begin
         for i_OPCODE in 0 to one_16_reg_ops'length-1 loop    
             for i_R16 in 0 to 1 loop
 
-                IR_input   <= form_reg16_imm_ALU_opcode(one_16_reg_ops(i_OPCODE), i_R16);
+                IR_input   <= form_reg16_imm_ALU_opcode(one_16_reg_ops(i_OPCODE), i_R16, 0);
                 Reg_input  <= std_logic_vector(to_unsigned(i_R16*2 + 24, NUM_DATA_BITS));
 
                 wait for CLOCK_PERIOD/2;
@@ -428,7 +435,7 @@ begin
 
         for i_A in 0 to 2 ** NUM_REG_LOG - 1 loop
 
-            IR_input   <= form_one_reg_ALU_opcode(OpSWAP, i_A, 0);
+            IR_input   <= form_one_reg_ALU_opcode(OpSWAP, i_A);
             Reg_input  <= std_logic_vector(to_unsigned(i_A, NUM_DATA_BITS));
 
             wait for CLOCK_PERIOD/2;
