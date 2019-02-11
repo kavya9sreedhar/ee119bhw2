@@ -39,5 +39,18 @@ package CPU_CONSTANTS is
 	constant NUM_IO_LOG:            integer := 6;
 	constant DATA_BITS_LOG:         integer := 3;
 	constant ADDR_BITS_LOG:         integer := 4;
-
+	
+	constant X_REG_LOW_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+									:= "11010";
+	constant X_REG_HIGH_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+									:= "11011";
+	constant Y_REG_LOW_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+									:= "11100";
+	constant Y_REG_HIGH_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+									:= "11101";
+	constant Z_REG_LOW_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+									:= "11110";
+	constant Z_REG_HIGH_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
+									:= "11111";
+	
 end package;
