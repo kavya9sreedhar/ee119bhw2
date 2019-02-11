@@ -160,6 +160,8 @@ begin
     begin
     if rising_edge(clk) then
 		
+		GP_Write_EnableA <= '0';
+		
 		-- Finite state machine that handles number of clocks per instruction
 		case State is
 		
@@ -466,7 +468,7 @@ begin
 				immed_val <= IR(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
 							& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
 				-- proceed to next instruction (instruction over)
-				GP_Write_EnableA <= not clk;
+				GP_Write_EnableA <= '1';
 				State <= Clock1;
 			end if;
 			
