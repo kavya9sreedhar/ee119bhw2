@@ -100,21 +100,38 @@ entity Control_Unit is
 	-------------------------------------------------------------------
 	
 	-- Data Memory Access Unit Control Signals and values
-	Data_Addr_Src_Sel		: out std_logic_vector(num_bits_Data_Addr_Src_Sel - 1 downto 0);
-	Offset_Src_Sel			: out std_logic_vector(num_bits_Offset_Src_Sel - 1 downto 0);
+	-- selects address source
+	Data_Addr_Src_Sel		: out std_logic_vector(
+								num_bits_Data_Addr_Src_Sel - 1 downto 0);
+	-- selects offset source
+	Offset_Src_Sel			: out std_logic_vector(
+								num_bits_Offset_Src_Sel - 1 downto 0);
+	-- contains value of unsigned displacement for Y or Z registers for 
+	-- particular instructions which can be selected to be used as the offset
+	-- source
 	unsigned_displacement	: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- indicates whether or not pre/post-increment/decrement was 
+	-- part of instruction
 	Pre_Post_Sel			: out std_logic;
 	
+	-- 8 bits of data, zero padded upper bits
 	Immediate_Data_Address	: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- current X register contents
 	X_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- current Y register contents
 	Y_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- current Z register contents
 	Z_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- current SP register contents
 	SP_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	
 	-- load immediate signals
+	-- indicates whether an LDI operation is happening
 	LDI_op					: out std_logic;
+	-- immediate value for LDI operation to move into a register
 	immed_val				: out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
 	
+	-- indicates whether or not instruction indicates a store operation
 	Store					: out std_logic;
 	
 	-- active low control line indicating data memory is being read
