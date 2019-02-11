@@ -67,6 +67,10 @@ architecture structural of MEM_TEST is
 
     signal databus_in_mux          : std_logic_vector(NUM_DATA_BITS-1 downto 0);
     signal Store                   : std_logic;
+    
+    -- Intermediate Rd/Wr signals
+    signal inter_Rd                : std_logic;
+    signal inter_Wr                : std_logic;
 
     -- Register inputs
     signal ALU_in                  : std_logic_vector(NUM_DATA_BITS-1 downto 0);
@@ -123,7 +127,10 @@ architecture structural of MEM_TEST is
 
 begin
 
-    databus_mux : process (DataDB, LDI_op, immed_val)
+    DataRd <= inter_Rd or clock;
+    DataWr <= inter_Wr or clock;
+
+    databus_mux : process (DataDB, LDI_op, immed_val, GP_outA, Store)
     begin
 
         -- Check for immediate loading
@@ -177,8 +184,8 @@ begin
         Store                  => Store,
 
         -- Read Write Signals
-        DataRd                 => DataRd,
-        DataWr                 => DataWr
+        DataRdOut              => inter_Rd,
+        DataWrOut              => inter_Wr
     );
 
     Registers : entity work.AVRRegisters(standard) 

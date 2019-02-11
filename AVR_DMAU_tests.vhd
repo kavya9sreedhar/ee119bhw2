@@ -215,8 +215,8 @@ begin
                         int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        X_test_corr_rd := "11111110000000"; 
-        X_test_corr_wr := "00000001111111";
+        X_test_corr_rd := "00000001111111"; 
+        X_test_corr_wr := "11111110000000";
 
         -- Y Tests
         Y_test_opcodes := (
@@ -602,10 +602,10 @@ begin
         report "-------- STARTING TESTS --------";
 
         -- Initially put zeros in all registers using LDI
-        for i_LDI in 0 to 2 ** NUM_REG_LOG - 1 loop
+        for i_LDI in 16 to 2 ** NUM_REG_LOG - 1 loop
             
             -- Pretend we are doing a LDI
-            IR_input <= form_imm_load(OpLDI, i_LDI, i_LDI);
+            IR_input <= form_imm_load(OpLDI, i_LDI, 0);
 
             wait for CLOCK_PERIOD;
         end loop;
@@ -614,9 +614,17 @@ begin
         
         for i_X_TEST in 0 to NUM_X_TESTS-1 loop
 
-            IR_input <= X_test_opcodes(i_X_TEST);
-            wait for CLOCK_PERIOD;
+            wait for CLOCK_PERIOD/32;
 
+            IR_input <= X_test_opcodes(i_X_TEST);
+            
+            wait for CLOCK_PERIOD;
+            
+            -- Load in the DB
+            DataDB <= X_test_data_ld(i_X_TEST);
+            
+            -- Read at 1/2
+            wait for CLOCK_PERIOD/2;
             -- Check Data AB
             assert (std_match(DataAB, X_test_corr_addr(i_X_TEST)))
             report  "Data Address Bus Failure" & 
@@ -624,12 +632,9 @@ begin
                     " Expected: "              & std_logic_vec_to_string(X_test_corr_addr(i_X_TEST))&
                     " For X Test: "            & integer'image(i_X_TEST)                                                         
             severity  ERROR;
-
-            -- Load in the DB
-            DataDB <= X_test_data_ld(i_X_TEST);
-
-            -- Sample 75% into clock
-            wait for 3 * (CLOCK_PERIOD/4);
+            
+            -- Sample 7/8 into clock
+            wait for 3*(CLOCK_PERIOD/8);
 
             -- Check DB
             assert (std_match(DataDB, X_test_corr_data(i_X_TEST)))
