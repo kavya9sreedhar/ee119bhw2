@@ -15,7 +15,7 @@
 --
 --  Revision History:
 --	04 Feb 2019		Kavya Sreedhar & Dan Xu 	Initial Revision
---  11 Feb 2019		Kavya Sreedhar & Dan Xu		Updated comments
+--  11 Feb 2019		Kavya Sreedhar & Dan Xu		Updated comments, headers
 ----------------------------------------------------------------------------
 
 -- declaration of libraries used
@@ -32,7 +32,10 @@ use work.DMAU_constants.all;
 
 --
 -- Data Memory Access entity declaration
--- TODO ADD MORE SUBSTANCE
+-- This unit uses control signals to update an address passed in. An address
+-- may come from the second word of the instruction, the X, Y, Z, or SP registers 
+-- (unchanged or with pre/post-increment/decrement), or the Y or Z registers with a 
+-- 6-bit unsigned offset (range 0 to 63).
 --
 entity Data_Memory_Access is
 	port(
@@ -42,6 +45,9 @@ entity Data_Memory_Access is
 								num_bits_Data_Addr_Src_Sel - 1 downto 0);
 		-- selects offset source
 		Offset_Src_Sel: in std_logic_vector(num_bits_Offset_Src_Sel - 1 downto 0);
+		-- contains value of unsigned displacement for Y or Z registers for 
+		-- particular instructions which can be selected to be used as the offset
+		-- source
 		unsigned_displacement: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		-- indicates whether or not pre/post-increment/decrement was 
 		-- part of instruction
@@ -50,13 +56,20 @@ entity Data_Memory_Access is
 		-- other inputs
 		-- 8 bits of data, zero padded upper bits
 		Immediate_Data_Address: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- current X register contents
 		X_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- current Y register contents
 		Y_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- current Z register contents
 		Z_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- current SP register contents
 		SP_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		
 		-- outputs
+		-- data address bus containing address for data to be put on data data bus
 		Data_Address_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		-- contains the updated address even if it is not immediately updated
+		-- in the system
 		Summed_Signal: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
         );
 end entity;
@@ -70,9 +83,15 @@ architecture Data_arch of Data_Memory_Access is
 	-- contains the sum of the data address value and offset i.e. the updated data 
 	-- address value
 	signal adder_subtractor_result: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- indicates whether to perform an addition / subtraction operation with the
+	-- data address and the offset
 	signal Subtract: std_logic;
+	-- indicates the first operand for the addition / subtraction operation
 	signal Operand1: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- indicates the second operand for the addition / subtraction operation
 	signal Operand2: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	-- keeps track of the individual bit carry outs from the intermediate bit
+	-- calculations part of the larger addition / subtraction operation
 	signal carry_outs: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	
 begin
@@ -127,6 +146,7 @@ begin
 	Data_Address_Bus <= data_addr_src when Pre_Post_Sel = Pre_Post_Sel_Pre else
 						adder_subtractor_result;
 						
+	-- updated address value (may or may not be stored)
 	Summed_Signal <= adder_subtractor_result;
 	
 end architecture;
