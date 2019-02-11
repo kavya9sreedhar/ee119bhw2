@@ -499,6 +499,14 @@ begin
 --				DataRd <= '1';
 --				DataWr <= '1';
 --			end if;
+
+			if std_match(Program_Data_Bus, OpIN) then
+			
+			end if;
+			
+			if std_match(Program_Data_Bus, OpOUT) then
+			
+			end if;
 			
 --		when Clock2 =>
 		
@@ -670,6 +678,14 @@ begin
 --				DataWr <= '1';
 --			end if;
 			
+		if std_match(Program_Data_Bus, OpIN) then
+			
+		end if;
+		
+		if std_match(Program_Data_Bus, OpOUT) then
+		
+		end if;
+			
 --		when Clock3 =>
 		
 --			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 3
@@ -781,6 +797,15 @@ begin
 --			if std_match(Program_Data_Bus, OpSTS) then
 			
 --			end if;
+			
+			if std_match(Program_Data_Bus, OpIN) then
+			
+			end if;
+			
+			if std_match(Program_Data_Bus, OpOUT) then
+			
+			end if;
+			
 		end case;
 		
     
