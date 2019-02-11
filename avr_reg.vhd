@@ -27,21 +27,32 @@ use ieee.numeric_std.all;
 -- Inputs:
 -- clk
 --   The clock signal into the system.
--- data_databus_in
+-- data_databus_in [NUM_DATA_BITS-1..0]
 --   The data bus going into the registers
--- ALU_in
+-- ALU_in [NUM_DATA_BITS-1..0]
 --   The ALU output going into the registers
+-- data_address_in [2*NUM_DATA_BITS-1..0]
+--   The updated data address
 -- Updated_SREG [NUM_DATA_BITS-1..0]
 --   The updated status register.
 -- GP Reg Control lines.
 -- GP_Input_Select [NUM_GP_INP_SELECT_BITS-1..0]
 --   Select which input source to use (Data bus or ALU)
--- GP_Write_Enable
---   Enable write to the GP registers
+-- GP_Write_EnableA
+--   Enable standard writes to the GP registers
 -- GP_Swap_Nibbles
 --   Ctrl signal to swap the nibbles for the GP register
--- GP_Dst_Select [NUM_REG_LOG-1..0]
---   Ctrl signal for which register to write to.
+-- GP_Dst_SelectA [NUM_REG_LOG-1..0]
+--   Ctrl signal for which register to write to for
+--   a standard register write.
+-- GP_Write_EnableB
+--   Enables wide bus writes to certain registers.
+-- GP_Dst_SelectB [NUM_GP_WIDE_LOAD_BITS-1..0]
+--   Destination for a wide bus write to registers
+--   00 - R16
+--   01 - X
+--   10 - Y
+--   10 - X
 -- GP_Src_SelectA [NUM_REG_LOG-1..0]
 --   Select for which GP register to output on A.
 -- GP_Src_SelectB [NUM_REG_LOG-1..0]
@@ -49,8 +60,10 @@ use ieee.numeric_std.all;
 -- IO Reg Control lines.
 -- IO_Input_Select
 --   The select for what IO input source to use.
--- IO_Write_Enable
---   The enable for writing to the IO registers.
+-- IO_Write_EnableA
+--   The enable for standard writing to the IO registers.
+-- IO_Write_EnableB
+--   Enable a wide bus write to the stack pointer.
 -- IO_Dst_Select [NUM_IO_LOG-1..0]
 --   The select for which IO reg. to write to.
 -- IO_Src_SelectA [NUM_IO_LOG-1..0]
@@ -77,27 +90,35 @@ entity AVRRegisters is
         -- Input
         data_databus_in       : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
         ALU_in                : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+        data_address_in       : in std_logic_vector(2*NUM_DATA_BITS-1 downto 0);
 		-- Outputs (Comes as a buffer with all bits)
 		GP_outA               : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
 		GP_outB               : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
         -- Ctrl signals
         GP_Input_Select       : in std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0);
-        GP_Write_Enable       : in std_logic;
+
+        GP_Write_EnableA      : in std_logic;
         GP_Swap_Nibbles       : in std_logic;
-		GP_Dst_Select         : in std_logic_vector(NUM_REG_LOG-1 downto 0);
+        GP_Dst_SelectA        : in std_logic_vector(NUM_REG_LOG-1 downto 0);
+        
+        GP_Write_EnableB      : in std_logic;
+		GP_Dst_SelectB        : in std_logic_vector(NUM_GP_WIDE_LOAD_BITS-1 downto 0);
+
 		GP_Src_SelectA        : in std_logic_vector(NUM_REG_LOG-1 downto 0);
         GP_Src_SelectB        : in std_logic_vector(NUM_REG_LOG-1 downto 0);
         
         -- IO Register control
         -- Inputs
         Updated_SREG          : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+        Updated_SP            : in std_logic_vector(2*NUM_DATA_BITS-1 downto 0);
 		-- Outputs (Comes as a buffer with all bits)
 		IO_outA               : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
 		IO_outB               : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
         -- Ctrl signals
         IO_Input_Select       : in std_logic;
-		IO_Write_Enable       : in std_logic;
-		IO_Dst_Select         : in std_logic_vector(NUM_IO_LOG-1 downto 0);
+        IO_Write_EnableA      : in std_logic;
+        IO_Write_EnableB      : in std_logic;
+		IO_Dst_SelectA        : in std_logic_vector(NUM_IO_LOG-1 downto 0);
 		IO_Src_SelectA        : in std_logic_vector(NUM_IO_LOG-1 downto 0);
         IO_Src_SelectB        : in std_logic_vector(NUM_IO_LOG-1 downto 0)		
      );
@@ -121,26 +142,29 @@ begin
     -- GP registers
     GPReg : entity work.Registers(standard)
         generic map (
-            NUM_BITS              =>  NUM_DATA_BITS,
-            LNUM_REGISTERS        =>  NUM_REG_LOG,
-            LNUM_WIDE_LD_REGS     =>  NUM_GP_WIDE_LOAD_BITS,
-            WIDE_LD_OFFSET        =>  GP_WIDE_LOAD_OFFSET
+            NUM_BITS               =>  NUM_DATA_BITS,
+            LNUM_REGISTERS         =>  NUM_REG_LOG
         )
         port map(
 
             -- Hook up the clock
-            clk                   => clk,
+            clk                    => clk,
 
             -- Hook up the input
-            reg_in                => GPReg_in,
+            reg_inA                => GPReg_in,
+            reg_inB                => data_address_in,
 
             -- Hook up outputs
-            reg_outA              => GP_A_intermed,
-            reg_outB              => GP_outB,
+            reg_outA               => GP_A_intermed,
+            reg_outB               => GP_outB,
 
             -- Ctrl signals
-            Register_Write_Enable => GP_Write_Enable,
-            Register_Dst_Select   => GP_Dst_Select,
+            Register_Write_EnableA => GP_Write_Enable,
+            Register_Dst_SelectA   => GP_Dst_Select,
+
+            Register_Write_EnableB => GP_Write_EnableB,
+            Register_Dst_SelectB   => GP_Dst_SelectB,
+
             Register_Src_SelectA  => GP_Src_SelectA,
             Register_Src_SelectB  => GP_Src_SelectB
     );
@@ -148,28 +172,31 @@ begin
     -- IO Registers
     IOReg : entity work.Registers(standard)
         generic map (
-			NUM_BITS              =>  NUM_DATA_BITS,
-            LNUM_REGISTERS        =>  NUM_IO_LOG
-            LNUM_WIDE_LD_REGS     =>  NUM_IO_WIDE_LOAD_BITS,
-            WIDE_LD_OFFSET        =>  IO_WIDE_LOAD_OFFSET
+			NUM_BITS               =>  NUM_DATA_BITS,
+            LNUM_REGISTERS         =>  NUM_IO_LOG
 		)
 		port map(
 
             -- Hook up the clock
-            clk                   => clk,
+            clk                    => clk,
 
             -- Hook up the input
-            reg_in                => IOReg_in,
+            reg_inA                => IOReg_in,
+            reg_inB                => data_address_in,
 
             -- Hook up outputs
-            reg_outA              => IO_A_intermed,
-            reg_outB              => IO_outB,
+            reg_outA               => IO_A_intermed,
+            reg_outB               => IO_outB,
 
             -- Ctrl signals
-            Register_Write_Enable => IO_Write_Enable,
-            Register_Dst_Select   => IO_Dst_Select,
-            Register_Src_SelectA  => IO_Src_SelectA,
-            Register_Src_SelectB  => IO_Src_SelectB
+            Register_Write_EnableA => IO_Write_EnableA,
+            Register_Write_EnableB => IO_Write_EnableB,
+
+            Register_Dst_SelectA   => IO_Dst_SelectA,
+
+            Register_Src_SelectA   => IO_Src_SelectA,
+            Register_Src_SelectB   => IO_Src_SelectB
+
     );
 
     -- Process to determint the input to the GP registers
