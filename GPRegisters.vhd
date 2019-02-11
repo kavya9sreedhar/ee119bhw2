@@ -26,6 +26,8 @@ library work;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.RegConstants.all;
+
 --
 -- GPRegisters entity declarations
 -- Generics
@@ -119,9 +121,10 @@ begin
                     when "10" =>
                         register_file(YL) <= reg_inB(NUM_BITS-1 downto 0);
                         register_file(YH) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
-                    when "11" =>
+                    when others =>
                         register_file(ZL) <= reg_inB(NUM_BITS-1 downto 0);
                         register_file(ZH) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+                        
                 end case;
 			end if;
 		end if;

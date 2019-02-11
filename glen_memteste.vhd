@@ -79,7 +79,7 @@ architecture structural of MEM_TEST is
     signal GP_Src_SelectA          : std_logic_vector(NUM_REG_LOG-1 downto 0);
 
     signal GP_Write_EnableB	       : std_logic;
-    signal GP_Dst_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
+    signal GP_Dst_SelectB          : std_logic_vector(NUM_GP_WIDE_LOAD_BITS-1 downto 0);
     signal GP_Src_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
 
     signal GP_Input_Select         : std_logic_vector(NUM_GP_INP_SELECT_BITS - 1 downto 0);
@@ -208,7 +208,7 @@ begin
  
         -- IO Register Inputs
         Updated_SREG           => Updated_SREG,
-        Updated_SP             => databus_in_mux,
+        Updated_SP             => Summed_Signal,
 
         -- IO Control signals
         IO_outA                => IO_outA,

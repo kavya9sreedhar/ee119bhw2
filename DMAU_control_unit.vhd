@@ -81,7 +81,7 @@ entity Control_Unit is
     -- Select for which GP register to output on B
 	GP_Src_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
 	-- Destination for a wide bus write to registers
-	GP_Dst_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+	GP_Dst_SelectB          : out std_logic_vector(NUM_GP_WIDE_LOAD_BITS-1 downto 0);
 	-- Enable standard writes to the GP registers
 	GP_Write_EnableA		: out std_logic;
 	-- Enables wide bus writes to certain registers.

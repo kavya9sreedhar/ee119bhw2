@@ -20,11 +20,11 @@ package DMAU_constants is
     
 	-- possible offset select options to add to data address
 	constant num_bits_Offset_Src_Sel: integer := 3;
-	constant Offset_Src_Sel_pos_1: std_logic_vector(1 downto 0) := "000";
-	constant Offset_Src_Sel_neg_1: std_logic_vector(1 downto 0) := "001";
-	constant Offset_Src_Sel_0: std_logic_vector(1 downto 0) := "010";
-	constant Offset_Src_Sel_offset: std_logic_vector(1 downto 0) := "011";
-	constant Offset_Src_Sel_unsigned_q: std_logic_vector(2 downto 0) := "100";
+	constant Offset_Src_Sel_pos_1: std_logic_vector(num_bits_Offset_Src_Sel-1 downto 0) := "000";
+	constant Offset_Src_Sel_neg_1: std_logic_vector(num_bits_Offset_Src_Sel-1 downto 0) := "001";
+	constant Offset_Src_Sel_0: std_logic_vector(num_bits_Offset_Src_Sel-1 downto 0) := "010";
+	constant Offset_Src_Sel_offset: std_logic_vector(num_bits_Offset_Src_Sel-1 downto 0) := "011";
+	constant Offset_Src_Sel_unsigned_q: std_logic_vector(num_bits_Offset_Src_Sel-1 downto 0) := "100";
 	
 	-- possible data address options to add offset to (immediate address, 
 	-- registers, stack pointer)

@@ -244,19 +244,19 @@ package body AVR_Opcode_Formation is
     --   OPcode
     --     The LDI opcode
     --   src_dest
-    --     5-bit dest/src
+    --     4-bit dest/src
     function form_imm_load (OPcode : opcode_word; src_dest: integer; val:integer) 
       return opcode_word is
 
-        variable reg            : std_logic_vector(4 downto 0);
+        variable reg            : std_logic_vector(3 downto 0);
         variable imm            : std_logic_vector(7 downto 0);
         variable FormedOPcode   : opcode_word;
 
     begin
-        reg  := int_to_std_vector(src_dest, 5);
+        reg  := int_to_std_vector(src_dest, 4);
         imm  := int_to_std_vector(val, 8);
 
-        FormedOPcode := OPcode(15 downto 12) & imm(7 downto 4) & reg(4 downto 0) & imm(3 downto 0);
+        FormedOPcode := OPcode(15 downto 12) & imm(7 downto 4) & reg(3 downto 0) & imm(3 downto 0);
         return FormedOPcode;
     end form_imm_load;    
 

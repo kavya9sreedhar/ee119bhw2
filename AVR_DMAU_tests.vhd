@@ -92,7 +92,7 @@ begin
         variable X_test_data_ld         : data_lst_t(0 to NUM_X_TESTS-1);
         variable X_test_corr_addr       : addr_lst_t(0 to NUM_X_TESTS-1);
         variable X_test_corr_data       : data_lst_t(0 to NUM_X_TESTS-1);
-        variable X_test_coor_rd         : std_logic_vector(0 to NUM_X_TESTS-1);
+        variable X_test_corr_rd         : std_logic_vector(0 to NUM_X_TESTS-1);
         variable X_test_corr_wr         : std_logic_vector(0 to NUM_X_TESTS-1);
 
         constant NUM_Y_TESTS            : integer := 14;
@@ -100,7 +100,7 @@ begin
         variable Y_test_data_ld         : data_lst_t(0 to NUM_Y_TESTS-1);
         variable Y_test_corr_addr       : addr_lst_t(0 to NUM_Y_TESTS-1);
         variable Y_test_corr_data       : data_lst_t(0 to NUM_Y_TESTS-1);
-        variable Y_test_coor_rd         : std_logic_vector(0 to NUM_Y_TESTS-1);
+        variable Y_test_corr_rd         : std_logic_vector(0 to NUM_Y_TESTS-1);
         variable Y_test_corr_wr         : std_logic_vector(0 to NUM_Y_TESTS-1);
 
         constant NUM_Z_TESTS            : integer := 14;
@@ -108,7 +108,7 @@ begin
         variable Z_test_data_ld         : data_lst_t(0 to NUM_Z_TESTS-1);
         variable Z_test_corr_addr       : addr_lst_t(0 to NUM_Z_TESTS-1);
         variable Z_test_corr_data       : data_lst_t(0 to NUM_Z_TESTS-1);
-        variable Z_test_coor_rd         : std_logic_vector(0 to NUM_Z_TESTS-1);
+        variable Z_test_corr_rd         : std_logic_vector(0 to NUM_Z_TESTS-1);
         variable Z_test_corr_wr         : std_logic_vector(0 to NUM_Z_TESTS-1);
 
         constant NUM_MOV_TESTS          : integer := 15;
@@ -116,7 +116,7 @@ begin
         variable MOV_test_data_ld       : data_lst_t(0 to NUM_MOV_TESTS-1);
         variable MOV_test_corr_addr     : addr_lst_t(0 to NUM_MOV_TESTS-1);
         variable MOV_test_corr_data     : data_lst_t(0 to NUM_MOV_TESTS-1);
-        variable MOV_test_coor_rd       : std_logic_vector(0 to NUM_MOV_TESTS-1);
+        variable MOV_test_corr_rd       : std_logic_vector(0 to NUM_MOV_TESTS-1);
         variable MOV_test_corr_wr       : std_logic_vector(0 to NUM_MOV_TESTS-1);
 
         constant NUM_STACK_TESTS        : integer := 10;
@@ -124,7 +124,7 @@ begin
         variable SP_test_data_ld        : data_lst_t(0 to NUM_STACK_TESTS-1);
         variable SP_test_corr_addr      : addr_lst_t(0 to NUM_STACK_TESTS-1);
         variable SP_test_corr_data      : data_lst_t(0 to NUM_STACK_TESTS-1);
-        variable SP_test_coor_rd        : std_logic_vector(0 to NUM_STACK_TESTS-1);
+        variable SP_test_corr_rd        : std_logic_vector(0 to NUM_STACK_TESTS-1);
         variable SP_test_corr_wr        : std_logic_vector(0 to NUM_STACK_TESTS-1);
 
         constant NUM_MEM_TESTS          : integer := 6;
@@ -133,7 +133,7 @@ begin
         variable MEM_test_data_ld       : data_lst_t(0 to NUM_MEM_TESTS-1);
         variable MEM_test_corr_addr     : addr_lst_t(0 to NUM_MEM_TESTS-1);
         variable MEM_test_corr_data     : data_lst_t(0 to NUM_MEM_TESTS-1);
-        variable MEM_test_coor_rd       : std_logic_vector(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_corr_rd       : std_logic_vector(0 to NUM_MEM_TESTS-1);
         variable MEM_test_corr_wr       : std_logic_vector(0 to NUM_MEM_TESTS-1);
 
     begin
@@ -192,7 +192,8 @@ begin
                         int_to_std_vector(2, NUM_DATA_BITS),
                         int_to_std_vector(3, NUM_DATA_BITS),
                         int_to_std_vector(4, NUM_DATA_BITS),
-                        int_to_std_vector(5, NUM_DATA_BITS)
+                        int_to_std_vector(5, NUM_DATA_BITS),
+                        int_to_std_vector(6, NUM_DATA_BITS)
                         );
 
         X_test_corr_addr := (
@@ -214,7 +215,7 @@ begin
                         int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        X_test_coor_rd := "11111110000000"; 
+        X_test_corr_rd := "11111110000000"; 
         X_test_corr_wr := "00000001111111";
 
         -- Y Tests
@@ -271,7 +272,8 @@ begin
                         int_to_std_vector(2, NUM_DATA_BITS),
                         int_to_std_vector(3, NUM_DATA_BITS),
                         int_to_std_vector(4, NUM_DATA_BITS),
-                        int_to_std_vector(5, NUM_DATA_BITS)
+                        int_to_std_vector(5, NUM_DATA_BITS),
+                        int_to_std_vector(6, NUM_DATA_BITS)
                         );
 
         Y_test_corr_addr := (
@@ -293,7 +295,7 @@ begin
                         int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        Y_test_coor_rd := "11111110000000"; 
+        Y_test_corr_rd := "11111110000000"; 
         Y_test_corr_wr := "00000001111111";
 
         -- Z Tests
@@ -350,7 +352,8 @@ begin
                         int_to_std_vector(2, NUM_DATA_BITS),
                         int_to_std_vector(3, NUM_DATA_BITS),
                         int_to_std_vector(4, NUM_DATA_BITS),
-                        int_to_std_vector(5, NUM_DATA_BITS)
+                        int_to_std_vector(5, NUM_DATA_BITS),
+                        int_to_std_vector(6, NUM_DATA_BITS)
                         );
 
         Z_test_corr_addr := (
@@ -372,7 +375,7 @@ begin
                         int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        Z_test_coor_rd := "11111110000000"; 
+        Z_test_corr_rd := "11111110000000"; 
         Z_test_corr_wr := "00000001111111";
 
         -- MOV tests
@@ -460,7 +463,7 @@ begin
                         (NUM_ADDRESS_BITS-1 downto 0 => '-')
                         );
 
-        MOV_test_coor_rd := "000000000000000"; 
+        MOV_test_corr_rd := "000000000000000"; 
         MOV_test_corr_wr := "000000000011111";
 
         -- Stack Tests
@@ -515,9 +518,9 @@ begin
         SP_test_corr_addr := (
                         -- LOAD IN VALUES
                         (NUM_ADDRESS_BITS-1 downto 0 => '-'),
-                        (NUM_ADDRESS_BITS downto 0 => '-'),
-                        (NUM_ADDRESS_BITS downto 0 => '-'),
-                        (NUM_ADDRESS_BITS downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
                         -- MOV Around
                         int_to_std_vector(10 , NUM_ADDRESS_BITS),
                         int_to_std_vector(9 , NUM_ADDRESS_BITS),
@@ -528,8 +531,8 @@ begin
                         int_to_std_vector(10 , NUM_ADDRESS_BITS)
                         );
 
-        MOV_test_coor_rd := "0000111000"; 
-        MOV_test_corr_wr := "0000000111";
+        SP_test_corr_rd := "0000111000"; 
+        SP_test_corr_wr := "0000000111";
         -- Memory Tests
         MEM_test_opcodes := (
                         -- LOAD TESTS
@@ -586,7 +589,7 @@ begin
                         int_to_std_vector(65535, NUM_ADDRESS_BITS)
                         );
 
-        MEM_test_coor_rd := "111000"; 
+        MEM_test_corr_rd := "111000"; 
         MEM_test_corr_wr := "000111";
 
         -- Initialize signals
@@ -619,7 +622,7 @@ begin
             report  "Data Address Bus Failure" & 
                     " Got: "                   & std_logic_vec_to_string(DataAB) &
                     " Expected: "              & std_logic_vec_to_string(X_test_corr_addr(i_X_TEST))&
-                    " For X Test: "            & i_X_TEST'image                                                          
+                    " For X Test: "            & integer'image(i_X_TEST)                                                         
             severity  ERROR;
 
             -- Load in the DB
@@ -633,23 +636,23 @@ begin
             report  "Data Data Bus Failure"    & 
                     " Got: "                   & std_logic_vec_to_string(DataDB) &
                     " Expected: "              & std_logic_vec_to_string(X_test_corr_data(i_X_TEST))&
-                    " For X Test: "            & i_X_TEST'image                                                          
+                    " For X Test: "            & integer'image(i_X_TEST)                                                          
             severity  ERROR;
 
             -- Check Rd/Wr
 
-            assert (DataRd = X_test_coor_rd(i_X_TEST))
+            assert (DataRd = X_test_corr_rd(i_X_TEST))
             report  "Data Data Bus Failure"    & 
-                    " Got: "                   & DataRd'image &
-                    " Expected: "              & X_test_coor_rd(i_X_TEST)'image &
-                    " For X Test: "            & i_X_TEST'image                                                          
+                    " Got: "                   & std_logic'image(DataRd)(2) &
+                    " Expected: "              & std_logic'image(X_test_corr_rd(i_X_TEST))(2) &
+                    " For X Test: "            & integer'image(i_X_TEST)                                                       
             severity  ERROR;    
 
-            assert (DataWr = X_test_coor_wr(i_X_TEST))
+            assert (DataWr = X_test_corr_wr(i_X_TEST))
             report  "Data Data Bus Failure"    & 
-                    " Got: "                   & DataWr'image &
-                    " Expected: "              & X_test_coor_wr(i_X_TEST)'image &
-                    " For X Test: "            & i_X_TEST'image                                                          
+                    " Got: "                   & std_logic'image(DataWr)(2) &
+                    " Expected: "              & std_logic'image(X_test_corr_wr(i_X_TEST))(2) &
+                    " For X Test: "            & integer'image(i_X_TEST)                                                          
             severity  ERROR;
 
             -- Wait for next clock

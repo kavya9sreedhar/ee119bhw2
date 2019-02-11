@@ -26,6 +26,8 @@ library work;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.RegConstants.all;
+
 --
 -- GPRegisters entity declarations
 -- Generics
