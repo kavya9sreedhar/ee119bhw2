@@ -40,9 +40,10 @@ entity Control_Unit is
     IR                      : in opcode_word;
  
     GP_Swap_Nibbles         : out std_logic;
-    GP_Dst_Select           : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+    GP_Dst_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
     GP_Src_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
     GP_Src_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+	GP_Dst_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
 
     GP_outA                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
     GP_outB                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);    
@@ -62,6 +63,8 @@ entity Control_Unit is
 	-- load immediate signals
 	LDI_op					: out std_logic;
 	immed_val				: out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+	
+	Store					: out std_logic;
 	
 	-- active low control line indicating data memory is being read
 	-- active only during 2nd half of the clock in the 2nd cycle
@@ -284,7 +287,7 @@ begin
 			
 			if std_match(IR, OpLDI) then
 				LDI_op <= '1';
-				GP_Dst_Select <= 
+				GP_Dst_SelectA <= 
 					'1' & IR(DMAU_Reg_high_bit - 1 downto DMAU_Reg_low_bit);
 				immed_val <= IR(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
 							& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
@@ -510,72 +513,90 @@ begin
 				--DataRd <= not ('1' and not clk);
 				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpLDXI) then
 				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpLDXD) then
 				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(IR, OpLDYI) then
-				DataRd <= not ('1' and not clk);
+			if std_match(Program_Data_Bus, OpLDYI) then
+				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(IR, OpLDYD) then
-				DataRd <= not ('1' and not clk);
+			if std_match(Program_Data_Bus, OpLDYD) then
+				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(IR, OpLDDY) then
-				DataRd <= not ('1' and not clk);
+			if std_match(Program_Data_Bus, OpLDDY) then
+				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(IR, OpLDZI) then
-				DataRd <= not ('1' and not clk);
+			if std_match(Program_Data_Bus, OpLDZI) then
+				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(IR, OpLDZD) then
-				DataRd <= not ('1' and not clk);
+			if std_match(Program_Data_Bus, OpLDZD) then
+				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(IR, OpLDDZ) then
-				DataRd <= not ('1' and not clk);
+			if std_match(Program_Data_Bus, OpLDDZ) then
+				DataRd <= clk;
 				DataWr <= '1';
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+				Store <= '0';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 
@@ -598,72 +619,90 @@ begin
 			if std_match(IR, OpSTX) then
 				DataRd <= '1';
 				DataWr <= clk;
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTXI) then
 				DataRd <= '1';
 				DataWr <= clk;
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTXD) then
 				DataRd <= '1';
 				DataWr <= clk;
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTYI) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				DataWr <= clk;
+				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTYD) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				DataWr <= clk;
+				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTDY) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				DataWr <= clk;
+				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTZI) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				DataWr <= clk;
+				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTZD) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				DataWr <= clk;
+				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(IR, OpSTDZ) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
-				GP_Dst_Select <= 
-					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				DataWr <= clk;
+				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+				Store <= '1';
+				GP_Dst_SelectA <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
