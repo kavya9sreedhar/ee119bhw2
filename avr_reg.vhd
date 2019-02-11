@@ -10,6 +10,8 @@
 --	31 Jan 19	Kavya Sreedhar & Dan Xu 	Bug Fixes
 --	01 Feb 19	Kavya Sreedhar & Dan Xu 	Added more documentation
 --	08 Feb 19	Kavya Sreedhar & Dan Xu 	Added wide loading functionality
+--	09 Feb 19	Kavya Sreedhar & Dan Xu 	Changed to use two separate reg.
+--                                            modlues.
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -140,7 +142,7 @@ begin
     IO_outA <= IO_A_intermed;
 
     -- GP registers
-    GPReg : entity work.Registers(standard)
+    GPReg : entity work.GPRegisters(standard)
         generic map (
             NUM_BITS               =>  NUM_DATA_BITS,
             LNUM_REGISTERS         =>  NUM_REG_LOG
@@ -170,7 +172,7 @@ begin
     );
 
     -- IO Registers
-    IOReg : entity work.Registers(standard)
+    IOReg : entity work.IORegisters(standard)
         generic map (
 			NUM_BITS               =>  NUM_DATA_BITS,
             LNUM_REGISTERS         =>  NUM_IO_LOG
