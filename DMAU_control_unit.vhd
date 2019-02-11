@@ -42,6 +42,7 @@ library work;
 use work.CPU_CONSTANTS.all;
 use work.DMAU_constants.all;
 use work.opcodes.all;
+use work.RegConstants.all;
 
 --
 -- Control Unit entity declaration
@@ -292,11 +293,8 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
-				unsigned_displacement <= 
-					(5 downto 0 => IR(13) & 
-					IR(11 downto 10) & 
-					IR(2 downto 0), 
-					others => '0');
+				unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+				unsigned_displacement(7 downto 6) <= "00";
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
 				X_register <= (others => '0');
@@ -355,11 +353,8 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
-				unsigned_displacement <= 
-					(5 downto 0 => IR(13) & 
-					IR(11 downto 10) & 
-					IR(2 downto 0), 
-					others => '0');
+				unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+                unsigned_displacement(7 downto 6) <= "00";
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
 				X_register <= (others => '0');
@@ -508,11 +503,8 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
-				unsigned_displacement <= 
-					(5 downto 0 => IR(13) & 
-					IR(11 downto 10) & 
-					IR(2 downto 0), 
-					others => '0');
+				unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+                unsigned_displacement(7 downto 6) <= "00";
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
 				X_register <= (others => '0');
@@ -571,11 +563,8 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
-				unsigned_displacement <= 
-					(5 downto 0 => IR(13) & 
-					IR(11 downto 10) & 
-					IR(2 downto 0), 
-					others => '0');
+				unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+                unsigned_displacement(7 downto 6) <= "00";
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
 				X_register <= (others => '0');

@@ -41,8 +41,11 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.numeric_std.all;
 
-library opcodes;
-use opcodes.opcodes.all;
+library work;
+use work.CPU_CONSTANTS.all;
+use work.DMAU_constants.all;
+use work.opcodes.all;
+use work.RegConstants.all;
 
 
 entity  MEM_TEST  is
@@ -63,21 +66,40 @@ end  MEM_TEST;
 architecture structural of MEM_TEST is
 
     signal databus_in_mux          : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    signal Store                   : std_logic;
 
     -- Register inputs
     signal ALU_in                  : std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
     -- Register Ctrl Sginals
     signal GP_Swap_Nibbles         : std_logic;
+
+    signal GP_Write_EnableA	       : std_logic;
     signal GP_Dst_SelectA          : std_logic_vector(NUM_REG_LOG-1 downto 0);
     signal GP_Src_SelectA          : std_logic_vector(NUM_REG_LOG-1 downto 0);
+
+    signal GP_Write_EnableB	       : std_logic;
     signal GP_Dst_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
     signal GP_Src_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
+
+    signal GP_Input_Select         : std_logic_vector(NUM_GP_INP_SELECT_BITS - 1 downto 0);
 
     -- Register Outputs
     signal GP_outA                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
     signal GP_outB                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
     
+    -- IO Reg Inputs
+    signal Updated_SREG            : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    -- IO Reg Outputs
+    signal IO_outA                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    signal IO_outB                 : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    -- IO Reg Ctrl signals
+    signal IO_Input_Select         : std_logic;
+    signal IO_Write_EnableA        : std_logic;
+    signal IO_Write_EnableB        : std_logic;
+    signal IO_Dst_SelectA          : std_logic_vector(NUM_IO_LOG-1 downto 0);
+    signal IO_Src_SelectA          : std_logic_vector(NUM_IO_LOG-1 downto 0);
+    signal IO_Src_SelectB          : std_logic_vector(NUM_IO_LOG-1 downto 0);
 
     -- Data Address Unit Control Signals
 
@@ -112,7 +134,7 @@ begin
         end if;
 
         -- Check if we are currently storing
-        if (store = '1') then
+        if (Store = '1') then
             DataDB <= GP_outA;
         else
             DataDB <= (others => 'Z');
@@ -128,12 +150,17 @@ begin
         Program_Data_Bus       => ProgDB,
         IR                     => IR,
 
-        GP_Swap_Nibbles        => GP_Swap_Nibbles,
-        GP_Dst_Select          => GP_Dst_Select,
-        GP_Src_SelectA         => GP_Src_SelectA,
-        GP_Src_SelectB         => GP_Src_SelectB,
         GP_outA                => GP_outA,
         GP_outB                => GP_outB,
+
+        GP_Swap_Nibbles        => GP_Swap_Nibbles,
+        GP_Dst_SelectA         => GP_Dst_SelectA,
+        GP_Src_SelectA         => GP_Src_SelectA,
+        GP_Src_SelectB         => GP_Src_SelectB,
+        GP_Dst_SelectB         => GP_Dst_SelectB,
+        GP_Write_EnableA       => GP_Write_EnableA,
+        GP_Write_EnableB       => GP_Write_EnableB,
+        GP_Input_Select        => GP_Input_Select,
 
         Data_Addr_Src_Sel      => Data_Addr_Src_Sel,
         Offset_Src_Sel         => Offset_Src_Sel,
@@ -146,6 +173,8 @@ begin
         SP_register            => SP_register,
         LDI_op                 => LDI_op,
         immed_val              => immed_val,
+
+        Store                  => Store,
 
         -- Read Write Signals
         DataRd                 => DataRd,
@@ -166,33 +195,33 @@ begin
         GP_outA                => GP_outA,
         GP_outB                => GP_outB,
 
-        GP_Input_Select        =>
-        GP_Write_EnableA       =>
-        GP_Swap_Nibbles        =>
-        GP_Dst_SelectA         =>
+        GP_Input_Select        => GP_Input_Select,
+        GP_Write_EnableA       => GP_Write_EnableA,
+        GP_Swap_Nibbles        => GP_Swap_Nibbles,
+        GP_Dst_SelectA         => GP_Dst_SelectA,
 
-        GP_Write_EnableB       =>
-        GP_Dst_SelectB         =>
+        GP_Write_EnableB       => GP_Write_EnableB,
+        GP_Dst_SelectB         => GP_Dst_SelectB,
 
-        GP_Src_SelectA         =>
-        GP_Src_SelectB         =>
-
+        GP_Src_SelectA         => GP_Src_SelectA,
+        GP_Src_SelectB         => GP_Src_SelectB,
+ 
         -- IO Register Inputs
-        Updated_SREG           =>
-        Updated_SP             =>
+        Updated_SREG           => Updated_SREG,
+        Updated_SP             => databus_in_mux,
 
         -- IO Control signals
-        IO_outA                =>
-        IO_outB                =>
+        IO_outA                => IO_outA,
+        IO_outB                => IO_outB,
 
-        IO_Input_Select        =>
-        IO_Write_EnableA       =>
-        IO_Dst_SelectA         =>
+        IO_Input_Select        => IO_Input_Select,
+        IO_Write_EnableA       => IO_Write_EnableA, 
+        IO_Dst_SelectA         => IO_Dst_SelectA,
 
-        IO_Write_EnableB       =>
+        IO_Write_EnableB       => IO_Write_EnableB,
 
-        IO_Src_SelectA         =>
-        IO_Src_SelectB         =>
+        IO_Src_SelectA         => IO_Src_SelectA,
+        IO_Src_SelectB         => IO_Src_SelectB
     );
 
     DataAddressUnit : entity work.Data_Memory_Access(Data_arch)

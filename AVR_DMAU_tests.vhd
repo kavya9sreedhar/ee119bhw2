@@ -41,15 +41,15 @@ architecture TB of Register_Tester is
     -- The instruction register input
     signal IR_input  : opcode_word;
     -- The second word of instruction
-    signal ProgDB    : std_logic_vector(2*NUM_BITS-1 downto 0);
+    signal ProgDB    : std_logic_vector(2*NUM_DATA_BITS-1 downto 0);
 
     -- System reset signal.
     signal Reset     : std_logic;
 
     -- Data Address bus
-    signal DataAB    : std_logic_vector(2*NUM_BITS-1 downto 0);
+    signal DataAB    : std_logic_vector(2*NUM_DATA_BITS-1 downto 0);
     -- Data Data bus
-    signal DataDB    : std_logic_vector(NUM_BITS-1 downto 0);
+    signal DataDB    : std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
     -- Read/Write Signals
     signal DataRd  :      std_logic;
@@ -60,8 +60,8 @@ architecture TB of Register_Tester is
 
     -- Array of operations
     type op_lst_t is array (integer range <>) of opcode_word;
-    type addr_lst_t is array (integer range <>) of std_logic_vector(2*NUM_BITS-1 downto 0);
-    type data_lst_t is array (integer range <>) of std_logic_vector(NUM_BITS-1 downto 0);
+    type addr_lst_t is array (integer range <>) of std_logic_vector(NUM_ADDRESS_BITS-1 downto 0);
+    type data_lst_t is array (integer range <>) of std_logic_vector(NUM_DATA_BITS-1 downto 0);
 
 begin
     -- Connect all signals to the entity being tested.
@@ -87,54 +87,54 @@ begin
     );
 
     test_main: process
-        constant NUM_X_TESTS     : integer := 14;
-        X_test_opcodes           :   op_lst_t(0 to NUM_X_TESTS-1);
-        X_test_data_ld           : data_lst_t(0 to NUM_X_TESTS-1);
-        X_test_corr_addr         : addr_lst_t(0 to NUM_X_TESTS-1);
-        X_test_corr_data         : data_lst_t(0 to NUM_X_TESTS-1);
-        X_test_coor_rd           : std_logic_vector(0 to NUM_X_TESTS-1);
-        X_test_corr_wr           : std_logic_vector(0 to NUM_X_TESTS-1);
+        constant NUM_X_TESTS            : integer := 14;
+        variable X_test_opcodes         :   op_lst_t(0 to NUM_X_TESTS-1);
+        variable X_test_data_ld         : data_lst_t(0 to NUM_X_TESTS-1);
+        variable X_test_corr_addr       : addr_lst_t(0 to NUM_X_TESTS-1);
+        variable X_test_corr_data       : data_lst_t(0 to NUM_X_TESTS-1);
+        variable X_test_coor_rd         : std_logic_vector(0 to NUM_X_TESTS-1);
+        variable X_test_corr_wr         : std_logic_vector(0 to NUM_X_TESTS-1);
 
-        constant NUM_Y_TESTS     : integer := 14;
-        Y_test_opcodes           :   op_lst_t(0 to NUM_Y_TESTS-1);
-        Y_test_data_ld           : data_lst_t(0 to NUM_Y_TESTS-1);
-        Y_test_corr_addr         : addr_lst_t(0 to NUM_Y_TESTS-1);
-        Y_test_corr_data         : data_lst_t(0 to NUM_Y_TESTS-1);
-        Y_test_coor_rd           : std_logic_vector(0 to NUM_Y_TESTS-1);
-        Y_test_corr_wr           : std_logic_vector(0 to NUM_Y_TESTS-1);
+        constant NUM_Y_TESTS            : integer := 14;
+        variable Y_test_opcodes         :   op_lst_t(0 to NUM_Y_TESTS-1);
+        variable Y_test_data_ld         : data_lst_t(0 to NUM_Y_TESTS-1);
+        variable Y_test_corr_addr       : addr_lst_t(0 to NUM_Y_TESTS-1);
+        variable Y_test_corr_data       : data_lst_t(0 to NUM_Y_TESTS-1);
+        variable Y_test_coor_rd         : std_logic_vector(0 to NUM_Y_TESTS-1);
+        variable Y_test_corr_wr         : std_logic_vector(0 to NUM_Y_TESTS-1);
 
-        constant NUM_Z_TESTS     : integer := 14;
-        Z_test_opcodes           :   op_lst_t(0 to NUM_Z_TESTS-1);
-        Z_test_data_ld           : data_lst_t(0 to NUM_Z_TESTS-1);
-        Z_test_corr_addr         : addr_lst_t(0 to NUM_Z_TESTS-1);
-        Z_test_corr_data         : data_lst_t(0 to NUM_Z_TESTS-1);
-        Z_test_coor_rd           : std_logic_vector(0 to NUM_Z_TESTS-1);
-        Z_test_corr_wr           : std_logic_vector(0 to NUM_Z_TESTS-1);
+        constant NUM_Z_TESTS            : integer := 14;
+        variable Z_test_opcodes         :   op_lst_t(0 to NUM_Z_TESTS-1);
+        variable Z_test_data_ld         : data_lst_t(0 to NUM_Z_TESTS-1);
+        variable Z_test_corr_addr       : addr_lst_t(0 to NUM_Z_TESTS-1);
+        variable Z_test_corr_data       : data_lst_t(0 to NUM_Z_TESTS-1);
+        variable Z_test_coor_rd         : std_logic_vector(0 to NUM_Z_TESTS-1);
+        variable Z_test_corr_wr         : std_logic_vector(0 to NUM_Z_TESTS-1);
 
-        constant NUM_MOV_TESTS   : integer := 15;
-        MOV_test_opcodes         :   op_lst_t(0 to NUM_MOV_TESTS-1);
-        MOV_test_data_ld         : data_lst_t(0 to NUM_MOV_TESTS-1);
-        MOV_test_corr_addr       : addr_lst_t(0 to NUM_MOV_TESTS-1);
-        MOV_test_corr_data       : data_lst_t(0 to NUM_MOV_TESTS-1);
-        MOV_test_coor_rd         : std_logic_vector(0 to NUM_MOV_TESTS-1);
-        MOV_test_corr_wr         : std_logic_vector(0 to NUM_MOV_TESTS-1);
+        constant NUM_MOV_TESTS          : integer := 15;
+        variable MOV_test_opcodes       :   op_lst_t(0 to NUM_MOV_TESTS-1);
+        variable MOV_test_data_ld       : data_lst_t(0 to NUM_MOV_TESTS-1);
+        variable MOV_test_corr_addr     : addr_lst_t(0 to NUM_MOV_TESTS-1);
+        variable MOV_test_corr_data     : data_lst_t(0 to NUM_MOV_TESTS-1);
+        variable MOV_test_coor_rd       : std_logic_vector(0 to NUM_MOV_TESTS-1);
+        variable MOV_test_corr_wr       : std_logic_vector(0 to NUM_MOV_TESTS-1);
 
-        constant NUM_STACK_TESTS : integer := 10;
-        SP_test_opcodes          :   op_lst_t(0 to NUM_STACK_TESTS-1);
-        SP_test_data_ld          : data_lst_t(0 to NUM_STACK_TESTS-1);
-        SP_test_corr_addr        : addr_lst_t(0 to NUM_STACK_TESTS-1);
-        SP_test_corr_data        : data_lst_t(0 to NUM_STACK_TESTS-1);
-        SP_test_coor_rd          : std_logic_vector(0 to NUM_STACK_TESTS-1);
-        SP_test_corr_wr          : std_logic_vector(0 to NUM_STACK_TESTS-1);
+        constant NUM_STACK_TESTS        : integer := 10;
+        variable SP_test_opcodes        :   op_lst_t(0 to NUM_STACK_TESTS-1);
+        variable SP_test_data_ld        : data_lst_t(0 to NUM_STACK_TESTS-1);
+        variable SP_test_corr_addr      : addr_lst_t(0 to NUM_STACK_TESTS-1);
+        variable SP_test_corr_data      : data_lst_t(0 to NUM_STACK_TESTS-1);
+        variable SP_test_coor_rd        : std_logic_vector(0 to NUM_STACK_TESTS-1);
+        variable SP_test_corr_wr        : std_logic_vector(0 to NUM_STACK_TESTS-1);
 
-        constant NUM_MEM_TESTS   : integer := 6;
-        MEM_test_opcodes         :   op_lst_t(0 to NUM_MEM_TESTS-1);
-        MEM_test_progDB          : addr_lst_t(0 to NUM_MEM_TESTS-1);
-        MEM_test_data_ld         : data_lst_t(0 to NUM_MEM_TESTS-1);
-        MEM_test_corr_addr       : addr_lst_t(0 to NUM_MEM_TESTS-1);
-        MEM_test_corr_data       : data_lst_t(0 to NUM_MEM_TESTS-1);
-        MEM_test_coor_rd         : std_logic_vector(0 to NUM_MEM_TESTS-1);
-        MEM_test_corr_wr         : std_logic_vector(0 to NUM_MEM_TESTS-1);
+        constant NUM_MEM_TESTS          : integer := 6;
+        variable MEM_test_opcodes       :   op_lst_t(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_progDB        : addr_lst_t(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_data_ld       : data_lst_t(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_corr_addr     : addr_lst_t(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_corr_data     : data_lst_t(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_coor_rd       : std_logic_vector(0 to NUM_MEM_TESTS-1);
+        variable MEM_test_corr_wr       : std_logic_vector(0 to NUM_MEM_TESTS-1);
 
     begin
 
@@ -155,67 +155,67 @@ begin
                         form_dest_src_LDST(OpSTXD, 3),
                         form_dest_src_LDST(OpSTXD, 4),
                         form_dest_src_LDST(OpSTXI, 5),
-                        form_dest_src_LDST(OpSTX , 6),
+                        form_dest_src_LDST(OpSTX , 6)
                         );
 
         X_test_data_ld := (
                         -- LOAD TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
-                        int_to_std_vector(3, NUM_BITS),
-                        int_to_std_vector(4, NUM_BITS),
-                        int_to_std_vector(5, NUM_BITS),
-                        int_to_std_vector(6, NUM_BITS),
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
+                        int_to_std_vector(3, NUM_DATA_BITS),
+                        int_to_std_vector(4, NUM_DATA_BITS),
+                        int_to_std_vector(5, NUM_DATA_BITS),
+                        int_to_std_vector(6, NUM_DATA_BITS),
                         -- STORE TESTS
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z')
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );  
 
         X_test_corr_data := (
                         -- LOAD TESTS
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- STORE TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
-                        int_to_std_vector(3, NUM_BITS),
-                        int_to_std_vector(4, NUM_BITS),
-                        int_to_std_vector(5, NUM_BITS)
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
+                        int_to_std_vector(3, NUM_DATA_BITS),
+                        int_to_std_vector(4, NUM_DATA_BITS),
+                        int_to_std_vector(5, NUM_DATA_BITS)
                         );
 
         X_test_corr_addr := (
                         -- LOAD TESTS
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
                         -- STORE TESTS
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS)
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        X_test_coor_rd <= "11111110000000"; 
-        X_test_corr_wr <= "00000001111111";
+        X_test_coor_rd := "11111110000000"; 
+        X_test_corr_wr := "00000001111111";
 
         -- Y Tests
         Y_test_opcodes := (
@@ -234,67 +234,67 @@ begin
                         form_dest_src_LDST(OpSTYD, 3),
                         form_dest_src_LDST(OpSTYD, 4),
                         form_dest_src_LDST(OpSTYI, 5),
-                        form_dest_src_LDST_with_disp(OpSTDY , 6, 0),
+                        form_dest_src_LDST_with_disp(OpSTDY , 6, 0)
                         );
 
         Y_test_data_ld := (
                         -- LOAD TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
-                        int_to_std_vector(3, NUM_BITS),
-                        int_to_std_vector(4, NUM_BITS),
-                        int_to_std_vector(5, NUM_BITS),
-                        int_to_std_vector(6, NUM_BITS),
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
+                        int_to_std_vector(3, NUM_DATA_BITS),
+                        int_to_std_vector(4, NUM_DATA_BITS),
+                        int_to_std_vector(5, NUM_DATA_BITS),
+                        int_to_std_vector(6, NUM_DATA_BITS),
                         -- STORE TESTS
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z')
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );  
 
         Y_test_corr_data := (
                         -- LOAD TESTS
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- STORE TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
-                        int_to_std_vector(3, NUM_BITS),
-                        int_to_std_vector(4, NUM_BITS),
-                        int_to_std_vector(5, NUM_BITS)
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
+                        int_to_std_vector(3, NUM_DATA_BITS),
+                        int_to_std_vector(4, NUM_DATA_BITS),
+                        int_to_std_vector(5, NUM_DATA_BITS)
                         );
 
         Y_test_corr_addr := (
                         -- LOAD TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
                         -- STORE TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS)
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        Y_test_coor_rd <= "11111110000000"; 
-        Y_test_corr_wr <= "00000001111111";
+        Y_test_coor_rd := "11111110000000"; 
+        Y_test_corr_wr := "00000001111111";
 
         -- Z Tests
         Z_test_opcodes := (
@@ -313,67 +313,67 @@ begin
                         form_dest_src_LDST(OpSTZD, 3),
                         form_dest_src_LDST(OpSTZD, 4),
                         form_dest_src_LDST(OpSTZI, 5),
-                        form_dest_src_LDST_with_disp(OpSTDZ , 6, 0),
+                        form_dest_src_LDST_with_disp(OpSTDZ , 6, 0)
                         );
 
         Z_test_data_ld := (
                         -- LOAD TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
-                        int_to_std_vector(3, NUM_BITS),
-                        int_to_std_vector(4, NUM_BITS),
-                        int_to_std_vector(5, NUM_BITS),
-                        int_to_std_vector(6, NUM_BITS),
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
+                        int_to_std_vector(3, NUM_DATA_BITS),
+                        int_to_std_vector(4, NUM_DATA_BITS),
+                        int_to_std_vector(5, NUM_DATA_BITS),
+                        int_to_std_vector(6, NUM_DATA_BITS),
                         -- STORE TESTS
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z')
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );  
 
         Z_test_corr_data := (
                         -- LOAD TESTS
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- STORE TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
-                        int_to_std_vector(3, NUM_BITS),
-                        int_to_std_vector(4, NUM_BITS),
-                        int_to_std_vector(5, NUM_BITS)
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
+                        int_to_std_vector(3, NUM_DATA_BITS),
+                        int_to_std_vector(4, NUM_DATA_BITS),
+                        int_to_std_vector(5, NUM_DATA_BITS)
                         );
 
         Z_test_corr_addr := (
                         -- LOAD TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
                         -- STORE TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS),
-                        int_to_std_vector(0    , 2*NUM_BITS)
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
+                        int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        Z_test_coor_rd <= "11111110000000"; 
-        Z_test_corr_wr <= "00000001111111";
+        Z_test_coor_rd := "11111110000000"; 
+        Z_test_corr_wr := "00000001111111";
 
         -- MOV tests
         MOV_test_opcodes := (
@@ -399,69 +399,69 @@ begin
 
         MOV_test_data_ld := (
                         -- LOAD IN VALUES
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- MOV Around
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- Check by outputting
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z')
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );  
 
         MOV_test_corr_data := (
                         -- LOAD IN VALUES
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- MOV Around
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- Check by outputting
-                        int_to_std_vector(0 , NUM_BITS),
-                        int_to_std_vector(1 , NUM_BITS),
-                        int_to_std_vector(2 , NUM_BITS),
-                        int_to_std_vector(3 , NUM_BITS),
-                        int_to_std_vector(4 , NUM_BITS)
+                        int_to_std_vector(0 , NUM_DATA_BITS),
+                        int_to_std_vector(1 , NUM_DATA_BITS),
+                        int_to_std_vector(2 , NUM_DATA_BITS),
+                        int_to_std_vector(3 , NUM_DATA_BITS),
+                        int_to_std_vector(4 , NUM_DATA_BITS)
                         );
 
         MOV_test_corr_addr := (
                         -- LOAD IN VALUES
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
                         -- MOV Around
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
                         -- Check by outputting
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-')
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-')
                         );
 
-        MOV_test_coor_rd <= "000000000000000"; 
-        MOV_test_corr_wr <= "000000000011111";
+        MOV_test_coor_rd := "000000000000000"; 
+        MOV_test_corr_wr := "000000000011111";
 
         -- Stack Tests
         SP_test_opcodes := (
@@ -482,54 +482,54 @@ begin
 
         SP_test_data_ld := (
                         -- Reset the stack
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- PUSH
-                        int_to_std_vector(0 , NUM_BITS),
-                        int_to_std_vector(1 , NUM_BITS),
-                        int_to_std_vector(2 , NUM_BITS),
+                        int_to_std_vector(0 , NUM_DATA_BITS),
+                        int_to_std_vector(1 , NUM_DATA_BITS),
+                        int_to_std_vector(2 , NUM_DATA_BITS),
                         -- POP
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z')
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );
 
         SP_test_corr_data := (
                         -- Reset the stack
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- PUSH
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- POP
-                        int_to_std_vector(0 , NUM_BITS),
-                        int_to_std_vector(1 , NUM_BITS),
-                        int_to_std_vector(2 , NUM_BITS)
+                        int_to_std_vector(0 , NUM_DATA_BITS),
+                        int_to_std_vector(1 , NUM_DATA_BITS),
+                        int_to_std_vector(2 , NUM_DATA_BITS)
                         );
 
         SP_test_corr_addr := (
                         -- LOAD IN VALUES
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
-                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
+                        (NUM_ADDRESS_BITS downto 0 => '-'),
+                        (NUM_ADDRESS_BITS downto 0 => '-'),
+                        (NUM_ADDRESS_BITS downto 0 => '-'),
                         -- MOV Around
-                        int_to_std_vector(10 , 2*NUM_BITS),
-                        int_to_std_vector(9 , 2*NUM_BITS),
-                        int_to_std_vector(8 , 2*NUM_BITS),
+                        int_to_std_vector(10 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(9 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(8 , NUM_ADDRESS_BITS),
                         -- Check by outputting
-                        int_to_std_vector(8 , 2*NUM_BITS),
-                        int_to_std_vector(9 , 2*NUM_BITS),
-                        int_to_std_vector(10 , 2*NUM_BITS)
+                        int_to_std_vector(8 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(9 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(10 , NUM_ADDRESS_BITS)
                         );
 
-        MOV_test_coor_rd <= "0000111000"; 
-        MOV_test_corr_wr <= "0000000111";
+        MOV_test_coor_rd := "0000111000"; 
+        MOV_test_corr_wr := "0000000111";
         -- Memory Tests
         MEM_test_opcodes := (
                         -- LOAD TESTS
@@ -544,65 +544,65 @@ begin
 
         MEM_test_data_ld := (
                         -- LOAD TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS),
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS),
                         -- STORE TESTS
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z'),
-                        (NUM_BITS-1 downto 0 => 'Z')
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
+                        (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );  
 
         MEM_test_corr_data := (
                         -- LOAD TESTS
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-'),
-                        (NUM_BITS-1 downto 0 => '-')
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- STORE TESTS
-                        int_to_std_vector(0, NUM_BITS),
-                        int_to_std_vector(1, NUM_BITS),
-                        int_to_std_vector(2, NUM_BITS)
+                        int_to_std_vector(0, NUM_DATA_BITS),
+                        int_to_std_vector(1, NUM_DATA_BITS),
+                        int_to_std_vector(2, NUM_DATA_BITS)
                         );
 
         MEM_test_progDB := (
                         -- LOAD TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS)
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
                         -- STORE TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS)            
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS)            
                         );
 
         MEM_test_corr_addr := (
                         -- LOAD TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS)
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS),
                         -- STORE TESTS
-                        int_to_std_vector(16   , 2*NUM_BITS),
-                        int_to_std_vector(24   , 2*NUM_BITS),
-                        int_to_std_vector(65535, 2*NUM_BITS)
+                        int_to_std_vector(16   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(24   , NUM_ADDRESS_BITS),
+                        int_to_std_vector(65535, NUM_ADDRESS_BITS)
                         );
 
-        MEM_test_coor_rd <= "111000"; 
-        MEM_test_corr_wr <= "000111";
+        MEM_test_coor_rd := "111000"; 
+        MEM_test_corr_wr := "000111";
 
         -- Initialize signals
-        ProgDB   => (others => 'X');
-        Reset    => '1';
-        IR_input => (others => 'X');
+        ProgDB   <= (others => 'X');
+        Reset    <= '1';
+        IR_input <= (others => 'X');
 
         wait for 4*CLOCK_PERIOD;
 
-        report "-------- STARTING TESTS --------"
+        report "-------- STARTING TESTS --------";
 
         -- Initially put zeros in all registers using LDI
         for i_LDI in 0 to 2 ** NUM_REG_LOG - 1 loop
             
             -- Pretend we are doing a LDI
-            IR_input <= form_imm_load(LDI, i_LDI, i_LDI);
+            IR_input <= form_imm_load(OpLDI, i_LDI, i_LDI);
 
             wait for CLOCK_PERIOD;
         end loop;

@@ -16,8 +16,28 @@ use ieee.numeric_std.all;
 use ieee.std_logic_arith.ALL;
 
 use work.opcodes.all;
+use work.CPU_Constants.all;
 
 package AVR_Opcode_Formation is
+    function std_logic_vec_to_string (vec: std_logic_vector) return string;
+    function int_to_std_vector(num: integer; bits: integer) return std_logic_vector;
+    
+    -- ALU
+    function form_two_reg_ALU_opcode (OPcode : opcode_word; Register1:  integer; Register2 : integer) return opcode_word;
+    function form_one_reg_ALU_opcode (OPcode : opcode_word; Register1: integer) return opcode_word;
+    function form_reg8_imm_ALU_opcode (OPcode : opcode_word; Register1: integer; Immediate: integer) return opcode_word;
+    function form_reg16_imm_ALU_opcode (OPcode : opcode_word; Register1: integer; Immediate: integer) return opcode_word;
+    function form_bitop_ALU_opcode (OPcode : opcode_word; Register1: integer; BitToOp: integer) return opcode_word;
+    function form_SREG_bitop_ALU_opcode (OPcode : opcode_word; BitToOp: integer) return opcode_word;
+    -- Data
+    function form_mov_operation (OPcode : opcode_word; src_reg: integer; dest_reg: integer) return opcode_word;
+    function form_inout_operation (OPcode : opcode_word; gp_register: integer; io_register: integer) return opcode_word;
+    function form_imm_load (OPcode : opcode_word; src_dest: integer; val:integer) return opcode_word;
+    function form_dest_src_LDST (OPcode : opcode_word; src_dest: integer) return opcode_word;
+    function form_dest_src_LDST_with_disp (OPcode : opcode_word; src_dest: integer; disp: integer) return opcode_word;
+end package;
+
+package body AVR_Opcode_Formation is
 
     -- std_logic_vec_to_string
     -- Converts a std_logic_vector to a string
@@ -278,7 +298,7 @@ package AVR_Opcode_Formation is
     --     5-bit src
     --   dst_reg
     --     5-bit destination
-    function form_mov_operation OPcode : opcode_word; src_reg: integer; dest_reg: integer)
+    function form_mov_operation (OPcode : opcode_word; src_reg: integer; dest_reg: integer)
         return opcode_word is
             variable sreg            : std_logic_vector(4 downto 0);
             variable dreg            : std_logic_vector(4 downto 0);
@@ -303,7 +323,7 @@ package AVR_Opcode_Formation is
     --     5-bit src
     --   IO_reg
     --     6-bit destination
-    function form_inout_operation OPcode : opcode_word; gp_register: integer; io_register: integer)
+    function form_inout_operation (OPcode : opcode_word; gp_register: integer; io_register: integer)
         return opcode_word is
             variable GPreg           : std_logic_vector(4 downto 0);
             variable IOreg           : std_logic_vector(5 downto 0);
@@ -317,4 +337,4 @@ package AVR_Opcode_Formation is
 
         return FormedOPcode;
     end form_inout_operation;    
-end package
+end package body;

@@ -161,8 +161,8 @@ begin
             reg_outB               => GP_outB,
 
             -- Ctrl signals
-            Register_Write_EnableA => GP_Write_Enable,
-            Register_Dst_SelectA   => GP_Dst_Select,
+            Register_Write_EnableA => GP_Write_EnableA,
+            Register_Dst_SelectA   => GP_Dst_SelectA,
 
             Register_Write_EnableB => GP_Write_EnableB,
             Register_Dst_SelectB   => GP_Dst_SelectB,
