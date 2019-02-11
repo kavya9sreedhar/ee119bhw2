@@ -55,4 +55,7 @@ package RegConstants is
 	constant ZL                     : integer := 30;
 	constant ZH                     : integer := 31;
 
+	constant SPL                    : integer := 61;
+	constant SPH                    : integer := 62;
+
 end package;
