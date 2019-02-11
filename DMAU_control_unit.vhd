@@ -155,6 +155,7 @@ architecture control_arch of Control_Unit is
 	type state_type is (Clock1, Clock2, Clock3); 
 	-- defines state type for state of finite state machine
 	signal state: state_type;
+	signal state1: state_type;
 	
 begin
 
@@ -164,16 +165,29 @@ begin
     process (clk)
     begin
     if rising_edge(clk) then
+		if std_match(IR, OpLDI) then
+			State1 <= Clock1;
+		else if State = Clock1 then
+			State1 <= Clock2;
+		elsif State = Clock2 then
+			State1 <= Clock1;
+		end if;
+
+	end process;
 		
+	process (IR, State1)
+	begin
 		-- default values
 		GP_Write_EnableA <= '0';
 		
 		-- Finite state machine that handles number of clocks per instruction
-		case State is
+		case State1 is
 		
 		-- first clock of an instruction, idle state, beginning an instruction
 		when Clock1 =>
 			
+	
+	
 			-----------------------------------------------------------------
 			-----------------------------------------------------------------
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1

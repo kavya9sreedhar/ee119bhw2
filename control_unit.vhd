@@ -1930,6 +1930,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
@@ -1951,6 +1952,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
