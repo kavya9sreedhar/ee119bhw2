@@ -65,6 +65,10 @@ entity Control_Unit is
 	-- register to store value from Data Memory Access Unit return address in
 	DMAU_Reg_Bits			: out std_logic_vector(NUM_REG_LOG - 1 downto 0);
 	
+	-- load immediate signals
+	LDI_op					: out std_logic;
+	immed_val				: out std_logic_vector(NUM_DATA_BITS - 1 downto 0);
+	
 	-- active low control line indicating data memory is being read
 	-- active only during 2nd half of the clock in the 2nd cycle
 	DataRd					: out std_logic;
@@ -87,7 +91,6 @@ begin
     begin
     
     if rising_edge(clk) then
-		-- TODO: ADIW and SBIW need to be adjusted for new FSM implementation
 		
 		case State is
 		
@@ -96,6 +99,7 @@ begin
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1
 		
 			if std_match(Program_Data_Bus, OpLDX) then
+				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
@@ -119,6 +123,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
+				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
@@ -141,6 +146,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
+				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
@@ -162,105 +168,134 @@ begin
 				State <= Clock2;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpLDYI) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
---				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpLDYI) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Y_register <= GP_outA & GP_outB;
+				Z_register <= (others => '0');
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDYD) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
---				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpLDYD) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Y_register <= GP_outA & GP_outB;
+				Z_register <= (others => '0');
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDDY) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
---				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
---				unsigned_displacement <= 
---					(5 downto 0 => Program_Data_Bus(13) & 
---					Program_Data_Bus(11 downto 10) & 
---					Program_Data_Bus(2 downto 0), 
---					others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpLDDY) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Y_register <= GP_outA & GP_outB;
+				Z_register <= (others => '0');
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDZI) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
---				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpLDZI) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				Y_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Z_register <= GP_outA & GP_outB;
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDZD) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
---				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpLDZD) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				Y_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Z_register <= GP_outA & GP_outB;
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDDZ) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
---				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
---				unsigned_displacement <= 
---					(5 downto 0 => Program_Data_Bus(13) & 
---					Program_Data_Bus(11 downto 10) & 
---					Program_Data_Bus(2 downto 0), 
---					others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpLDDZ) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				Y_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Z_register <= GP_outA & GP_outB;
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDI) then
-			
---			end if;
+			if std_match(Program_Data_Bus, OpLDI) then
+				LDI_op <= '1';
+				DMAU_Reg_Bits <= 
+					'1' & Program_Data_Bus(DMAU_Reg_high_bit - 1 downto DMAU_Reg_low_bit);
+				immed_val <= Program_Data_Bus(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
+							& Program_Data_Bus(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
+				State <= Clock1;
+			end if;
 			
 --			if std_match(Program_Data_Bus, OpLDS) then
 --				DataRd <= '1';
@@ -272,6 +307,7 @@ begin
 --			end if;
 			
 			if std_match(Program_Data_Bus, OpSTX) then
+				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
@@ -294,6 +330,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
+				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
@@ -316,6 +353,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
+				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
@@ -337,101 +375,125 @@ begin
 				State <= Clock2;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpSTYI) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
---				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpSTYI) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Y_register <= GP_outA & GP_outB;
+				Z_register <= (others => '0');
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTYD) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
---				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpSTYD) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Y_register <= GP_outA & GP_outB;
+				Z_register <= (others => '0');
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTDY) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
---				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
---				unsigned_displacement <= 
---					(5 downto 0 => Program_Data_Bus(13) & 
---					Program_Data_Bus(11 downto 10) & 
---					Program_Data_Bus(2 downto 0), 
---					others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpSTDY) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Y_register <= GP_outA & GP_outB;
+				Z_register <= (others => '0');
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTZI) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
---				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpSTZI) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				Y_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Z_register <= GP_outA & GP_outB;
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTZD) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
---				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
---				-- value does not matter
---				unsigned_displacement <= (others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpSTZD) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				Y_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Z_register <= GP_outA & GP_outB;
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTDZ) then
---				DataRd <= '1';
---				DataWr <= '1';
---				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
---				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
---				unsigned_displacement <= 
---					(5 downto 0 => Program_Data_Bus(13) & 
---					Program_Data_Bus(11 downto 10) & 
---					Program_Data_Bus(2 downto 0), 
---					others => '0');
---				Pre_Post_Sel <=
---				Immediate_Data_Address <=
---				X_register <=
---				Y_register <=
---				Z_register <= 
---				SP_register <=
---			end if;
+			if std_match(Program_Data_Bus, OpSTDZ) then
+				LDI_op <= '0';
+				DataRd <= '1';
+				DataWr <= '1';
+				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+				unsigned_displacement <= 
+					(5 downto 0 => Program_Data_Bus(13) & 
+					Program_Data_Bus(11 downto 10) & 
+					Program_Data_Bus(2 downto 0), 
+					others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <= (others => '0');
+				X_register <= (others => '0');
+				Y_register <= (others => '0');
+				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				Z_register <= GP_outA & GP_outB;
+				SP_register <= (others => '0');
+				State <= Clock2;
+			end if;
 			
 --			if std_match(Program_Data_Bus, OpSTS) then
 --				DataRd <= '1';
@@ -467,41 +529,58 @@ begin
 				State <= Clock1;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpLDYI) then
---				DataRd <= not ('1' and not clk);
---				DataWr <= '1';
---			end if;
+			if std_match(Program_Data_Bus, OpLDYI) then
+				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDYD) then
---				DataRd <= not ('1' and not clk);
---				DataWr <= '1';
---			end if;
+			if std_match(Program_Data_Bus, OpLDYD) then
+				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDDY) then
---				DataRd <= not ('1' and not clk);
---				DataWr <= '1';
---			end if;
+			if std_match(Program_Data_Bus, OpLDDY) then
+				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDZI) then
---				DataRd <= not ('1' and not clk);
---				DataWr <= '1';
---			end if;
+			if std_match(Program_Data_Bus, OpLDZI) then
+				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDZD) then
---				DataRd <= not ('1' and not clk);
---				DataWr <= '1';
---			end if;
+			if std_match(Program_Data_Bus, OpLDZD) then
+				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDDZ) then
---				DataRd <= not ('1' and not clk);
---				DataWr <= '1';
---			end if;
-			
---			if std_match(Program_Data_Bus, OpLDI) then
---				-- 1 clock instruction, nothing here
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			if std_match(Program_Data_Bus, OpLDDZ) then
+				DataRd <= not ('1' and not clk);
+				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
+
+			-- will never get here, instruction does not require 2 clocks
+			if std_match(Program_Data_Bus, OpLDI) then
+
+			end if;
 			
 --			if std_match(Program_Data_Bus, OpLDS) then
 --				DataRd <= '1';
@@ -538,35 +617,53 @@ begin
 				State <= Clock1;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpSTYI) then
---				DataRd <= '1';
---				DataWr <= not ('1' and not clk);
---			end if;
+			if std_match(Program_Data_Bus, OpSTYI) then
+				DataRd <= '1';
+				DataWr <= not ('1' and not clk);
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTYD) then
---				DataRd <= '1';
---				DataWr <= not ('1' and not clk);
---			end if;
+			if std_match(Program_Data_Bus, OpSTYD) then
+				DataRd <= '1';
+				DataWr <= not ('1' and not clk);
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTDY) then
---				DataRd <= '1';
---				DataWr <= not ('1' and not clk);
---			end if;
+			if std_match(Program_Data_Bus, OpSTDY) then
+				DataRd <= '1';
+				DataWr <= not ('1' and not clk);
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTZI) then
---				DataRd <= '1';
---				DataWr <= not ('1' and not clk);
---			end if;
+			if std_match(Program_Data_Bus, OpSTZI) then
+				DataRd <= '1';
+				DataWr <= not ('1' and not clk);
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTZD) then
---				DataRd <= '1';
---				DataWr <= not ('1' and not clk);
---			end if;
+			if std_match(Program_Data_Bus, OpSTZD) then
+				DataRd <= '1';
+				DataWr <= not ('1' and not clk);
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTDZ) then
---				DataRd <= '1';
---				DataWr <= not ('1' and not clk);
---			end if;
+			if std_match(Program_Data_Bus, OpSTDZ) then
+				DataRd <= '1';
+				DataWr <= not ('1' and not clk);
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				State <= Clock1;
+			end if;
 			
 --			if std_match(Program_Data_Bus, OpSTS) then
 --				DataRd <= '1';
@@ -592,51 +689,49 @@ begin
 			
 			end if;
 			
---			if std_match(Program_Data_Bus, OpLDYI) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDYI) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDYD) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDYD) then
 			
---			if std_match(Program_Data_Bus, OpLDDY) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDZI) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDDY) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDZD) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDZI) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDDZ) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDZD) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpLDI) then
---				-- 1 clock instruction, nothing here
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDDZ) then
+			
+			end if;
+			
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpLDI) then
+				
+			end if;
 			
 --			if std_match(Program_Data_Bus, OpLDS) then
 
 --			end if;
 			
---			if std_match(Program_Data_Bus, OpMOV) then
---				-- 1 clock instruction, nothing here
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpMOV) then
+
+			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpSTX) then
@@ -653,35 +748,35 @@ begin
 				
 			end if;
 			
---			if std_match(Program_Data_Bus, OpSTYI) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpSTYI) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTYD) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpSTYD) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTDY) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpSTDY) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTZI) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpSTZI) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTZD) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpSTZD) then
+				
+			end if;
 			
---			if std_match(Program_Data_Bus, OpSTDZ) then
---				DataRd <= '1';
---				DataWr <= '1';
---			end if;
+			-- will never get here, instruction does not require 3 clocks
+			if std_match(Program_Data_Bus, OpSTDZ) then
+				
+			end if;
 			
 --			if std_match(Program_Data_Bus, OpSTS) then
 			
