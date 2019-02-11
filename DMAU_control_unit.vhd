@@ -10,6 +10,7 @@
 --  active low reset is used to initialize the stack pointer to all 1's (note
 --  this is inconsistent with the standard AVR processor which does not initialize
 --  its stack pointer on reset). 
+-- 
 --	Only instructions part of the data memory access unit are currently supported
 --  and the control unit generates appropriate signals for that unit to generate
 --  addresses and read and write data for the data memory. While the data memory
@@ -44,11 +45,14 @@ use work.opcodes.all;
 
 --
 -- Control Unit entity declaration
+-- includes control signals to other units such as data memory access unit and
+-- accesses registers for values to be sent to units such as data memory access 
+-- unit
 --
 entity Control_Unit is
     port(
     
-    -- The clock.
+    -- system clock.
     clk: in std_logic;
     
     -- inputs
@@ -57,6 +61,8 @@ entity Control_Unit is
     -- instruction register
     IR                      : in opcode_word;
  
+	-- CONTROL SIGNALS TO REGISTERS UNIT
+	-- Ctrl signal to swap the nibbles for a general purpose register
     GP_Swap_Nibbles         : out std_logic;
     GP_Dst_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
     GP_Src_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
