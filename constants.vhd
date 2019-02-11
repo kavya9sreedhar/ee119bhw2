@@ -52,5 +52,10 @@ package CPU_CONSTANTS is
 									:= "11110";
 	constant Z_REG_HIGH_BYTE:		std_logic_vector(NUM_DATA_BITS - 1 downto 0)
 									:= "11111";
+									
+	constant GP_Dst_SelectB_Reg		std_logic_vector(1 downto 0) := "00";
+	constant GP_Dst_SelectB_X		std_logic_vector(1 downto 0) := "01";
+	constant GP_Dst_SelectB_Y		std_logic_vector(1 downto 0) := "10";
+	constant GP_Dst_SelectB_Z		std_logic_vector(1 downto 0) := "11";
 	
 end package;

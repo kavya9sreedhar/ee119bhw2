@@ -54,7 +54,7 @@ use ieee.numeric_std.all;
 --   00 - R16
 --   01 - X
 --   10 - Y
---   10 - X
+--   10 - Z
 -- GP_Src_SelectA [NUM_REG_LOG-1..0]
 --   Select for which GP register to output on A.
 -- GP_Src_SelectB [NUM_REG_LOG-1..0]
