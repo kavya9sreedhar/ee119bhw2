@@ -141,7 +141,7 @@ entity Control_Unit is
 	-- active low control line indicating data memory is being written
 	-- active only during 2nd half of the clock in the 2nd cycle
 	DataWr					: out std_logic;
-	DataWrOut				: out std_logic;
+	DataWrOut				: out std_logic
 	
 	
     
