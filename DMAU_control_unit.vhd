@@ -171,7 +171,8 @@ begin
 		elsif State1 = Clock2 then
 			State1 <= Clock1;
 		end if;
-
+	end if;
+	
 	end process;
 		
 	process (IR, State1)
