@@ -547,7 +547,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
@@ -557,7 +557,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
@@ -567,7 +567,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
@@ -577,7 +577,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
@@ -587,7 +587,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
@@ -597,7 +597,7 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
@@ -654,7 +654,7 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTYI) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
 				DMAU_Reg_Bits <= 
@@ -664,7 +664,7 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTYD) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
 				DMAU_Reg_Bits <= 
@@ -674,7 +674,7 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTDY) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
 				DMAU_Reg_Bits <= 
@@ -684,7 +684,7 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTZI) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
 				DMAU_Reg_Bits <= 
@@ -694,7 +694,7 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTZD) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
 				DMAU_Reg_Bits <= 
@@ -704,7 +704,7 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTDZ) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
 				DMAU_Reg_Bits <= 
