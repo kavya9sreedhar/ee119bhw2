@@ -35,9 +35,9 @@ entity Control_Unit is
     
     -- inputs
     -- program data bus
-    Program_Data_Bus: in std_logic_vector(15 downto 0);
+    Program_Data_Bus        : in std_logic_vector(15 downto 0);
     -- instruction register
-    -- IR: in opcode_word;
+    IR                      : in opcode_word;
  
     GP_Swap_Nibbles         : out std_logic;
     GP_Dst_Select           : out std_logic_vector(NUM_REG_LOG-1 downto 0);
@@ -48,12 +48,9 @@ entity Control_Unit is
     GP_outB                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);    
 	
 	-- Data Memory Access Unit Control Signals and values
-	Data_Addr_Src_Sel		: out std_logic_vector(
-									num_bits_Data_Addr_Src_Sel - 1 downto 0);
-	Offset_Src_Sel			: out std_logic_vector(
-									num_bits_Offset_Src_Sel - 1 downto 0);
-	unsigned_displacement	: out std_logic_vector(
-									NUM_ADDRESS_BITS - 1 downto 0);
+	Data_Addr_Src_Sel		: out std_logic_vector(num_bits_Data_Addr_Src_Sel - 1 downto 0);
+	Offset_Src_Sel			: out std_logic_vector(num_bits_Offset_Src_Sel - 1 downto 0);
+	unsigned_displacement	: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	Pre_Post_Sel			: out std_logic;
 	
 	Immediate_Data_Address	: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
@@ -61,9 +58,6 @@ entity Control_Unit is
 	Y_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	Z_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	SP_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
-	
-	-- register to store value from Data Memory Access Unit return address in
-	DMAU_Reg_Bits			: out std_logic_vector(NUM_REG_LOG - 1 downto 0);
 	
 	-- load immediate signals
 	LDI_op					: out std_logic;
@@ -98,7 +92,7 @@ begin
 
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1
 		
-			if std_match(Program_Data_Bus, OpLDX) then
+			if std_match(IR, OpLDX) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -122,7 +116,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDXI) then
+			if std_match(IR, OpLDXI) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -145,7 +139,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDXD) then
+			if std_match(IR, OpLDXD) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -168,7 +162,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDYI) then
+			if std_match(IR, OpLDYI) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -187,7 +181,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDYD) then
+			if std_match(IR, OpLDYD) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -206,16 +200,16 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDDY) then
+			if std_match(IR, OpLDDY) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
 				unsigned_displacement <= 
-					(5 downto 0 => Program_Data_Bus(13) & 
-					Program_Data_Bus(11 downto 10) & 
-					Program_Data_Bus(2 downto 0), 
+					(5 downto 0 => IR(13) & 
+					IR(11 downto 10) & 
+					IR(2 downto 0), 
 					others => '0');
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
@@ -228,7 +222,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDZI) then
+			if std_match(IR, OpLDZI) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -247,7 +241,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDZD) then
+			if std_match(IR, OpLDZD) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -266,16 +260,16 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDDZ) then
+			if std_match(IR, OpLDDZ) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
 				unsigned_displacement <= 
-					(5 downto 0 => Program_Data_Bus(13) & 
-					Program_Data_Bus(11 downto 10) & 
-					Program_Data_Bus(2 downto 0), 
+					(5 downto 0 => IR(13) & 
+					IR(11 downto 10) & 
+					IR(2 downto 0), 
 					others => '0');
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
@@ -288,25 +282,25 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDI) then
+			if std_match(IR, OpLDI) then
 				LDI_op <= '1';
-				DMAU_Reg_Bits <= 
-					'1' & Program_Data_Bus(DMAU_Reg_high_bit - 1 downto DMAU_Reg_low_bit);
-				immed_val <= Program_Data_Bus(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
-							& Program_Data_Bus(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
+				GP_Dst_Select <= 
+					'1' & IR(DMAU_Reg_high_bit - 1 downto DMAU_Reg_low_bit);
+				immed_val <= IR(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
+							& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
 				State <= Clock1;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpLDS) then
+--			if std_match(IR, OpLDS) then
 --				DataRd <= '1';
 --				DataWr <= '1';
 --			end if;
 			
---			if std_match(Program_Data_Bus, OpMOV) then
+--			if std_match(IR, OpMOV) then
 			
 --			end if;
 			
-			if std_match(Program_Data_Bus, OpSTX) then
+			if std_match(IR, OpSTX) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -329,7 +323,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTXI) then
+			if std_match(IR, OpSTXI) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -352,7 +346,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTXD) then
+			if std_match(IR, OpSTXD) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -375,7 +369,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTYI) then
+			if std_match(IR, OpSTYI) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -394,7 +388,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTYD) then
+			if std_match(IR, OpSTYD) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -413,16 +407,16 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTDY) then
+			if std_match(IR, OpSTDY) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
 				unsigned_displacement <= 
-					(5 downto 0 => Program_Data_Bus(13) & 
-					Program_Data_Bus(11 downto 10) & 
-					Program_Data_Bus(2 downto 0), 
+					(5 downto 0 => IR(13) & 
+					IR(11 downto 10) & 
+					IR(2 downto 0), 
 					others => '0');
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
@@ -435,7 +429,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTZI) then
+			if std_match(IR, OpSTZI) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -454,7 +448,7 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTZD) then
+			if std_match(IR, OpSTZD) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
@@ -473,16 +467,16 @@ begin
 				State <= Clock2;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTDZ) then
+			if std_match(IR, OpSTDZ) then
 				LDI_op <= '0';
 				DataRd <= '1';
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
 				unsigned_displacement <= 
-					(5 downto 0 => Program_Data_Bus(13) & 
-					Program_Data_Bus(11 downto 10) & 
-					Program_Data_Bus(2 downto 0), 
+					(5 downto 0 => IR(13) & 
+					IR(11 downto 10) & 
+					IR(2 downto 0), 
 					others => '0');
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				Immediate_Data_Address <= (others => '0');
@@ -495,16 +489,16 @@ begin
 				State <= Clock2;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpSTS) then
+--			if std_match(IR, OpSTS) then
 --				DataRd <= '1';
 --				DataWr <= '1';
 --			end if;
 
-			if std_match(Program_Data_Bus, OpIN) then
+			if std_match(IR, OpIN) then
 			
 			end if;
 			
-			if std_match(Program_Data_Bus, OpOUT) then
+			if std_match(IR, OpOUT) then
 			
 			end if;
 			
@@ -512,177 +506,177 @@ begin
 		
 --			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 2
 		
-			if std_match(Program_Data_Bus, OpLDX) then
+			if std_match(IR, OpLDX) then
 				--DataRd <= not ('1' and not clk);
 				DataRd <= clk;
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDXI) then
+			if std_match(IR, OpLDXI) then
 				DataRd <= clk;
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDXD) then
+			if std_match(IR, OpLDXD) then
 				DataRd <= clk;
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDYI) then
+			if std_match(IR, OpLDYI) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDYD) then
+			if std_match(IR, OpLDYD) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDDY) then
+			if std_match(IR, OpLDDY) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDZI) then
+			if std_match(IR, OpLDZI) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDZD) then
+			if std_match(IR, OpLDZD) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpLDDZ) then
+			if std_match(IR, OpLDDZ) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 
 			-- will never get here, instruction does not require 2 clocks
-			if std_match(Program_Data_Bus, OpLDI) then
+			if std_match(IR, OpLDI) then
 
 			end if;
 			
---			if std_match(Program_Data_Bus, OpLDS) then
+--			if std_match(IR, OpLDS) then
 --				DataRd <= '1';
 --				DataWr <= '1';
 --			end if;
 			
---			if std_match(Program_Data_Bus, OpMOV) then
+--			if std_match(IR, OpMOV) then
 --				-- 1 clock instruction, nothing here
 --				DataRd <= '1';
 --				DataWr <= '1';
 --			end if;
 			
-			if std_match(Program_Data_Bus, OpSTX) then
+			if std_match(IR, OpSTX) then
 				DataRd <= '1';
 				DataWr <= clk;
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTXI) then
+			if std_match(IR, OpSTXI) then
 				DataRd <= '1';
 				DataWr <= clk;
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTXD) then
+			if std_match(IR, OpSTXD) then
 				DataRd <= '1';
 				DataWr <= clk;
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTYI) then
+			if std_match(IR, OpSTYI) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTYD) then
+			if std_match(IR, OpSTYD) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTDY) then
+			if std_match(IR, OpSTDY) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTZI) then
+			if std_match(IR, OpSTZI) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTZD) then
+			if std_match(IR, OpSTZD) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
-			if std_match(Program_Data_Bus, OpSTDZ) then
+			if std_match(IR, OpSTDZ) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
-				DMAU_Reg_Bits <= 
-					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Dst_Select <= 
+					IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
---			if std_match(Program_Data_Bus, OpSTS) then
+--			if std_match(IR, OpSTS) then
 --				DataRd <= '1';
 --				DataWr <= '1';
 --			end if;
 			
-		if std_match(Program_Data_Bus, OpIN) then
+		if std_match(IR, OpIN) then
 			
 		end if;
 		
-		if std_match(Program_Data_Bus, OpOUT) then
+		if std_match(IR, OpOUT) then
 		
 		end if;
 			
@@ -691,118 +685,118 @@ begin
 --			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 3
 		
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDX) then
+			if std_match(IR, OpLDX) then
 		
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDXI) then
+			if std_match(IR, OpLDXI) then
 			
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDXD) then
+			if std_match(IR, OpLDXD) then
 			
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDYI) then
+			if std_match(IR, OpLDYI) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDYD) then
+			if std_match(IR, OpLDYD) then
 			
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDDY) then
+			if std_match(IR, OpLDDY) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDZI) then
+			if std_match(IR, OpLDZI) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDZD) then
+			if std_match(IR, OpLDZD) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDDZ) then
+			if std_match(IR, OpLDDZ) then
 			
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpLDI) then
+			if std_match(IR, OpLDI) then
 				
 			end if;
 			
---			if std_match(Program_Data_Bus, OpLDS) then
+--			if std_match(IR, OpLDS) then
 
 --			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpMOV) then
+			if std_match(IR, OpMOV) then
 
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTX) then
+			if std_match(IR, OpSTX) then
 			
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTXI) then
+			if std_match(IR, OpSTXI) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTXD) then
+			if std_match(IR, OpSTXD) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTYI) then
+			if std_match(IR, OpSTYI) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTYD) then
+			if std_match(IR, OpSTYD) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTDY) then
+			if std_match(IR, OpSTDY) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTZI) then
+			if std_match(IR, OpSTZI) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTZD) then
+			if std_match(IR, OpSTZD) then
 				
 			end if;
 			
 			-- will never get here, instruction does not require 3 clocks
-			if std_match(Program_Data_Bus, OpSTDZ) then
+			if std_match(IR, OpSTDZ) then
 				
 			end if;
 			
---			if std_match(Program_Data_Bus, OpSTS) then
+--			if std_match(IR, OpSTS) then
 			
 --			end if;
 			
-			if std_match(Program_Data_Bus, OpIN) then
+			if std_match(IR, OpIN) then
 			
 			end if;
 			
-			if std_match(Program_Data_Bus, OpOUT) then
+			if std_match(IR, OpOUT) then
 			
 			end if;
 			

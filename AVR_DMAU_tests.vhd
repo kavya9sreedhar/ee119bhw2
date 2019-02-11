@@ -111,7 +111,7 @@ begin
         Z_test_coor_rd           : std_logic_vector(0 to NUM_Z_TESTS-1);
         Z_test_corr_wr           : std_logic_vector(0 to NUM_Z_TESTS-1);
 
-        constant NUM_MOV_TESTS   : integer := 0;
+        constant NUM_MOV_TESTS   : integer := 15;
         MOV_test_opcodes         :   op_lst_t(0 to NUM_MOV_TESTS-1);
         MOV_test_data_ld         : data_lst_t(0 to NUM_MOV_TESTS-1);
         MOV_test_corr_addr       : addr_lst_t(0 to NUM_MOV_TESTS-1);
@@ -374,6 +374,98 @@ begin
         Z_test_coor_rd <= "11111110000000"; 
         Z_test_corr_wr <= "00000001111111";
 
+        -- MOV tests
+        MOV_test_opcodes := (
+                        -- LOAD IN VALUES
+                        form_imm_load(OpLDI, 0, 0),
+                        form_imm_load(OpLDI, 2, 1),
+                        form_imm_load(OpLDI, 4, 2),
+                        form_imm_load(OpLDI, 8, 3),
+                        form_imm_load(OpLDI, 16, 4),
+                        -- MOV Around
+                        form_mov_operation(OpMOV, 0, 1),
+                        form_mov_operation(OpMOV, 2, 3),
+                        form_mov_operation(OpMOV, 4, 5),
+                        form_mov_operation(OpMOV, 8, 9),
+                        form_mov_operation(OpMOV, 16, 17),
+                        -- Check by outputting
+                        form_dest_src_LDST(OpSTX , 1),
+                        form_dest_src_LDST(OpSTX , 2),
+                        form_dest_src_LDST(OpSTX , 5),
+                        form_dest_src_LDST(OpSTX , 6),
+                        form_dest_src_LDST(OpSTX , 17)
+                        );
+
+        MOV_test_data_ld := (
+                        -- LOAD IN VALUES
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        -- MOV Around
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        -- Check by outputting
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z'),
+                        (NUM_BITS-1 downto 0 => 'Z')
+                        );  
+
+        MOV_test_corr_data := (
+                        -- LOAD IN VALUES
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        -- MOV Around
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        (NUM_BITS-1 downto 0 => '-'),
+                        -- Check by outputting
+                        int_to_std_vector(0 , NUM_BITS),
+                        int_to_std_vector(1 , NUM_BITS),
+                        int_to_std_vector(2 , NUM_BITS),
+                        int_to_std_vector(3 , NUM_BITS),
+                        int_to_std_vector(4 , NUM_BITS)
+                        );
+
+        MOV_test_corr_addr := (
+                        -- LOAD IN VALUES
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        -- MOV Around
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        -- Check by outputting
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-'),
+                        (2*NUM_BITS-1 downto 0 => '-')
+                        );
+
+        MOV_test_coor_rd <= "000000000000000"; 
+        MOV_test_corr_wr <= "000000000011111";
+
+        -- Stack Tests
+
+        -- Memory Tests
+
         -- Initialize signals
         ProgDB   => (others => 'X');
         Reset    => '1';
@@ -387,7 +479,7 @@ begin
         for i_LDI in 0 to 2 ** NUM_REG_LOG - 1 loop
             
             -- Pretend we are doing a LDI
-            IR_input <= form_imm_load(LDI, i_LDI);
+            IR_input <= form_imm_load(LDI, i_LDI, i_LDI);
 
             wait for CLOCK_PERIOD;
         end loop;
