@@ -7,6 +7,7 @@
 --  Revision History:
 --	28 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
 --	1  Feb 19	Kavya Sreedhar & Dan Xu		Updated revision history
+--  11 Feb 19	Kavya Sreedhar & Dan Xu		Added X, Y, Z register constants
 ----------------------------------------------------------------------------
 
 -- declaration of libraries used

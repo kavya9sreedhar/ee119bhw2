@@ -83,6 +83,8 @@ entity Control_Unit is
 	GP_Dst_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
 	GP_Write_EnableA		: out std_logic;
 	GP_Write_EnableB		: out std_logic;
+	GP_Input_Select			: out std_logic_vector(
+									NUM_GP_INP_SELECT_BITS - 1 downto 0);
 	
 	-- REGISTER VALUES FROM THE REGISTERS UNIT
 	-- Output A from the GP registers
@@ -143,7 +145,7 @@ begin
 		
 		-- first clock of an instruction, idle state, beginning an instruction
 		when Clock1 =>
-
+			
 			-----------------------------------------------------------------
 			-----------------------------------------------------------------
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1
@@ -176,6 +178,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
@@ -206,6 +209,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
@@ -234,6 +238,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -257,6 +262,7 @@ begin
 				Y_register <= GP_outA & GP_outB;
 				Z_register <= (others => '0');
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -276,6 +282,7 @@ begin
 				Y_register <= GP_outA & GP_outB;
 				Z_register <= (others => '0');
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -298,6 +305,7 @@ begin
 				Y_register <= GP_outA & GP_outB;
 				Z_register <= (others => '0');
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -317,6 +325,7 @@ begin
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -336,6 +345,7 @@ begin
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -358,6 +368,7 @@ begin
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -399,8 +410,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
-				GP_Src_SelectA <= 
-				GP_Dst_SelectA <= IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -424,6 +434,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -447,6 +458,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -466,6 +478,7 @@ begin
 				Y_register <= GP_outA & GP_outB;
 				Z_register <= (others => '0');
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -485,6 +498,7 @@ begin
 				Y_register <= GP_outA & GP_outB;
 				Z_register <= (others => '0');
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -507,6 +521,7 @@ begin
 				Y_register <= GP_outA & GP_outB;
 				Z_register <= (others => '0');
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -526,6 +541,7 @@ begin
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -545,6 +561,7 @@ begin
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -567,6 +584,7 @@ begin
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
@@ -601,6 +619,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -613,6 +632,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -625,6 +645,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -637,6 +658,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -649,6 +671,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -661,6 +684,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -673,6 +697,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -685,6 +710,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -697,6 +723,7 @@ begin
 				GP_Write_EnableB <= '0';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 
@@ -725,6 +752,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -737,6 +765,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -749,6 +778,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -761,6 +791,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -773,6 +804,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -785,6 +817,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -797,6 +830,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -809,6 +843,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
@@ -821,6 +856,7 @@ begin
 				GP_Write_EnableA <= '0';
 				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			

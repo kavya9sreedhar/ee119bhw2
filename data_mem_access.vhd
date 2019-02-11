@@ -15,6 +15,7 @@
 --
 --  Revision History:
 --	04 Feb 2019		Kavya Sreedhar & Dan Xu 	Initial Revision
+--  11 Feb 2019		Kavya Sreedhar & Dan Xu		Updated comments
 ----------------------------------------------------------------------------
 
 -- declaration of libraries used
