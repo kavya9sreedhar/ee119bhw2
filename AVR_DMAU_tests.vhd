@@ -295,8 +295,8 @@ begin
                         int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        Y_test_corr_rd := "11111110000000"; 
-        Y_test_corr_wr := "00000001111111";
+        Y_test_corr_rd := "00000001111111"; 
+        Y_test_corr_wr := "11111110000000";
 
         -- Z Tests
         Z_test_opcodes := (
@@ -375,8 +375,8 @@ begin
                         int_to_std_vector(0    , NUM_ADDRESS_BITS)
         );
 
-        Z_test_corr_rd := "11111110000000"; 
-        Z_test_corr_wr := "00000001111111";
+        Z_test_corr_rd := "00000001111111"; 
+        Z_test_corr_wr := "11111110000000";
 
         -- MOV tests
         MOV_test_opcodes := (
@@ -658,6 +658,112 @@ begin
                     " Got: "                   & std_logic'image(DataWr)(2) &
                     " Expected: "              & std_logic'image(X_test_corr_wr(i_X_TEST))(2) &
                     " For X Test: "            & integer'image(i_X_TEST)                                                          
+            severity  ERROR;
+
+            -- Wait for next clock
+            wait until clk = '1';
+        end loop;
+
+        -- Test all of the Y Reg. operations
+        for i_Y_TEST in 0 to NUM_Y_TESTS-1 loop
+
+            wait for CLOCK_PERIOD/32;
+
+            IR_input <= Y_test_opcodes(i_Y_TEST);
+            
+            wait for CLOCK_PERIOD;
+            
+            -- Load in the DB
+            DataDB <= Y_test_data_ld(i_Y_TEST);
+            
+            -- Read at 1/2
+            wait for CLOCK_PERIOD/2;
+            -- Check Data AB
+            assert (std_match(DataAB, Y_test_corr_addr(i_Y_TEST)))
+            report  "Data Address Bus Failure" & 
+                    " Got: "                   & std_logic_vec_to_string(DataAB) &
+                    " Expected: "              & std_logic_vec_to_string(Y_test_corr_addr(i_Y_TEST))&
+                    " For Y Test: "            & integer'image(i_Y_TEST)                                                         
+            severity  ERROR;
+            
+            -- Sample 7/8 into clock
+            wait for 3*(CLOCK_PERIOD/8);
+
+            -- Check DB
+            assert (std_match(DataDB, Y_test_corr_data(i_Y_TEST)))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic_vec_to_string(DataDB) &
+                    " Expected: "              & std_logic_vec_to_string(Y_test_corr_data(i_Y_TEST))&
+                    " For Y Test: "            & integer'image(i_Y_TEST)                                                          
+            severity  ERROR;
+
+            -- Check Rd/Wr
+
+            assert (DataRd = Y_test_corr_rd(i_Y_TEST))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic'image(DataRd)(2) &
+                    " Expected: "              & std_logic'image(Y_test_corr_rd(i_Y_TEST))(2) &
+                    " For Y Test: "            & integer'image(i_Y_TEST)                                                       
+            severity  ERROR;    
+
+            assert (DataWr = Y_test_corr_wr(i_Y_TEST))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic'image(DataWr)(2) &
+                    " Expected: "              & std_logic'image(Y_test_corr_wr(i_Y_TEST))(2) &
+                    " For Y Test: "            & integer'image(i_Y_TEST)                                                          
+            severity  ERROR;
+
+            -- Wait for next clock
+            wait until clk = '1';
+        end loop;
+
+        -- Test all of the Z Reg. operations
+        for i_Z_TEST in 0 to NUM_Z_TESTS-1 loop
+
+            wait for CLOCK_PERIOD/32;
+
+            IR_input <= Z_test_opcodes(i_Z_TEST);
+            
+            wait for CLOCK_PERIOD;
+            
+            -- Load in the DB
+            DataDB <= Z_test_data_ld(i_Z_TEST);
+            
+            -- Read at 1/2
+            wait for CLOCK_PERIOD/2;
+            -- Check Data AB
+            assert (std_match(DataAB, Z_test_corr_addr(i_Z_TEST)))
+            report  "Data Address Bus Failure" & 
+                    " Got: "                   & std_logic_vec_to_string(DataAB) &
+                    " Expected: "              & std_logic_vec_to_string(Z_test_corr_addr(i_Z_TEST))&
+                    " For Z Test: "            & integer'image(i_Z_TEST)                                                         
+            severity  ERROR;
+            
+            -- Sample 7/8 into clock
+            wait for 3*(CLOCK_PERIOD/8);
+
+            -- Check DB
+            assert (std_match(DataDB, Z_test_corr_data(i_Z_TEST)))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic_vec_to_string(DataDB) &
+                    " Expected: "              & std_logic_vec_to_string(Z_test_corr_data(i_Z_TEST))&
+                    " For Z Test: "            & integer'image(i_Z_TEST)                                                          
+            severity  ERROR;
+
+            -- Check Rd/Wr
+
+            assert (DataRd = Z_test_corr_rd(i_Z_TEST))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic'image(DataRd)(2) &
+                    " Expected: "              & std_logic'image(Z_test_corr_rd(i_Z_TEST))(2) &
+                    " For Z Test: "            & integer'image(i_Z_TEST)                                                       
+            severity  ERROR;    
+
+            assert (DataWr = Z_test_corr_wr(i_Z_TEST))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic'image(DataWr)(2) &
+                    " Expected: "              & std_logic'image(Z_test_corr_wr(i_Z_TEST))(2) &
+                    " For Z Test: "            & integer'image(i_Z_TEST)                                                          
             severity  ERROR;
 
             -- Wait for next clock

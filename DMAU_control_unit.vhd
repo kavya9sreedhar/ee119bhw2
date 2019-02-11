@@ -149,14 +149,1028 @@ entity Control_Unit is
     );
 end entity;
 
+architecture standard of Control_Unit is
+	type state_type is (Clock1, Clock2, Clock3);
+	signal state: state_type;
+	signal next_state: state_type;
+
+begin
+
+	actions: process(IR, GP_outA, GP_outB, state)
+	begin
+		case state is
+
+			--
+			-- CLOCK 1
+			--
+
+			when Clock1 =>
+
+				if std_match(IR, OpLDI) then
+					-- LDI operation
+					LDI_op <= '1';
+					-- get register to load immediate value into
+					GP_Dst_SelectA <= 
+						'1' & IR(DMAU_Reg_high_bit - 1 downto DMAU_Reg_low_bit);
+					-- get immediate value to load into register
+					immed_val <= IR(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
+								& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
+					-- proceed to next instruction (instruction over)
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				if std_match(IR, OpLDX) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- X register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+					-- not modifying X
+					Offset_Src_Sel <= Offset_Src_Sel_0;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- address is not changed
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- get current X register value
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+
+				if std_match(IR, OpLDXI) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- X register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+					-- incrementing X
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- post-increment
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- get current X register value
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpLDXD) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- X register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+					-- decrementing X
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+					
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+
+				-- Store X
+				if std_match(IR, OpSTX) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- X register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+					-- not changing X
+					Offset_Src_Sel <= Offset_Src_Sel_0;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- save current value of X, no change
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- get current X register value
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpSTXI) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- X register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+					-- incrementing X
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- post increment
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- get current X register value
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';					
+				end if;
+				
+				if std_match(IR, OpSTXD) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+					-- decremnting X by 1
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- pre decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- get current X register value
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';					
+				end if;
+
+				-- Load Y
+
+				if std_match(IR, OpLDYI) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Y register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+					-- incrementing Y
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- post increment
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Y_REG_LOW_BYTE;
+					Y_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpLDYD) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Y register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+					-- decrementing Y
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- pre decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Y_REG_LOW_BYTE;
+					Y_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpLDDY) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Y register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+					-- adding unsiged offset to Y
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+					unsigned_displacement(7 downto 6) <= "00";
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Y_REG_LOW_BYTE;
+					Y_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+
+				-- Store Y
+				if std_match(IR, OpSTYI) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Y register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+					-- incrementing Y
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- post increment
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Y_REG_LOW_BYTE;
+					Y_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpSTYD) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Y register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+					-- decrementing Y
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- pre decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Y_REG_LOW_BYTE;
+					Y_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpSTDY) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not a LDI operation
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- not a LDI operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+					-- adding unsiged offset to Y
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+					unsigned_displacement(7 downto 6) <= "00";
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Y_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Y_REG_LOW_BYTE;
+					Y_register <= GP_outA & GP_outB;
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;				
+
+				-- Load Z
+				if std_match(IR, OpLDZI) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Z register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					-- incrementing Z
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- post increment
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- get current Z register value
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					Z_register <= GP_outA & GP_outB;
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpLDZD) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Z register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					-- decrementing Z
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- pre decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- get current Z register value
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					Z_register <= GP_outA & GP_outB;
+					SP_register <= (others => '0');
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpLDDZ) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Z register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					-- adding unsiged offset to Z
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+					unsigned_displacement(7 downto 6) <= "00";
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- get current Z register value
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					Z_register <= GP_outA & GP_outB;
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+
+				-- Store Z
+				if std_match(IR, OpSTZI) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Z register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					-- incrementing Z
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- post increment
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- get current Y register value
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					Z_register <= GP_outA & GP_outB;
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpSTZD) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Z register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					-- decrementing Z
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- pre decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- get current Z register value
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					Z_register <= GP_outA & GP_outB;
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+				
+				if std_match(IR, OpSTDZ) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Z register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					-- adding unsiged offset to Z
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					unsigned_displacement(5 downto 0) <= (IR(13) & IR(11 downto 10) & IR(2 downto 0));
+					unsigned_displacement(7 downto 6) <= "00";
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- get current Z register value
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					Z_register <= GP_outA & GP_outB;
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+			--
+			-- CLOCK 2
+			--
+
+			when Clock2 =>
+				-- Load X
+				if std_match(IR, OpLDX) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_X;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				if std_match(IR, OpLDXI) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_X;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpLDXD) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_X;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				-- Store X
+				if std_match(IR, OpSTX) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_X;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpSTXI) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_X;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpSTXD) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_X;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				-- Y Loads
+				if std_match(IR, OpLDYI) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpLDYD) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpLDDY) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				-- Y Stores
+				if std_match(IR, OpSTYI) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpSTYD) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpSTDY) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Y;
+					Store <= '1';
+					GP_Write_EnableB <= '0';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				-- Load Z
+				if std_match(IR, OpLDZI) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpLDZD) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpLDDZ) then
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					Store <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+				-- Store Z
+				if std_match(IR, OpSTZI) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpSTZD) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					Store <= '1';
+					GP_Write_EnableB <= '1';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+				
+				if std_match(IR, OpSTDZ) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					Store <= '1';
+					GP_Write_EnableB <= '0';
+					GP_Write_EnableA <= '0';
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				end if;
+
+			when Clock3 =>
+
+		end case;
+	end process actions;
+
+	state_transition: process (IR, state)
+	begin
+		case state is
+			when Clock1 =>
+				-- Immediate Load
+				if std_match(IR, OpLDI) then
+					next_state <= Clock1;
+				end if;
+				-- X Reg. Loads
+				if std_match(IR, OpLDX) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpLDXI) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpLDXD) then
+					next_state <= Clock2;
+				end if;
+				-- X Reg. Stores
+				if std_match(IR, OpSTX) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTXI) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTXD) then
+					next_state <= Clock2;
+				end if;
+				-- Y Reg. Loads
+				if std_match(IR, OpLDYI) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpLDYD) then
+					next_state <= Clock2;					
+				end if;	
+				if std_match(IR, OpLDDY) then
+					next_state <= Clock2;
+				end if;
+				-- Y Reg Stores
+				if std_match(IR, OpSTYI) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTYD) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTDY) then
+					next_state <= Clock2;
+				end if;
+				-- Z Reg. Loads
+				if std_match(IR, OpLDZI) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpLDZD) then
+					next_state <= Clock2;					
+				end if;	
+				if std_match(IR, OpLDDZ) then
+					next_state <= Clock2;
+				end if;
+				-- Z Reg Stores
+				if std_match(IR, OpSTZI) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTZD) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTDZ) then
+					next_state <= Clock2;
+				end if;				
+
+			when Clock2 =>
+				-- X Reg. Loads
+				if std_match(IR, OpLDX) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpLDXI) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpLDXD) then
+					next_state <= Clock1;
+				end if;
+				-- X Reg. Stores
+				if std_match(IR, OpSTX) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTXI) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTXD) then
+					next_state <= Clock1;
+				end if;
+				-- Y Reg. Loads
+				if std_match(IR, OpLDYI) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpLDYD) then
+					next_state <= Clock1;					
+				end if;	
+				if std_match(IR, OpLDDY) then
+					next_state <= Clock1;
+				end if;
+				-- Y Reg Stores
+				if std_match(IR, OpSTYI) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTYD) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTDY) then
+					next_state <= Clock1;
+				end if;	
+				-- Z Reg. Loads
+				if std_match(IR, OpLDZI) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpLDZD) then
+					next_state <= Clock1;					
+				end if;	
+				if std_match(IR, OpLDDZ) then
+					next_state <= Clock1;
+				end if;
+				-- Z Reg Stores
+				if std_match(IR, OpSTZI) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTZD) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTDZ) then
+					next_state <= Clock1;
+				end if;								
+			when Clock3 =>
+		end case;
+	end process state_transition;
+
+	state_update : process (clk)
+	begin
+		if rising_edge(clk) then
+			state <= next_state;
+		end if;
+	end process state_update;
+
+end architecture;
+
 architecture control_arch of Control_Unit is
 	-- for finite state machine for instruction decoding
 	-- defines different states
 	type state_type is (Clock1, Clock2, Clock3); 
 	-- defines state type for state of finite state machine
-	signal state: state_type;
-	signal state1: state_type;
-	
+	signal State: state_type;
+	signal State1: state_type;
+
 begin
 
 	-- instruction decoder
@@ -167,7 +1181,7 @@ begin
     if rising_edge(clk) then
 		if std_match(IR, OpLDI) then
 			State1 <= Clock1;
-		else if State1 = Clock1 then
+		elsif State1 = Clock1 then
 			State1 <= Clock2;
 		elsif State1 = Clock2 then
 			State1 <= Clock1;
@@ -1167,9 +2181,6 @@ begin
 --			end if;
 			
 		end case;
-		
-    
-    end if;
     
     end process;
 end architecture;

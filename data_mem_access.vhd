@@ -143,7 +143,7 @@ begin
 	
 	-- choose whether or not to update address depending on whether pre or post
 	-- select was indicated as part of instruction
-	Data_Address_Bus <= data_addr_src when Pre_Post_Sel = Pre_Post_Sel_Pre else
+	Data_Address_Bus <= data_addr_src when Pre_Post_Sel = Pre_Post_Sel_Post else
 						adder_subtractor_result;
 						
 	-- updated address value (may or may not be stored)

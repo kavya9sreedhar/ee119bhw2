@@ -151,7 +151,7 @@ begin
         end if;
     end process databus_mux;
 
-    ControlUnit : entity work.control_unit(control_arch)
+    ControlUnit : entity work.control_unit(standard)
     port map (
         -- Connect up the clock
         clk                    => clock,
