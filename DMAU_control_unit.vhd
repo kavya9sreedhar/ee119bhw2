@@ -476,6 +476,7 @@ begin
 				GP_Write_EnableA <= '1';
 				DataRdOut <= '0';
 				DataWrOut <= '1';
+				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock1;
 			end if;
 			
