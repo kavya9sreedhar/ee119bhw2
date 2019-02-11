@@ -52,6 +52,10 @@ use work.opcodes.all;
 entity Control_Unit is
     port(
     
+	-------------------------------------------------------------------
+	-- GENERAL
+	-------------------------------------------------------------------
+	
     -- system clock.
     clk: in std_logic;
     
@@ -61,16 +65,34 @@ entity Control_Unit is
     -- instruction register
     IR                      : in opcode_word;
  
+	-------------------------------------------------------------------
+	-- REGISTERS
+	-------------------------------------------------------------------
+	
 	-- CONTROL SIGNALS TO REGISTERS UNIT
 	-- Ctrl signal to swap the nibbles for a general purpose register
     GP_Swap_Nibbles         : out std_logic;
+	-- Ctrl signal for which register to write to for
+	--   a standard register write
     GP_Dst_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+	-- Select for which GP register to output on A
     GP_Src_SelectA          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
-    GP_Src_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+    -- Select for which GP register to output on B
+	GP_Src_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
+	-- Destination for a wide bus write to registers
 	GP_Dst_SelectB          : out std_logic_vector(NUM_REG_LOG-1 downto 0);
-
+	GP_Write_EnableA		: out std_logic;
+	GP_Write_EnableB		: out std_logic;
+	
+	-- REGISTER VALUES FROM THE REGISTERS UNIT
+	-- Output A from the GP registers
     GP_outA                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+	-- Output B from the GP registers
     GP_outB                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);    
+	
+	-------------------------------------------------------------------
+	-- DATA MEMORY ACCESS UNIT
+	-------------------------------------------------------------------
 	
 	-- Data Memory Access Unit Control Signals and values
 	Data_Addr_Src_Sel		: out std_logic_vector(num_bits_Data_Addr_Src_Sel - 1 downto 0);
@@ -101,29 +123,42 @@ entity Control_Unit is
 end entity;
 
 architecture control_arch of Control_Unit is
-    
+	-- for finite state machine for instruction decoding
+	-- defines different states
 	type state_type is (Clock1, Clock2, Clock3); 
+	-- defines state type for state of finite state machine
 	signal state: state_type;
 	
 begin
 
+	-- instruction decoder
+	-- depending on instruction in instruction register, sets appropriate 
+	-- control signals to various units to perform instruction
     process (clk)
-    
     begin
-    
     if rising_edge(clk) then
 		
+		-- Finite state machine that handles number of clocks per instruction
 		case State is
 		
+		-- first clock of an instruction, idle state, beginning an instruction
 		when Clock1 =>
 
+			-----------------------------------------------------------------
+			-----------------------------------------------------------------
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1
-		
+			-----------------------------------------------------------------
+			-----------------------------------------------------------------
+			
 			if std_match(IR, OpLDX) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				-- not modifying X
 				Offset_Src_Sel <= Offset_Src_Sel_0;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
@@ -131,6 +166,7 @@ begin
 				Pre_Post_Sel <= Pre_Post_Sel_Pre;
 				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- get current X register value
 				GP_Src_SelectA <= X_REG_HIGH_BYTE;
 				GP_Src_SelectB <= X_REG_LOW_BYTE;
 				X_register <= GP_outA & GP_outB;
@@ -140,20 +176,27 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDXI) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				-- incrementing X
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
+				-- post-increment
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
 				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- get current X register value
 				GP_Src_SelectA <= X_REG_HIGH_BYTE;
 				GP_Src_SelectB <= X_REG_LOW_BYTE;
 				X_register <= GP_outA & GP_outB;
@@ -163,13 +206,17 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDXD) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 				-- value does not matter
@@ -529,16 +576,21 @@ begin
 			
 			end if;
 			
---		when Clock2 =>
+		-----------------------------------------------------------------
+		-----------------------------------------------------------------
+			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 2
+		-----------------------------------------------------------------
+		-----------------------------------------------------------------
 		
---			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 2
-		
+		when Clock2 =>
+			
 			if std_match(IR, OpLDX) then
 				--DataRd <= not ('1' and not clk);
 				DataRd <= clk;
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -549,6 +601,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -559,6 +612,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -569,6 +623,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -579,6 +634,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -589,6 +645,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -599,6 +656,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -609,6 +667,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -619,6 +678,7 @@ begin
 				DataWr <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
+				GP_Write_EnableA <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -645,6 +705,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -655,6 +716,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -665,6 +727,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -675,6 +738,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -685,6 +749,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -695,6 +760,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -705,6 +771,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -715,6 +782,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -725,6 +793,7 @@ begin
 				DataWr <= clk;
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
+				GP_Write_EnableB <= '1';
 				GP_Dst_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
@@ -743,9 +812,13 @@ begin
 		
 		end if;
 			
---		when Clock3 =>
+		when Clock3 =>
 		
---			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 3
+			-----------------------------------------------------------------
+			-----------------------------------------------------------------
+			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 3
+			-----------------------------------------------------------------
+			-----------------------------------------------------------------
 		
 			-- will never get here, instruction does not require 3 clocks
 			if std_match(IR, OpLDX) then
