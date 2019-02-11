@@ -25,34 +25,13 @@ use work.opcodes.all;
 use work.FlagConstants.all;
 use work.RegConstants.all;
 use work.CPU_CONSTANTS.all;
+use work.AVR_Opcode_Formation.all;
 
 entity Register_Tester is
     -- 1MHz Clock
     constant CLOCK_PERIOD  : time := 1 us;
     
 end Register_Tester;
-
--- Architecture
-architecture TB of Register_Tester is
-
-    -- Clock signal
-    signal clk       : std_logic;
-
-    -- The instruction register input
-    signal IR_input  : opcode_word;
-    -- The input into the register file.
-    signal Reg_input : std_logic_vector(NUM_DATA_BITS-1 downto 0);
-
-    -- Register outputs
-    signal RegAOut   : std_logic_vector(NUM_DATA_BITS-1 downto 0);
-    signal RegBOut   : std_logic_vector(NUM_DATA_BITS-1 downto 0);
-
-    -- Signal used to stop clock signal generators
-    signal  END_SIM  :  BOOLEAN := FALSE;
-
-    -- Array of operations
-    type op_lst_t is array (integer range <>) of opcode_word;
-
     -- std_logic_vec_to_string
     -- Converts a std_logic_vector to a string
     --
@@ -220,7 +199,26 @@ architecture TB of Register_Tester is
 
         FormedOPcode := OPcode(15 downto 7) & imm(2 downto 0) & OPcode(3 downto 0);
     return FormedOPcode;
-    end form_SREG_bitop_ALU_opcode;
+-- Architecture
+architecture TB of Register_Tester is
+
+    -- Clock signal
+    signal clk       : std_logic;
+
+    -- The instruction register input
+    signal IR_input  : opcode_word;
+    -- The input into the register file.
+    signal Reg_input : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+
+    -- Register outputs
+    signal RegAOut   : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+    signal RegBOut   : std_logic_vector(NUM_DATA_BITS-1 downto 0);
+
+    -- Signal used to stop clock signal generators
+    signal  END_SIM  :  BOOLEAN := FALSE;
+
+    -- Array of operations
+    type op_lst_t is array (integer range <>) of opcode_word;
 
 begin
 

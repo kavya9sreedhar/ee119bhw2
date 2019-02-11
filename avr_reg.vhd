@@ -97,8 +97,7 @@ entity AVRRegisters is
 		GP_outA               : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
 		GP_outB               : out std_logic_vector(NUM_DATA_BITS-1 downto 0);
         -- Ctrl signals
-        GP_Input_Select       : in std_logic_vector(
-								NUM_GP_INP_SELECT_BITS-1 downto 0);
+        GP_Input_Select       : in std_logic_vector(NUM_GP_INP_SELECT_BITS-1 downto 0);
 
         GP_Write_EnableA      : in std_logic;
         GP_Swap_Nibbles       : in std_logic;
