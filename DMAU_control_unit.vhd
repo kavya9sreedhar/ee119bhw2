@@ -165,6 +165,7 @@ begin
     begin
     if rising_edge(clk) then
 		
+		-- default values
 		GP_Write_EnableA <= '0';
 		
 		-- Finite state machine that handles number of clocks per instruction
