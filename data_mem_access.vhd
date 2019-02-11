@@ -2,7 +2,16 @@
 --  Data Memory Access Unit 
 --
 --  This file contains an implementation of the data memory access unit for 
---  an 8-bit AVR architecture.
+--  an 8-bit AVR architecture. The data memory access unit generates addresses
+--	and reads or writes the data for the data memory. The data memory is 
+--  addressed as bytes with 16-bits of address (64 Kbytes of total data memory
+--  space). The address bus is output from this unit, while the data data bus
+--  is updated with the contents from the address output and the read and the 
+--  write lines are accordingly updated from the control unit depending on 
+--  whether there was a load or store instruction. An address may come from
+--  the second word of the instruction, the X, Y, Z, or SP registers (unchanged
+--  or with pre/post-increment/decrement), or the Y or Z registers with a 
+--  6-bit unsigned offset (range 0 to 63).
 --
 --  Revision History:
 --	04 Feb 2019		Kavya Sreedhar & Dan Xu 	Initial Revision
