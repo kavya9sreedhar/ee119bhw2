@@ -466,6 +466,7 @@ begin
 				immed_val <= IR(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
 							& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
 				-- proceed to next instruction (instruction over)
+				GP_Write_EnableA <= not clk;
 				State <= Clock1;
 			end if;
 			
