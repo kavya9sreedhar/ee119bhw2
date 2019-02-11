@@ -12,6 +12,9 @@
 --      3 May 02  Glen George       Fixed Reset signal type.
 --     23 Jan 06  Glen George       Updated comments.
 --     21 Jan 08  Glen George       Updated comments.
+--     11 Feb 09  Kavya & Dan		Updated to fit with our files
+--									and test our signals + code
+--	   11 Feb 09  Kavya & Dan		Updated comments
 --
 ----------------------------------------------------------------------------
 
