@@ -138,9 +138,13 @@ entity Control_Unit is
 	-- active low control line indicating data memory is being read
 	-- active only during 2nd half of the clock in the 2nd cycle
 	DataRd					: out std_logic;
+	DataRdOut				: out std_logic;
 	-- active low control line indicating data memory is being written
 	-- active only during 2nd half of the clock in the 2nd cycle
-	DataWr					: out std_logic
+	DataWr					: out std_logic;
+	DataWrOut				: out std_logic;
+	
+	
     
     );
 end entity;
@@ -179,8 +183,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				-- not modifying X
@@ -210,8 +214,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				-- incrementing X
@@ -241,8 +245,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				-- decrementing X
@@ -269,8 +273,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				-- incrementing Y
@@ -300,8 +304,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				-- decrementing Y
@@ -332,8 +336,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				-- adding unsiged offset to Y
@@ -363,8 +367,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				-- incrementing Z
@@ -395,8 +399,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				-- decrementing Z
@@ -424,8 +428,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				-- adding unsiged offset to Z
@@ -462,8 +466,8 @@ begin
 							& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
 				-- proceed to next instruction (instruction over)
 				GP_Write_EnableA <= '1';
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				State <= Clock1;
 			end if;
 			
@@ -480,8 +484,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				-- not changing X
@@ -512,8 +516,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				-- incrementing X
@@ -544,8 +548,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				-- decremnting X by 1
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
@@ -575,8 +579,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				-- incrementing Y
@@ -607,8 +611,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				-- decrementing Y
@@ -639,8 +643,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not a LDI operation
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- not a LDI operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				-- adding unsiged offset to Y
@@ -670,8 +674,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				-- incrementing Z
@@ -701,8 +705,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				-- decrementing Z
@@ -733,8 +737,8 @@ begin
 				-- not a LDI operation
 				LDI_op <= '0';
 				-- not reading or writing data right now
-				DataRd <= '1';
-				DataWr <= '1';
+				DataRdOut <= '1';
+				DataWrOut <= '1';
 				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				-- adding unsiged offset to Z
@@ -775,8 +779,8 @@ begin
 			
 			if std_match(IR, OpLDX) then
 				--DataRd <= not ('1' and not clk);
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -788,8 +792,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpLDXI) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -801,8 +805,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpLDXD) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -814,8 +818,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -827,8 +831,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -840,8 +844,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -853,8 +857,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -866,8 +870,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -879,8 +883,8 @@ begin
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
-				DataRd <= clk;
-				DataWr <= '1';
+				DataRdOut <= '0';
+				DataWrOut <= '1';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '0';
 				GP_Write_EnableA <= '1';
@@ -908,8 +912,8 @@ begin
 --			end if;
 			
 			if std_match(IR, OpSTX) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -921,8 +925,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTXI) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -934,8 +938,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTXD) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_X;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -947,8 +951,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTYI) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -960,8 +964,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTYD) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -973,8 +977,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTDY) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Y;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -986,8 +990,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTZI) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -999,8 +1003,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTZD) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
@@ -1012,8 +1016,8 @@ begin
 			end if;
 			
 			if std_match(IR, OpSTDZ) then
-				DataRd <= '1';
-				DataWr <= clk;
+				DataRdOut <= '1';
+				DataWrOut <= '0';
 				GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 				Store <= '1';
 				GP_Write_EnableB <= '1';
