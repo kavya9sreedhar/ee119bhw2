@@ -166,9 +166,9 @@ begin
     if rising_edge(clk) then
 		if std_match(IR, OpLDI) then
 			State1 <= Clock1;
-		else if State = Clock1 then
+		else if State1 = Clock1 then
 			State1 <= Clock2;
-		elsif State = Clock2 then
+		elsif State1 = Clock2 then
 			State1 <= Clock1;
 		end if;
 
