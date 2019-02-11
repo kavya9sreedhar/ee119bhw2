@@ -39,4 +39,7 @@ package DMAU_constants is
 	constant Pre_Post_Sel_Pre: std_logic := '0';
 	constant Pre_Post_Sel_Post: std_logic := '1';
 	
+	constant DMAU_Reg_high_bit: integer := 8;
+	constant DMAU_Reg_low_bit: integer := 4;
+	
 end package;

@@ -62,6 +62,9 @@ entity Control_Unit is
 	Z_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	SP_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	
+	-- register to store value from Data Memory Access Unit return address in
+	DMAU_Reg_Bits			: out std_logic_vector(NUM_REG_LOG - 1 downto 0);
+	
 	-- active low control line indicating data memory is being read
 	-- active only during 2nd half of the clock in the 2nd cycle
 	DataRd					: out std_logic;
@@ -440,20 +443,27 @@ begin
 --			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 2
 		
 			if std_match(Program_Data_Bus, OpLDX) then
-				DataRd <= not ('1' and not clk);
+				--DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
-				DataRd <= not ('1' and not clk);
+				DataRd <= clk;
 				DataWr <= '1';
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
@@ -506,19 +516,25 @@ begin
 			
 			if std_match(Program_Data_Bus, OpSTX) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
 				DataRd <= '1';
-				DataWr <= not ('1' and not clk);
+				DataWr <= clk;
+				DMAU_Reg_Bits <= 
+					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
 			
