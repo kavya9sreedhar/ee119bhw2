@@ -292,4 +292,29 @@ package AVR_Opcode_Formation is
 
         return FormedOPcode;
     end form_mov_operation;
+
+    -- form_inout_operation
+    -- Takes in an in/out OP code and creates teh fully formed OP code.
+    --
+    -- Params:
+    --   OPcode
+    --     IN or OUT opcode
+    --   GP_reg
+    --     5-bit src
+    --   IO_reg
+    --     6-bit destination
+    function form_inout_operation OPcode : opcode_word; gp_register: integer; io_register: integer)
+        return opcode_word is
+            variable GPreg           : std_logic_vector(4 downto 0);
+            variable IOreg           : std_logic_vector(5 downto 0);
+            variable FormedOPcode    : opcode_word;
+    begin
+
+        GPreg  := int_to_std_vector(gp_register, 5);
+        IOreg  := int_to_std_vector(io_register, 6);
+
+        FormedOPcode := OPcode(15 downto 11) & IOreg(5 downto 4) & GPreg(4 downto 0) & IOreg(3 downto 0);
+
+        return FormedOPcode;
+    end form_inout_operation;    
 end package

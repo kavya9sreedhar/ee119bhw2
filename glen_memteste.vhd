@@ -69,8 +69,9 @@ architecture structural of MEM_TEST is
 
     -- Register Ctrl Sginals
     signal GP_Swap_Nibbles         : std_logic;
-    signal GP_Dst_Select           : std_logic_vector(NUM_REG_LOG-1 downto 0);
+    signal GP_Dst_SelectA          : std_logic_vector(NUM_REG_LOG-1 downto 0);
     signal GP_Src_SelectA          : std_logic_vector(NUM_REG_LOG-1 downto 0);
+    signal GP_Dst_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
     signal GP_Src_SelectB          : std_logic_vector(NUM_REG_LOG-1 downto 0);
 
     -- Register Outputs
