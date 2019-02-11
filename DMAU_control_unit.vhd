@@ -3,13 +3,31 @@
 --
 --    This file contains an implementation of the control for an 8-bit
 --  AVR architecture. This implementation consists of a FSM and instruction
---  decoder to process instructions from the program data bus.
+--  decoder to process instructions from the program data bus as well as the
+--  16-bit instruction register which holds the instruction to be executed.
+--	The second word of an instruction is available on the bus Program_Data_Bus
+--  and the stack pointer in implemented in the control unit as well. An 
+--  active low reset is used to initialize the stack pointer to all 1's (note
+--  this is inconsistent with the standard AVR processor which does not initialize
+--  its stack pointer on reset). 
+--	Only instructions part of the data memory access unit are currently supported
+--  and the control unit generates appropriate signals for that unit to generate
+--  addresses and read and write data for the data memory. While the data memory
+--  access unit updates the data address bus, appropriate control signals are
+--  sent to the registers to correctly update the data data bus with the value
+--  at that address. There are also 2 active-low control lines for accessing the
+--  memory: DataRd indicates that the data memory is being read and DataWr indicates
+--  it is being written. These lines are only active during the second half of the
+--  clock (while the clock is low) in the last clock cycle for the insturction.
 --
 --  Revision History:
---	28 Jan 19   Kavya Sreedhar & Dan Xu    Initial revision
--- 	30 Jan 19   Kavya Sreedhar & Dan Xu    Updated more control signals 
---    1  Feb 19   Kavya Sreedhar & Dan Xu    Updated revision history
---    2  Feb 19   Kavya Sreedhar & Dan Xu    Fixed syntax errors, updated comments
+--	28 Jan 19   Kavya Sreedhar & Dan Xu    	Initial revision
+-- 	30 Jan 19   Kavya Sreedhar & Dan Xu    	Updated more control signals 
+--  01 Feb 19   Kavya Sreedhar & Dan Xu    	Updated revision history
+--  02 Feb 19   Kavya Sreedhar & Dan Xu    	Fixed syntax errors, updated comments
+--	10 Feb 19	Kavya Sreedhar & Dan Xu	   	Added data memory access unit control
+--											signals, deleted ALU
+--  11 Feb 19	Kavya Sreedhar & Dan Xu		Updated comments
 ----------------------------------------------------------------------------
 
 -- declaration of libraries used
