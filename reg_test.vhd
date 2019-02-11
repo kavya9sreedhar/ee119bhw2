@@ -28,25 +28,30 @@ end RegisterTester;
 architecture TestBench of RegisterTester is
 
     -- Number of bits for the register unit to test.
-    constant NUM_BITS            : positive := 8;
+    constant NUM_BITS             : positive := 8;
     -- Number of registers to test.
     constant LNUM_REGISTERS       : positive := 5;
+    constant LNUM_WIDE_LD_REGS    : integer := 2;
 
     -- Clock
-    signal clk                   : std_logic;   
+    signal clk                    : std_logic;   
     
     -- Input
-    signal reg_in                : std_logic_vector(NUM_BITS-1 downto 0);
+    signal reg_inA                : std_logic_vector(NUM_BITS-1 downto 0);
+    signal reg_inB                : std_logic_vector(NUM_BITS-1 downto 0);
 
     -- Outputs (Comes as a buffer with all bits)
-    signal reg_outA              : std_logic_vector(NUM_BITS-1 downto 0);
-    signal reg_outB              : std_logic_vector(NUM_BITS-1 downto 0);
+    signal reg_outA               : std_logic_vector(NUM_BITS-1 downto 0);
+    signal reg_outB               : std_logic_vector(NUM_BITS-1 downto 0);
 
     -- Ctrl signals
-    signal Register_Write_Enable : std_logic;
-    signal Register_Dst_Select   : std_logic_vector(LNUM_REGISTERS-1 downto 0);
-    signal Register_Src_SelectA  : std_logic_vector(LNUM_REGISTERS-1 downto 0);
-    signal Register_Src_SelectB  : std_logic_vector(LNUM_REGISTERS-1 downto 0);
+    signal Register_Write_EnableA : std_logic;
+    signal Register_Dst_SelectA   : std_logic_vector(LNUM_REGISTERS-1 downto 0);
+    signal Register_Write_EnableB : std_logic;
+    signal Register_Dst_SelectB   : std_logic_vector(LNUM_REGISTERS-1 downto 0);
+    
+    signal Register_Src_SelectA   : std_logic_vector(LNUM_REGISTERS-1 downto 0);
+    signal Register_Src_SelectB   : std_logic_vector(LNUM_REGISTERS-1 downto 0);
     
     -- Signal used to stop clock signal generators
     signal  END_SIM  :  BOOLEAN := FALSE;
@@ -81,20 +86,23 @@ begin
         port map(
 
             -- Hook up the clock
-            clk                   => clk,
+            clk                    => clk,
 
             -- Hook up the input
-            reg_in                => reg_in,
+            reg_inA                => reg_inA,
+            reg_inB                => reg_inB,
 
             -- Hook up outputs
-            reg_outA              => reg_outA,
-            reg_outB              => reg_outB,
+            reg_outA               => reg_outA,
+            reg_outB               => reg_outB,
 
             -- Ctrl signals
-            Register_Write_Enable => Register_Write_Enable,
-            Register_Dst_Select   => Register_Dst_Select,
-            Register_Src_SelectA  => Register_Src_SelectA,
-            Register_Src_SelectB  => Register_Src_SelectB
+            Register_Write_EnableA => Register_Write_EnableA,
+            Register_Dst_SelectA   => Register_Dst_SelectA,
+            Register_Write_EnableB => Register_Write_EnableB,
+            Register_Dst_SelectB   => Register_Dst_SelectB,
+            Register_Src_SelectA   => Register_Src_SelectA,
+            Register_Src_SelectB   => Register_Src_SelectB
         );
 
     -----------------------
@@ -106,24 +114,31 @@ begin
         report "-------- START TESTS --------";
         
         -- Initialize all input values to 'X'
-        Register_Write_Enable <= 'X';
-        Register_Dst_Select   <= (others => 'X');
-        Register_Src_SelectA  <= (others => 'X');
-        Register_Src_SelectB  <= (others => 'X');
-        reg_in                <= (others => 'X');
+        Register_Write_EnableA <= 'X';
+        Register_Dst_SelectA   <= (others => 'X');
+        Register_Write_EnableB <= 'X';
+        Register_Dst_SelectB   <= (others => 'X');
+        
+        Register_Src_SelectA   <= (others => 'X');
+        Register_Src_SelectB   <= (others => 'X');
+        
+        reg_inA                <= (others => 'X');
+        reg_inB                <= (others => 'X');
         
         wait for 4*CLOCK_PERIOD;
         
+        report "-------- Check Single Loading --------";
+        
         for i in 0 to 2 ** LNUM_REGISTERS - 1 loop
 
-            current               := std_logic_vector(to_unsigned(i, LNUM_REGISTERS));
+            current                := std_logic_vector(to_unsigned(i, LNUM_REGISTERS));
 
             -- Load a value corresponding to the register
-            reg_in                <= std_logic_vector(to_unsigned(i, NUM_BITS));
+            reg_inA                <= std_logic_vector(to_unsigned(i, NUM_BITS));
             
             -- Signals to load it in.
-            Register_Write_Enable <= '1';
-            Register_Dst_Select   <= current;
+            Register_Write_EnableA <= '1';
+            Register_Dst_SelectA   <= current;
 
             wait for CLOCK_PERIOD;
 
@@ -131,16 +146,16 @@ begin
 
         for i in 0 to 2 ** LNUM_REGISTERS - 1 loop
 
-            current               := std_logic_vector(to_unsigned(i, LNUM_REGISTERS));
+            current                := std_logic_vector(to_unsigned(i, LNUM_REGISTERS));
 
             -- Load a value corresponding to the register
-            reg_in                <= (NUM_BITS-1 downto 0 => '0');
+            reg_inA                <= (NUM_BITS-1 downto 0 => '0');
             
             -- Signals to not load it in.
-            Register_Write_Enable <= '0';
-            Register_Dst_Select   <= current;
-            Register_Src_SelectA  <= current;
-            Register_Src_SelectB  <= current;
+            Register_Write_EnableA <= '0';
+            Register_Dst_SelectA   <= current;
+            Register_Src_SelectA   <= current;
+            Register_Src_SelectB   <= current;
 
             wait for CLOCK_PERIOD/2;
 
@@ -161,7 +176,23 @@ begin
             wait for CLOCK_PERIOD/2;
 
         end loop;
+        
+        report "-------- Check Dual Loading --------";
 
+        -- Load in two values
+        reg_inA                <= std_logic_vector(to_unsigned(255, NUM_BITS));
+        reg_inB                <= std_logic_vector(to_unsigned(255, NUM_BITS));
+        
+        -- Signals to load it in.
+        Register_Write_EnableA <= '1';
+        Register_Write_EnableB <= '1';
+        
+        Register_Dst_SelectA   <= std_logic_vector(to_unsigned(0, LNUM_REGISTERS));
+        Register_Dst_SelectB   <= std_logic_vector(to_unsigned(1, LNUM_REGISTERS));
+
+        wait for CLOCK_PERIOD;
+
+       
         END_SIM <= TRUE;        -- end of stimulus events
         
         -- Report that all tests are done.

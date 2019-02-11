@@ -17,6 +17,12 @@ use ieee.numeric_std.all;
 -- constants for the Registers implementation only
 package RegConstants is
 
+	-- Wide load constants
+	constant NUM_GP_WIDE_LOAD_BITS  : integer := 2;
+	constant GP_WIDE_LOAD_OFFSET    : integer := 24;
+	constant NUM_IO_WIDE_LOAD_BITS  : integer := 1;
+	constant IO_WIDE_LOAD_OFFSET    : integer := 61;
+
 	-- Swap control values
 	constant SWAP_EN                : std_logic := '1';
 	constant SWAP_DIS               : std_logic := '0';
@@ -38,5 +44,15 @@ package RegConstants is
 	constant IO_IN_SEL_GP_A         : std_logic := '1';
 	-- Use the SREG update from ALU
 	constant IO_IN_SEL_SREG_ALU     : std_logic := '0';
+
+	-- 16 bit REGISTERS
+	constant R16L 	                : integer := 24;
+	constant R16H 	                : integer := 25;
+	constant XL                     : integer := 26;
+	constant XH                     : integer := 27;
+	constant YL                     : integer := 28;
+	constant YH                     : integer := 29;
+	constant ZL                     : integer := 30;
+	constant ZH                     : integer := 31;
 
 end package;

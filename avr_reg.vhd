@@ -9,6 +9,7 @@
 --	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial Revision
 --	31 Jan 19	Kavya Sreedhar & Dan Xu 	Bug Fixes
 --	01 Feb 19	Kavya Sreedhar & Dan Xu 	Added more documentation
+--	08 Feb 19	Kavya Sreedhar & Dan Xu 	Added wide loading functionality
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -121,7 +122,9 @@ begin
     GPReg : entity work.Registers(standard)
         generic map (
             NUM_BITS              =>  NUM_DATA_BITS,
-            LNUM_REGISTERS        =>  NUM_REG_LOG
+            LNUM_REGISTERS        =>  NUM_REG_LOG,
+            LNUM_WIDE_LD_REGS     =>  NUM_GP_WIDE_LOAD_BITS,
+            WIDE_LD_OFFSET        =>  GP_WIDE_LOAD_OFFSET
         )
         port map(
 
@@ -146,7 +149,9 @@ begin
     IOReg : entity work.Registers(standard)
         generic map (
 			NUM_BITS              =>  NUM_DATA_BITS,
-			LNUM_REGISTERS        =>  NUM_IO_LOG
+            LNUM_REGISTERS        =>  NUM_IO_LOG
+            LNUM_WIDE_LD_REGS     =>  NUM_IO_WIDE_LOAD_BITS,
+            WIDE_LD_OFFSET        =>  IO_WIDE_LOAD_OFFSET
 		)
 		port map(
 

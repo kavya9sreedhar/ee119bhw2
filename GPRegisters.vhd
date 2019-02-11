@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
---  Register
+--  GPRegister
 --
 --	This file contains an implementation of a dual input, two output
 --  register file. Two was chosen because this was designed for a max
@@ -16,7 +16,7 @@
 --  Revision History:
 --	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
 --  1  Feb 19	Kavya Sreedhar & Dan Xu		Updated comments
---	08 Feb 19	Kavya Sreedhar & Dan Xu 	Added 2 input functionality
+--	08 Feb 19	Kavya Sreedhar & Dan Xu 	Added wide loading functionality
 ----------------------------------------------------------------------------
 
 -- library declarations
@@ -27,7 +27,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 --
--- Registers entity declarations
+-- GPRegisters entity declarations
 -- Generics
 -- NUM_BITS
 --     The number of bits in a register.
@@ -54,7 +54,7 @@ use ieee.numeric_std.all;
 --     The first register output
 -- reg_outB [NUM_BITS-1..0]
 --     The second register output
-entity Registers is
+entity GPRegisters is
 
 	generic(
 		NUM_BITS              : positive := 8;
@@ -67,7 +67,7 @@ entity Registers is
 		
 		-- Input
 		reg_inA                : in std_logic_vector(NUM_BITS-1 downto 0);
-		reg_inB                : in std_logic_vector(NUM_BITS-1 downto 0);
+		reg_inB                : in std_logic_vector(2*NUM_BITS-1 downto 0);
 
 		-- Outputs (Comes as a buffer with all bits)
 		reg_outA               : out std_logic_vector(NUM_BITS-1 downto 0);
@@ -78,7 +78,7 @@ entity Registers is
 		Register_Dst_SelectA   : in std_logic_vector(LNUM_REGISTERS-1 downto 0);
 
 		Register_Write_EnableB : in std_logic;
-		Register_Dst_SelectB   : in std_logic_vector(LNUM_REGISTERS-1 downto 0);
+		Register_Dst_SelectB   : in std_logic_vector(NUM_GP_WIDE_LOAD_BITS-1 downto 0);
 
 		Register_Src_SelectA   : in std_logic_vector(LNUM_REGISTERS-1 downto 0);
 		Register_Src_SelectB   : in std_logic_vector(LNUM_REGISTERS-1 downto 0)
@@ -86,7 +86,7 @@ entity Registers is
 end entity;
 
 -- Standard Register Architecture
-architecture standard of Registers is
+architecture standard of GPRegisters is
 
     -- Defined types
 	-- The register data type
@@ -107,11 +107,22 @@ begin
             if (Register_Write_EnableA = '1') then
                 register_file(to_integer(unsigned(Register_Dst_SelectA))) <= reg_inA;
             end if;
-			-- Check if we load
+			-- Check if we load to 16 bit registers
 			if (Register_Write_EnableB = '1') then
-			    if (not(Register_Dst_SelectA = Register_Dst_SelectB and Register_Write_EnableA = '1')) then
-					register_file(to_integer(unsigned(Register_Dst_SelectB))) <= reg_inB;
-				end if;
+                case Register_Dst_SelectB is
+                    when "00" =>
+                        register_file(R16L) <= reg_inB(NUM_BITS-1 downto 0);
+                        register_file(R16H) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+                    when "01" =>
+                        register_file(XL) <= reg_inB(NUM_BITS-1 downto 0);
+                        register_file(XH) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+                    when "10" =>
+                        register_file(YL) <= reg_inB(NUM_BITS-1 downto 0);
+                        register_file(YH) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+                    when "11" =>
+                        register_file(ZL) <= reg_inB(NUM_BITS-1 downto 0);
+                        register_file(ZH) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+                end case;
 			end if;
 		end if;
 	end process load;
