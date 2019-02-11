@@ -218,6 +218,7 @@ begin
 				DataWr <= '1';
 				-- X register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
+				-- decrementing X
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
@@ -237,10 +238,14 @@ begin
 			end if;
 			
 			if std_match(IR, OpLDYI) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				-- incrementing Y
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
@@ -394,6 +399,8 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				GP_Src_SelectA <= 
+				GP_Dst_SelectA <= IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock2;
 			end if;
 			
@@ -716,7 +723,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -728,7 +735,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -740,7 +747,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -752,7 +759,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -764,7 +771,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -776,7 +783,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -788,7 +795,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -800,7 +807,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
@@ -812,7 +819,7 @@ begin
 				Store <= '1';
 				GP_Write_EnableB <= '1';
 				GP_Write_EnableA <= '0';
-				GP_Dst_SelectA <= 
+				GP_Src_SelectA <= 
 					Program_Data_Bus(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 				State <= Clock1;
 			end if;
