@@ -42,4 +42,9 @@ package DMAU_constants is
 	constant DMAU_Reg_high_bit: integer := 8;
 	constant DMAU_Reg_low_bit: integer := 4;
 	
+	constant IMMED_VAL_HIGH_BYTE1: integer := 11;
+	constant IMMED_VAL_LOW_BYTE1: integer := 8;
+	constant IMMED_VAL_HIGH_BYTE2: integer := 7;
+	constant IMMED_VAL_LOW_BYTE2: integer := 4;
+	
 end package;
