@@ -274,95 +274,147 @@ begin
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
+				-- post increment
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- value does not matter
 				X_register <= (others => '0');
+				-- get current Y register value
 				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Y_register <= GP_outA & GP_outB;
+				-- value does not matter
 				Z_register <= (others => '0');
+				-- value does not matter
 				SP_register <= (others => '0');
+				-- access data data bus
 				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDYD) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				-- decrementing Y
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
+				-- pre decrement
 				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- value does not matter
 				X_register <= (others => '0');
+				-- get current Y register value
 				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Y_register <= GP_outA & GP_outB;
+				-- value does not matter
 				Z_register <= (others => '0');
+				-- value does not matter
 				SP_register <= (others => '0');
+				-- access data data bus
 				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDDY) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- Y register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
+				-- adding unsiged offset to Y
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
 				unsigned_displacement <= 
 					(5 downto 0 => IR(13) & 
 					IR(11 downto 10) & 
 					IR(2 downto 0), 
 					others => '0');
+				-- update Y with sum of Y and unsigned offset
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- value does not matter
 				X_register <= (others => '0');
+				-- get current Y register value
 				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Y_register <= GP_outA & GP_outB;
+				-- value does not matter
 				Z_register <= (others => '0');
+				-- value does not matter
 				SP_register <= (others => '0');
+				-- access data data bus
 				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDZI) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				-- incrementing Z
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
+				-- post increment
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- value does not matter
 				X_register <= (others => '0');
+				-- value does not matter
 				Y_register <= (others => '0');
+				-- get current Z register value
 				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
 				GP_Src_SelectB <= Y_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
+				-- value does not matter
 				SP_register <= (others => '0');
+				-- access data data bus
 				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDZD) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				-- decrementing Z
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
+				-- pre decrement
 				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- value does not matter
 				X_register <= (others => '0');
+				-- value does not matter
 				Y_register <= (others => '0');
-				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
-				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				-- get current Z register value
+				GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Z_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
 				SP_register <= (others => '0');
 				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
@@ -370,34 +422,50 @@ begin
 			end if;
 			
 			if std_match(IR, OpLDDZ) then
+				-- not a LDI operation
 				LDI_op <= '0';
+				-- not reading or writing data right now
 				DataRd <= '1';
 				DataWr <= '1';
+				-- Z register operation
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+				-- adding unsiged offset to Z
 				Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
 				unsigned_displacement <= 
 					(5 downto 0 => IR(13) & 
 					IR(11 downto 10) & 
 					IR(2 downto 0), 
 					others => '0');
+				-- update Z with sum of Z and unsigned offset
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				-- value does not matter
 				Immediate_Data_Address <= (others => '0');
+				-- value does not matter
 				X_register <= (others => '0');
+				-- value does not matter
 				Y_register <= (others => '0');
-				GP_Src_SelectA <= Y_REG_HIGH_BYTE;
-				GP_Src_SelectB <= Y_REG_LOW_BYTE;
+				-- get current Z register value
+				GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+				GP_Src_SelectB <= Z_REG_LOW_BYTE;
 				Z_register <= GP_outA & GP_outB;
+				-- value does not matter
 				SP_register <= (others => '0');
+				-- access data data bus
 				GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+				-- proceed to next clock of instruction
 				State <= Clock2;
 			end if;
 			
 			if std_match(IR, OpLDI) then
+				-- LDI operation
 				LDI_op <= '1';
+				-- get register to load immediate value into
 				GP_Dst_SelectA <= 
 					'1' & IR(DMAU_Reg_high_bit - 1 downto DMAU_Reg_low_bit);
+				-- get immediate value to load into register
 				immed_val <= IR(IMMED_VAL_HIGH_BYTE1 downto IMMED_VAL_LOW_BYTE1)
 							& IR(IMMED_VAL_HIGH_BYTE2 downto IMMED_VAL_LOW_BYTE2);
+				-- proceed to next instruction (instruction over)
 				State <= Clock1;
 			end if;
 			
