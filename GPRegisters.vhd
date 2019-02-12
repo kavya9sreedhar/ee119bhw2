@@ -2,21 +2,21 @@
 --  GPRegister
 --
 --	This file contains an implementation of a dual input, two output
---  register file. Two was chosen because this was designed for a max
---  two argument instruction set.
+--  register file. Two was chosen because this was designed an AVR
+--  processor.
+--  Allows for regular and wide loading of the registers.
 --
 --  Allows for the specification of:
 --    NUM_BITS
 --        The number of bits in a register.
 --    LNUM_REGISTERS
 --        The number of registers in the register file. (LOG)
---    NUM_OUTPUTS
---        The number of register outputs for the register file.
 --
 --  Revision History:
 --	30 Jan 19	Kavya Sreedhar & Dan Xu 	Initial revision
 --  1  Feb 19	Kavya Sreedhar & Dan Xu		Updated comments
 --	08 Feb 19	Kavya Sreedhar & Dan Xu 	Added wide loading functionality
+--	09 Feb 19	Kavya Sreedhar & Dan Xu 	Bug fixing
 ----------------------------------------------------------------------------
 
 -- library declarations
@@ -40,12 +40,22 @@ use work.RegConstants.all;
 -- Inputs:
 -- clk
 --     The clock signal into the system.
--- reg_in [NUM_BITS-1..0]
---     The input to the register file.
--- Register_Write_Enable
+-- reg_inA [NUM_BITS-1..0]
+--     The regular input to the register file.
+-- reg_inB [2*NUM_BITS-1..0]
+--     The wide input to the register file.
+-- Register_Write_EnableA
 --     Enable writing to the registers.
--- Register_Dst_Select
+-- Register_Dst_SelectA
 --     The destination for the register input.
+-- Register_Write_EnableB
+--     Enable wide bus writing to the registers.
+-- Register_Dst_SelectB
+--     The destination for the wide register input.
+--     00 - R16
+--     01 - X
+--     10 - Y
+--     10 - Z
 -- Register_Src_SelectA
 --     The select for the first register output.
 -- Register_Src_SelectB

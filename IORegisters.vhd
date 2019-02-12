@@ -40,12 +40,18 @@ use work.RegConstants.all;
 -- Inputs:
 -- clk
 --     The clock signal into the system.
--- reg_in [NUM_BITS-1..0]
---     The input to the register file.
--- Register_Write_Enable
+-- reg_inA [NUM_BITS-1..0]
+--     The regular input to the register file.
+-- reg_inB [2*NUM_BITS-1..0]
+--     The wide input to the register file.
+-- Register_Write_EnableA
 --     Enable writing to the registers.
--- Register_Dst_Select
+-- Register_Dst_SelectA
 --     The destination for the register input.
+-- Register_Write_EnableB
+--     Enable wide bus writing to the registers.
+-- Register_Dst_SelectA
+--     The destination for the regular register input.
 -- Register_Src_SelectA
 --     The select for the first register output.
 -- Register_Src_SelectB

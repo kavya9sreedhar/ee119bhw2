@@ -2,8 +2,11 @@
 --
 --  Atmel AVR Data Memory Test Entity Declaration
 --
---  This is the entity declaration which must be used for building the data
---  memory access portion of the AVR design for testing.
+--  This is the high level entity connecting the Control Unit, Registers and
+--  Data Memory Access unit. This entity is intended for use in testing the
+--  Dana Memory Access unit. Note that there are some high level multiplexing
+--  of signals in this file to handle the data bus and to handle the read
+--  write signals.
 --
 --  Revision History:
 --     24 Apr 98  Glen George       Initial revision.
@@ -22,9 +25,11 @@
 --
 --  MEM_TEST
 --
---  This is the data memory access testing interface.  It just brings all
+--  This is the data memory access testing interface.  It brings all
 --  the important data memory access signals out for testing along with the
 --  Instruction Register and Program Data Bus.
+--
+--  Needs the Control Unit, Registers and Data Memory Access Unit
 --
 --  Inputs:
 --    IR     - Instruction Register (16 bits)
@@ -156,10 +161,11 @@ begin
         -- Connect up the clock
         clk                    => clock,
 
-        -- Hook up 
+        -- Hook up Program stuff
         Program_Data_Bus       => ProgDB,
         IR                     => IR,
 
+        -- Hook up Register Control Signals
         GP_outA                => GP_outA,
         GP_outB                => GP_outB,
 
@@ -172,6 +178,7 @@ begin
         GP_Write_EnableB       => GP_Write_EnableB,
         GP_Input_Select        => GP_Input_Select,
 
+        -- Hook up Data Memory Control Signals
         Data_Addr_Src_Sel      => Data_Addr_Src_Sel,
         Offset_Src_Sel         => Offset_Src_Sel,
         unsigned_displacement  => unsigned_displacement,
