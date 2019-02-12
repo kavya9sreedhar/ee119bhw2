@@ -181,6 +181,9 @@ begin
 					DataRdOut <= '0';
 					DataWrOut <= '1';
 					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- Not Storing
+					Store <= '0';
 				end if;
 
 				if std_match(IR, OpLDX) then
@@ -788,6 +791,51 @@ begin
 					GP_Write_EnableA <= '0';
 					GP_Write_EnableB <= '0';
 				end if;
+
+				-- MOV instruction
+				if std_match(IR, OpMOV) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					
+					-- Data address unit doesn't matter
+					unsigned_displacement(7 downto 0) <= "00000000";
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					-- Z register operation (value does not matter)
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- value does not matter
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- get register value we want using A, B doesn't matter
+					GP_Src_SelectA <= IR(9) & IR(3 downto 0);
+					GP_Src_SelectB <= (others => '0');
+
+					-- Use the GP reg output
+					GP_Input_Select <= GP_IN_SEL_GP_A;
+
+					-- Move to correct other GP reg.
+					GP_Dst_SelectA <= IR(8 downto 4);
+
+					-- Write to register
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					
+					-- Not Storing
+					Store <= '0';
+				end if;
 			--
 			-- CLOCK 2
 			--
@@ -1087,7 +1135,11 @@ begin
 				end if;
 				if std_match(IR, OpSTDZ) then
 					next_state <= Clock2;
-				end if;				
+				end if;
+				-- MOV
+				if std_match(IR, OpMOV) then
+					next_state <= Clock1;
+				end if;
 
 			when Clock2 =>
 				-- X Reg. Loads
@@ -1149,7 +1201,7 @@ begin
 				end if;
 				if std_match(IR, OpSTDZ) then
 					next_state <= Clock1;
-				end if;								
+				end if;						
 			when Clock3 =>
 		end case;
 	end process state_transition;

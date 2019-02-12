@@ -112,6 +112,7 @@ begin
         variable Z_test_corr_wr         : std_logic_vector(0 to NUM_Z_TESTS-1);
 
         constant NUM_MOV_TESTS          : integer := 15;
+        constant NUM_ONC_CLK_MOV_TEST   : integer := 10;
         variable MOV_test_opcodes       :   op_lst_t(0 to NUM_MOV_TESTS-1);
         variable MOV_test_data_ld       : data_lst_t(0 to NUM_MOV_TESTS-1);
         variable MOV_test_corr_addr     : addr_lst_t(0 to NUM_MOV_TESTS-1);
@@ -381,23 +382,23 @@ begin
         -- MOV tests
         MOV_test_opcodes := (
                         -- LOAD IN VALUES
-                        form_imm_load(OpLDI, 0, 0),
-                        form_imm_load(OpLDI, 2, 1),
-                        form_imm_load(OpLDI, 4, 2),
-                        form_imm_load(OpLDI, 8, 3),
-                        form_imm_load(OpLDI, 16, 4),
+                        form_imm_load(OpLDI, 16, 7),
+                        form_imm_load(OpLDI, 18, 8),
+                        form_imm_load(OpLDI, 20, 9),
+                        form_imm_load(OpLDI, 22, 10),
+                        form_imm_load(OpLDI, 24, 11),
                         -- MOV Around
-                        form_mov_operation(OpMOV, 0, 1),
-                        form_mov_operation(OpMOV, 2, 3),
-                        form_mov_operation(OpMOV, 4, 5),
-                        form_mov_operation(OpMOV, 8, 9),
-                        form_mov_operation(OpMOV, 16, 17),
+                        form_mov_operation(OpMOV, 16, 0),
+                        form_mov_operation(OpMOV, 18, 1),
+                        form_mov_operation(OpMOV, 20, 2),
+                        form_mov_operation(OpMOV, 22, 3),
+                        form_mov_operation(OpMOV, 24, 4),
                         -- Check by outputting
+                        form_dest_src_LDST(OpSTX , 0),
                         form_dest_src_LDST(OpSTX , 1),
                         form_dest_src_LDST(OpSTX , 2),
-                        form_dest_src_LDST(OpSTX , 5),
-                        form_dest_src_LDST(OpSTX , 6),
-                        form_dest_src_LDST(OpSTX , 17)
+                        form_dest_src_LDST(OpSTX , 3),
+                        form_dest_src_LDST(OpSTX , 4)
                         );
 
         MOV_test_data_ld := (
@@ -435,11 +436,11 @@ begin
                         (NUM_DATA_BITS-1 downto 0 => '-'),
                         (NUM_DATA_BITS-1 downto 0 => '-'),
                         -- Check by outputting
-                        int_to_std_vector(0 , NUM_DATA_BITS),
-                        int_to_std_vector(1 , NUM_DATA_BITS),
-                        int_to_std_vector(2 , NUM_DATA_BITS),
-                        int_to_std_vector(3 , NUM_DATA_BITS),
-                        int_to_std_vector(4 , NUM_DATA_BITS)
+                        int_to_std_vector(7 , NUM_DATA_BITS),
+                        int_to_std_vector(8 , NUM_DATA_BITS),
+                        int_to_std_vector(9 , NUM_DATA_BITS),
+                        int_to_std_vector(10 , NUM_DATA_BITS),
+                        int_to_std_vector(11 , NUM_DATA_BITS)
                         );
 
         MOV_test_corr_addr := (
@@ -463,8 +464,8 @@ begin
                         (NUM_ADDRESS_BITS-1 downto 0 => '-')
                         );
 
-        MOV_test_corr_rd := "000000000000000"; 
-        MOV_test_corr_wr := "000000000011111";
+        MOV_test_corr_rd := "111111111111111"; 
+        MOV_test_corr_wr := "111111111100000";
 
         -- Stack Tests
         SP_test_opcodes := (
@@ -533,6 +534,7 @@ begin
 
         SP_test_corr_rd := "0000111000"; 
         SP_test_corr_wr := "0000000111";
+        
         -- Memory Tests
         MEM_test_opcodes := (
                         -- LOAD TESTS
@@ -618,7 +620,8 @@ begin
 
             IR_input <= X_test_opcodes(i_X_TEST);
             
-            wait for CLOCK_PERIOD;
+            -- Wait for next clock
+            wait until clk = '1';
             
             -- Load in the DB
             DataDB <= X_test_data_ld(i_X_TEST);
@@ -671,7 +674,8 @@ begin
 
             IR_input <= Y_test_opcodes(i_Y_TEST);
             
-            wait for CLOCK_PERIOD;
+            -- Wait for next clock
+            wait until clk = '1';
             
             -- Load in the DB
             DataDB <= Y_test_data_ld(i_Y_TEST);
@@ -724,7 +728,8 @@ begin
 
             IR_input <= Z_test_opcodes(i_Z_TEST);
             
-            wait for CLOCK_PERIOD;
+            -- Wait for next clock
+            wait until clk = '1';
             
             -- Load in the DB
             DataDB <= Z_test_data_ld(i_Z_TEST);
@@ -769,6 +774,64 @@ begin
             -- Wait for next clock
             wait until clk = '1';
         end loop;
+
+        -- Test the MOV operations
+        for i_MOV_TEST in 0 to NUM_MOV_TESTS-1 loop
+
+            wait for CLOCK_PERIOD/32;
+
+            IR_input <= MOV_test_opcodes(i_MOV_TEST);
+            
+            -- Wait for next clock
+            wait until clk = '1';
+
+            if i_MOV_TEST < NUM_ONC_CLK_MOV_TEST then
+                next;
+            end if;
+            
+            -- Load in the DB
+            DataDB <= MOV_test_data_ld(i_MOV_TEST);
+            
+            -- Read at 1/2
+            wait for CLOCK_PERIOD/2;
+            -- Check Data AB
+            assert (std_match(DataAB, MOV_test_corr_addr(i_MOV_TEST)))
+            report  "Data Address Bus Failure" & 
+                    " Got: "                   & std_logic_vec_to_string(DataAB) &
+                    " Expected: "              & std_logic_vec_to_string(MOV_test_corr_addr(i_MOV_TEST))&
+                    " For MOV Test: "            & integer'image(i_MOV_TEST)                                                         
+            severity  ERROR;
+            
+            -- Sample 7/8 into clock
+            wait for 3*(CLOCK_PERIOD/8);
+
+            -- Check DB
+            assert (std_match(DataDB, MOV_test_corr_data(i_MOV_TEST)))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic_vec_to_string(DataDB) &
+                    " Expected: "              & std_logic_vec_to_string(MOV_test_corr_data(i_MOV_TEST))&
+                    " For MOV Test: "            & integer'image(i_MOV_TEST)                                                          
+            severity  ERROR;
+
+            -- Check Rd/Wr
+
+            assert (DataRd = MOV_test_corr_rd(i_MOV_TEST))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic'image(DataRd)(2) &
+                    " Expected: "              & std_logic'image(MOV_test_corr_rd(i_MOV_TEST))(2) &
+                    " For MOV Test: "            & integer'image(i_MOV_TEST)                                                       
+            severity  ERROR;    
+
+            assert (DataWr = MOV_test_corr_wr(i_MOV_TEST))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic'image(DataWr)(2) &
+                    " Expected: "              & std_logic'image(MOV_test_corr_wr(i_MOV_TEST))(2) &
+                    " For MOV Test: "            & integer'image(i_MOV_TEST)                                                          
+            severity  ERROR;
+
+            -- Wait for next clock
+            wait until clk = '1';
+        end loop;        
 
         -- End of stimulus events
         END_SIM <= TRUE;
