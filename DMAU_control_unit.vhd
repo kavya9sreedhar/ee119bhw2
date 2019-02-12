@@ -905,10 +905,54 @@ begin
 					IO_Src_SelectB <= std_logic_vector(to_unsigned(SPL, NUM_IO_LOG));
 
 					-- Create the input source
-					SP_register <= IO_outA & IO_outB;				
+					SP_register <= IO_outA & IO_outB;
+
+					-- Not Storing this clock
+					Store <= '0';			
 				end if;
 
 				if std_match(IR, OpPOP) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+					-- No writing to GP regs yet
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+
+					-- SP register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_SP;
+					-- post decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- decrementing SP
+					Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+
+					-- Select stack pointer
+					IO_Src_SelectA <= std_logic_vector(to_unsigned(SPH, NUM_IO_LOG));
+					IO_Src_SelectB <= std_logic_vector(to_unsigned(SPL, NUM_IO_LOG));
+
+					-- Create the input source
+					SP_register <= IO_outA & IO_outB;
+
+					-- Not Storing
+					Store <= '0';	
 
 				end if;
 
@@ -1018,7 +1062,6 @@ begin
 					IO_Src_SelectB <= (others => '0');
 				end if;
 
-				-- PUSH/POP instructions
 			--
 			-- CLOCK 2
 			--
@@ -1248,14 +1291,18 @@ begin
 
 				-- Push/Pop
 				if std_match(IR, OpPUSH) then
+					-- Write
 					DataRdOut <= '1';
 					DataWrOut <= '0';
+					-- Storing
 					Store <= '1';
 					-- Doesn't matter
 					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 					GP_Write_EnableB <= '0';
 					GP_Write_EnableA <= '0';
 					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 
 					-- Load in
 					IO_Write_EnableB <= '1';
@@ -1263,15 +1310,19 @@ begin
 				end if;
 
 				if std_match(IR, OpPOP) then
-					DataRdOut <= '1';
-					DataWrOut <= '0';
-					Store <= '1';
+					-- Read
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+					-- Not storing
+					Store <= '0';
 					-- Doesn't matter
 					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
 					GP_Write_EnableB <= '0';
+
+					-- Write into register
 					GP_Write_EnableA <= '1';
 					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
-					GP_Src_SelectA <= IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Dst_SelectA <= IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
 
 					-- Load in
 					IO_Write_EnableB <= '1';

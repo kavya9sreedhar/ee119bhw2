@@ -470,51 +470,51 @@ begin
 
         -- Stack Tests
         SP_test_opcodes := (
-                        -- PUSH
-                        form_dest_src_LDST(OpPUSH, 0),
-                        form_dest_src_LDST(OpPUSH, 1),
-                        form_dest_src_LDST(OpPUSH, 2),
                         -- POP
+                        form_dest_src_LDST(OpPOP, 0),
+                        form_dest_src_LDST(OpPOP, 1),
+                        form_dest_src_LDST(OpPOP, 2),
+                        -- PUSH
                         form_dest_src_LDST(OpPUSH, 0),
                         form_dest_src_LDST(OpPUSH, 1),
                         form_dest_src_LDST(OpPUSH, 2)
                         );
 
         SP_test_data_ld := (
-                        -- PUSH
+                        -- POP
                         int_to_std_vector(0 , NUM_DATA_BITS),
                         int_to_std_vector(1 , NUM_DATA_BITS),
                         int_to_std_vector(2 , NUM_DATA_BITS),
-                        -- POP
+                        -- PUSH
                         (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         (NUM_DATA_BITS-1 downto 0 => 'Z')
                         );
 
         SP_test_corr_data := (
-                        -- PUSH
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- POP
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        (NUM_DATA_BITS-1 downto 0 => '-'),
+                        -- PUSH
                         int_to_std_vector(0 , NUM_DATA_BITS),
                         int_to_std_vector(1 , NUM_DATA_BITS),
                         int_to_std_vector(2 , NUM_DATA_BITS)
                         );
 
         SP_test_corr_addr := (
-                        -- MOV Around
-                        int_to_std_vector(10 , NUM_ADDRESS_BITS),
-                        int_to_std_vector(9 , NUM_ADDRESS_BITS),
-                        int_to_std_vector(8 , NUM_ADDRESS_BITS),
-                        -- Check by outputting
-                        int_to_std_vector(8 , NUM_ADDRESS_BITS),
-                        int_to_std_vector(9 , NUM_ADDRESS_BITS),
-                        int_to_std_vector(10 , NUM_ADDRESS_BITS)
+                        -- POP
+                        int_to_std_vector(0 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(1 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(2 , NUM_ADDRESS_BITS),
+                        -- PUSH
+                        int_to_std_vector(2 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(1 , NUM_ADDRESS_BITS),
+                        int_to_std_vector(0 , NUM_ADDRESS_BITS)
                         );
 
-        SP_test_corr_rd := "111000"; 
-        SP_test_corr_wr := "000111";
+        SP_test_corr_rd := "000111"; 
+        SP_test_corr_wr := "111000";
 
         -- Memory Tests
         MEM_test_opcodes := (
@@ -631,14 +631,14 @@ begin
             -- Check Rd/Wr
 
             assert (DataRd = X_test_corr_rd(i_X_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Read Line Failure"        &  
                     " Got: "                   & std_logic'image(DataRd)(2) &
                     " Expected: "              & std_logic'image(X_test_corr_rd(i_X_TEST))(2) &
                     " For X Test: "            & integer'image(i_X_TEST)                                                       
             severity  ERROR;    
 
             assert (DataWr = X_test_corr_wr(i_X_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Write Line Failure"       & 
                     " Got: "                   & std_logic'image(DataWr)(2) &
                     " Expected: "              & std_logic'image(X_test_corr_wr(i_X_TEST))(2) &
                     " For X Test: "            & integer'image(i_X_TEST)                                                          
@@ -685,14 +685,14 @@ begin
             -- Check Rd/Wr
 
             assert (DataRd = Y_test_corr_rd(i_Y_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Read Line Failure"        &  
                     " Got: "                   & std_logic'image(DataRd)(2) &
                     " Expected: "              & std_logic'image(Y_test_corr_rd(i_Y_TEST))(2) &
                     " For Y Test: "            & integer'image(i_Y_TEST)                                                       
             severity  ERROR;    
 
             assert (DataWr = Y_test_corr_wr(i_Y_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Write Line Failure"       & 
                     " Got: "                   & std_logic'image(DataWr)(2) &
                     " Expected: "              & std_logic'image(Y_test_corr_wr(i_Y_TEST))(2) &
                     " For Y Test: "            & integer'image(i_Y_TEST)                                                          
@@ -739,14 +739,14 @@ begin
             -- Check Rd/Wr
 
             assert (DataRd = Z_test_corr_rd(i_Z_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Read Line Failure"        & 
                     " Got: "                   & std_logic'image(DataRd)(2) &
                     " Expected: "              & std_logic'image(Z_test_corr_rd(i_Z_TEST))(2) &
                     " For Z Test: "            & integer'image(i_Z_TEST)                                                       
             severity  ERROR;    
 
             assert (DataWr = Z_test_corr_wr(i_Z_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Write Line Failure"       & 
                     " Got: "                   & std_logic'image(DataWr)(2) &
                     " Expected: "              & std_logic'image(Z_test_corr_wr(i_Z_TEST))(2) &
                     " For Z Test: "            & integer'image(i_Z_TEST)                                                          
@@ -797,7 +797,7 @@ begin
             -- Check Rd/Wr
 
             assert (DataRd = MOV_test_corr_rd(i_MOV_TEST))
-            report  "Data Data Bus Failure"    & 
+            report  "Read Line Failure"        & 
                     " Got: "                   & std_logic'image(DataRd)(2) &
                     " Expected: "              & std_logic'image(MOV_test_corr_rd(i_MOV_TEST))(2) &
                     " For MOV Test: "            & integer'image(i_MOV_TEST)                                                       
@@ -822,6 +822,58 @@ begin
         Reset <= '1';
         wait for CLOCK_PERIOD;
 
+        for i_SP_TEST in 0 to NUM_STACK_TESTS-1 loop
+
+            wait for CLOCK_PERIOD/32;
+
+            IR_input <= SP_test_opcodes(i_SP_TEST);
+            
+            -- Wait for next clock
+            wait until clk = '1';
+            
+            -- Load in the DB
+            DataDB <= SP_test_data_ld(i_SP_TEST);
+            
+            -- Read at 1/2
+            wait for CLOCK_PERIOD/2;
+            -- Check Data AB
+            assert (std_match(DataAB, SP_test_corr_addr(i_SP_TEST)))
+            report  "Data Address Bus Failure" & 
+                    " Got: "                   & std_logic_vec_to_string(DataAB) &
+                    " Expected: "              & std_logic_vec_to_string(SP_test_corr_addr(i_SP_TEST))&
+                    " For SP Test: "           & integer'image(i_SP_TEST)                                                         
+            severity  ERROR;
+            
+            -- Sample 7/8 into clock
+            wait for 3*(CLOCK_PERIOD/8);
+
+            -- Check DB
+            assert (std_match(DataDB, SP_test_corr_data(i_SP_TEST)))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic_vec_to_string(DataDB) &
+                    " Expected: "              & std_logic_vec_to_string(SP_test_corr_data(i_SP_TEST))&
+                    " For SP Test: "           & integer'image(i_SP_TEST)                                                          
+            severity  ERROR;
+
+            -- Check Rd/Wr
+
+            assert (DataRd = SP_test_corr_rd(i_SP_TEST))
+            report  "Read Line Failure"        & 
+                    " Got: "                   & std_logic'image(DataRd)(2) &
+                    " Expected: "              & std_logic'image(SP_test_corr_rd(i_SP_TEST))(2) &
+                    " For SP Test: "           & integer'image(i_SP_TEST)                                                       
+            severity  ERROR;    
+
+            assert (DataWr = SP_test_corr_wr(i_SP_TEST))
+            report  "Read Line Failure"        & 
+                    " Got: "                   & std_logic'image(DataWr)(2) &
+                    " Expected: "              & std_logic'image(SP_test_corr_wr(i_SP_TEST))(2) &
+                    " For SP Test: "           & integer'image(i_SP_TEST)                                                          
+            severity  ERROR;
+
+            -- Wait for next clock
+            wait until clk = '1';
+        end loop;
         -- End of stimulus events
         END_SIM <= TRUE;
         

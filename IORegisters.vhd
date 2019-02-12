@@ -110,11 +110,11 @@ architecture standard of IORegisters is
 
 begin
 
-	load : process(clk)
+	load : process(clk, rst)
 	begin
 		-- Only load on rising edges
 		if (rising_edge(clk)) then
-			
+
 			-- Check that we are enabled to load
             if (Register_Write_EnableA = '1') then
                 register_file(to_integer(unsigned(Register_Dst_SelectA))) <= reg_inA;
@@ -122,16 +122,16 @@ begin
 			
 			-- Check if we load to 16 bit registers
 			if (Register_Write_EnableB = '1') then
-                register_file(SPH) <= reg_inB(NUM_BITS-1 downto 0);
-                register_file(SPL) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+				register_file(SPH) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
+				register_file(SPL) <= reg_inB(NUM_BITS-1 downto 0);
 			end if;
 
-			-- Active low reset
-			if (rst = '0') then
-				register_file(SPH) <= (NUM_BITS-1 downto 0 => '1');
-                register_file(SPL) <= (NUM_BITS-1 downto 0 => '1');
-			end if;
+		end if;
 
+		-- Active low reset
+		if (rst = '0') then
+			register_file(SPH) <= (NUM_BITS-1 downto 0 => '1');
+			register_file(SPL) <= (NUM_BITS-1 downto 0 => '1');
 		end if;
 	end process load;
     

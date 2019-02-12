@@ -181,6 +181,13 @@ begin
         GP_Write_EnableB       => GP_Write_EnableB,
         GP_Input_Select        => GP_Input_Select,
 
+        IO_Input_Select        => IO_Input_Select,
+        IO_Write_EnableA       => IO_Write_EnableA,
+        IO_Write_EnableB       => IO_Write_EnableB,
+        IO_Dst_SelectA         => IO_Dst_SelectA,
+        IO_Src_SelectA         => IO_Src_SelectA,
+        IO_Src_SelectB         => IO_Src_SelectB,
+
         -- Hook up Data Memory Control Signals
         Data_Addr_Src_Sel      => Data_Addr_Src_Sel,
         Offset_Src_Sel         => Offset_Src_Sel,
