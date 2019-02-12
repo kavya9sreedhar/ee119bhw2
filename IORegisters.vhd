@@ -40,6 +40,8 @@ use work.RegConstants.all;
 -- Inputs:
 -- clk
 --     The clock signal into the system.
+-- rst
+--     The reset signal
 -- reg_inA [NUM_BITS-1..0]
 --     The regular input to the register file.
 -- reg_inB [2*NUM_BITS-1..0]
@@ -71,7 +73,9 @@ entity IORegisters is
 
 	port(
 		-- Clock
-		clk                    : in std_logic;   
+		clk                    : in std_logic;
+		-- Reset signal
+		rst                    : in std_logic;
 		
 		-- Input
 		reg_inA                : in std_logic_vector(NUM_BITS-1 downto 0);
@@ -110,15 +114,24 @@ begin
 	begin
 		-- Only load on rising edges
 		if (rising_edge(clk)) then
+			
 			-- Check that we are enabled to load
             if (Register_Write_EnableA = '1') then
                 register_file(to_integer(unsigned(Register_Dst_SelectA))) <= reg_inA;
-            end if;
+			end if;
+			
 			-- Check if we load to 16 bit registers
 			if (Register_Write_EnableB = '1') then
                 register_file(SPH) <= reg_inB(NUM_BITS-1 downto 0);
                 register_file(SPL) <= reg_inB(2*NUM_BITS-1 downto NUM_BITS);
 			end if;
+
+			-- Active low reset
+			if (rst = '0') then
+				register_file(SPH) <= (NUM_BITS-1 downto 0 => '1');
+                register_file(SPL) <= (NUM_BITS-1 downto 0 => '1');
+			end if;
+
 		end if;
 	end process load;
     

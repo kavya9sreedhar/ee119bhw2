@@ -202,6 +202,8 @@ begin
     port map (
         -- Connect up the clock
         clk                    => clock,
+        -- Connect the Reset Line
+        rst                    => Reset,
 
         -- GP Register inputs
         data_databus_in        => databus_in_mux,

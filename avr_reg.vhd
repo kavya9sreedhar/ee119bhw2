@@ -29,6 +29,8 @@ use ieee.numeric_std.all;
 -- Inputs:
 -- clk
 --   The clock signal into the system.
+-- rst
+--   Register reset signal
 -- data_databus_in [NUM_DATA_BITS-1..0]
 --   The data bus going into the registers
 -- ALU_in [NUM_DATA_BITS-1..0]
@@ -86,7 +88,10 @@ use ieee.numeric_std.all;
 entity AVRRegisters is
 	port(
 		-- Clock
-		clk                   : in std_logic;   
+        clk                   : in std_logic;
+        
+        -- Reset
+        rst                   : in std_logic;
         
         -- GP Register control
         -- Input
@@ -181,6 +186,7 @@ begin
 
             -- Hook up the clock
             clk                    => clk,
+            rst                    => rst,
 
             -- Hook up the input
             reg_inA                => IOReg_in,

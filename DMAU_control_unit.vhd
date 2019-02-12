@@ -174,6 +174,15 @@ begin
 
 	actions: process(IR, GP_outA, GP_outB, state)
 	begin
+
+		-- By default do not enable any of the IO register inputs
+		IO_Input_Select  <= '0';
+		IO_Write_EnableA <= '0';
+		IO_Write_EnableB <= '0';
+		IO_Dst_SelectA <= (others => '0');
+		IO_Src_SelectA <= (others => '0');
+		IO_Src_SelectB <= (others => '0');
+
 		case state is
 
 			--
@@ -200,14 +209,6 @@ begin
 
 					-- Not Storing
 					Store <= '0';
-
-					-- Do not enable so
-					IO_Input_Select  <= '0';
-					IO_Write_EnableA <= '0';
-					IO_Write_EnableB <= '0';
-					IO_Dst_SelectA <= (others => '0');
-					IO_Src_SelectA <= (others => '0');
-					IO_Src_SelectB <= (others => '0');
 
 				end if;
 
@@ -242,6 +243,7 @@ begin
 					-- No writing
 					GP_Write_EnableA <= '0';
 					GP_Write_EnableB <= '0';
+
 				end if;
 
 				if std_match(IR, OpLDXI) then
@@ -841,8 +843,6 @@ begin
 					Z_register <= (others => '0');
 					-- value does not matter
 					SP_register <= (others => '0');
-					-- value does not matter
-					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 
 					-- get register value we want using A, B doesn't matter
 					GP_Src_SelectA <= IR(9) & IR(3 downto 0);
@@ -863,6 +863,110 @@ begin
 				end if;
 
 				-- IN/OUT instructions
+
+				if std_match(IR, OpIN) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					
+					-- Data address unit doesn't matter
+					unsigned_displacement(7 downto 0) <= "00000000";
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					-- Z register operation (value does not matter)
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+
+					-- Neither output matters
+					GP_Src_SelectA <= (others => '0');
+					GP_Src_SelectB <= (others => '0');
+
+					-- Use the IO reg output
+					GP_Input_Select <= GP_IN_SEL_IO_A;
+
+					-- Move to correct other GP reg.
+					GP_Dst_SelectA <= IR(8 downto 4);
+
+					-- Write to register
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					
+					-- Not Storing
+					Store <= '0';
+
+					-- Do not need to input anything into IO Regs
+					IO_Input_Select  <= '0';
+					IO_Write_EnableA <= '0';
+					IO_Write_EnableB <= '0';
+					IO_Dst_SelectA <= (others => '0');
+
+					-- Need to output the proper register
+					IO_Src_SelectA <= IR(10 downto 9) & IR(3 downto 0);
+					IO_Src_SelectB <= (others => '0');
+				end if;
+
+				if std_match(IR, OpOUT) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					
+					-- Data address unit doesn't matter
+					unsigned_displacement(7 downto 0) <= "00000000";
+					Offset_Src_Sel <= Offset_Src_Sel_unsigned_q;
+					-- Z register operation (value does not matter)
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- value does not matter
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+					-- Input doesn't matter
+					GP_Input_Select <= GP_IN_SEL_GP_A;
+					-- Destination doesn't matter
+					GP_Dst_SelectA <= (others => '0');
+
+					-- get register value we want using A, B doesn't matter
+					GP_Src_SelectA <= IR(8 downto 4);
+					GP_Src_SelectB <= (others => '0');
+
+					-- Do not write to registers
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+					
+					-- Not Storing
+					Store <= '0';
+
+					-- Do not need to input anything into IO Regs
+					IO_Input_Select  <= IO_IN_SEL_GP_A;
+					IO_Write_EnableA <= '1';
+					IO_Write_EnableB <= '0';
+					IO_Dst_SelectA <= IR(10 downto 9) & IR(3 downto 0);
+
+					-- Output doesn't matter
+					IO_Src_SelectA <= (others => '0');
+					IO_Src_SelectB <= (others => '0');
+				end if;
 
 				-- PUSH/POP instructions
 			--
