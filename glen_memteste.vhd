@@ -169,6 +169,9 @@ begin
         GP_outA                => GP_outA,
         GP_outB                => GP_outB,
 
+        IO_outA                => IO_outA,
+        IO_outB                => IO_outB,
+
         GP_Swap_Nibbles        => GP_Swap_Nibbles,
         GP_Dst_SelectA         => GP_Dst_SelectA,
         GP_Src_SelectA         => GP_Src_SelectA,

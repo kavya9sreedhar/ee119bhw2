@@ -111,6 +111,11 @@ entity Control_Unit is
     GP_outA                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
 	-- Output B from the GP registers
 	GP_outB                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+
+	-- Output A from the IO registers
+	IO_outA                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
+	-- Output B from the IO registers
+	IO_outB                 : in std_logic_vector(NUM_DATA_BITS-1 downto 0);
 	
 	-------------------------------------------------------------------
 	-- DATA MEMORY ACCESS UNIT
@@ -172,7 +177,7 @@ architecture standard of Control_Unit is
 
 begin
 
-	actions: process(IR, GP_outA, GP_outB, state)
+	actions: process(IR, GP_outA, GP_outB, IO_outA, IO_outB, state)
 	begin
 
 		-- By default do not enable any of the IO register inputs
@@ -862,6 +867,51 @@ begin
 					Store <= '0';
 				end if;
 
+				-- Push/Pop Instructions
+				if std_match(IR, OpPUSH) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- value does not matter
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					GP_Src_SelectA <= Z_REG_HIGH_BYTE;
+					GP_Src_SelectB <= Z_REG_LOW_BYTE;
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+					-- No writing to GP regs
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';	
+
+					-- SP register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_SP;
+					-- post decrement
+					Pre_Post_Sel <= Pre_Post_Sel_Post;
+					-- decrementing SP
+					Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+
+					-- Select stack pointer
+					IO_Src_SelectA <= std_logic_vector(to_unsigned(SPH, NUM_IO_LOG));
+					IO_Src_SelectB <= std_logic_vector(to_unsigned(SPL, NUM_IO_LOG));
+
+					-- Create the input source
+					SP_register <= IO_outA & IO_outB;				
+				end if;
+
+				if std_match(IR, OpPOP) then
+
+				end if;
+
 				-- IN/OUT instructions
 
 				if std_match(IR, OpIN) then
@@ -1196,6 +1246,38 @@ begin
 					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
 				end if;
 
+				-- Push/Pop
+				if std_match(IR, OpPUSH) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					Store <= '1';
+					-- Doesn't matter
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					GP_Write_EnableB <= '0';
+					GP_Write_EnableA <= '0';
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- Load in
+					IO_Write_EnableB <= '1';
+					
+				end if;
+
+				if std_match(IR, OpPOP) then
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+					Store <= '1';
+					-- Doesn't matter
+					GP_Dst_SelectB <= GP_Dst_SelectB_Z;
+					GP_Write_EnableB <= '0';
+					GP_Write_EnableA <= '1';
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+					GP_Src_SelectA <= IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+
+					-- Load in
+					IO_Write_EnableB <= '1';
+					
+				end if;
+
 			when Clock3 =>
 
 		end case;
@@ -1273,6 +1355,13 @@ begin
 				if std_match(IR, OpMOV) then
 					next_state <= Clock1;
 				end if;
+				-- Push Pop
+				if std_match(IR, OpPUSH) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpPOP) then
+					next_state <= Clock2;
+				end if;
 
 			when Clock2 =>
 				-- X Reg. Loads
@@ -1334,7 +1423,14 @@ begin
 				end if;
 				if std_match(IR, OpSTDZ) then
 					next_state <= Clock1;
-				end if;						
+				end if;
+				-- Push Pop
+				if std_match(IR, OpPUSH) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpPOP) then
+					next_state <= Clock1;
+				end if;							
 			when Clock3 =>
 		end case;
 	end process state_transition;

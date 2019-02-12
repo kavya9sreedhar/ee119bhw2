@@ -69,9 +69,10 @@ begin
     port map(
 
         -- Hook up the clock
-        clock => clk,
+        clock  => clk,
+
         -- Hook up the IR in
-        IR => IR_input,
+        IR     => IR_input,
 
         -- Hook up the busses
         ProgDB => ProgDB,
@@ -120,7 +121,7 @@ begin
         variable MOV_test_corr_rd       : std_logic_vector(0 to NUM_MOV_TESTS-1);
         variable MOV_test_corr_wr       : std_logic_vector(0 to NUM_MOV_TESTS-1);
 
-        constant NUM_STACK_TESTS        : integer := 10;
+        constant NUM_STACK_TESTS        : integer := 6;
         variable SP_test_opcodes        :   op_lst_t(0 to NUM_STACK_TESTS-1);
         variable SP_test_data_ld        : data_lst_t(0 to NUM_STACK_TESTS-1);
         variable SP_test_corr_addr      : addr_lst_t(0 to NUM_STACK_TESTS-1);
@@ -469,11 +470,6 @@ begin
 
         -- Stack Tests
         SP_test_opcodes := (
-                        -- Reset the stack
-                        form_imm_load(OpLDI, 0, 0),
-                        form_imm_load(OpLDI, 1, 10),
-                        form_inout_operation(OpIN, 0, SPH),
-                        form_inout_operation(OpIN, 1, SPL),
                         -- PUSH
                         form_dest_src_LDST(OpPUSH, 0),
                         form_dest_src_LDST(OpPUSH, 1),
@@ -485,11 +481,6 @@ begin
                         );
 
         SP_test_data_ld := (
-                        -- Reset the stack
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- PUSH
                         int_to_std_vector(0 , NUM_DATA_BITS),
                         int_to_std_vector(1 , NUM_DATA_BITS),
@@ -501,11 +492,6 @@ begin
                         );
 
         SP_test_corr_data := (
-                        -- Reset the stack
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
-                        (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         -- PUSH
                         (NUM_DATA_BITS-1 downto 0 => 'Z'),
                         (NUM_DATA_BITS-1 downto 0 => 'Z'),
@@ -517,11 +503,6 @@ begin
                         );
 
         SP_test_corr_addr := (
-                        -- LOAD IN VALUES
-                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
-                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
-                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
-                        (NUM_ADDRESS_BITS-1 downto 0 => '-'),
                         -- MOV Around
                         int_to_std_vector(10 , NUM_ADDRESS_BITS),
                         int_to_std_vector(9 , NUM_ADDRESS_BITS),
@@ -532,9 +513,9 @@ begin
                         int_to_std_vector(10 , NUM_ADDRESS_BITS)
                         );
 
-        SP_test_corr_rd := "0000111000"; 
-        SP_test_corr_wr := "0000000111";
-        
+        SP_test_corr_rd := "111000"; 
+        SP_test_corr_wr := "000111";
+
         -- Memory Tests
         MEM_test_opcodes := (
                         -- LOAD TESTS
@@ -831,7 +812,15 @@ begin
 
             -- Wait for next clock
             wait until clk = '1';
-        end loop;        
+        end loop;
+
+        -- Stack tests
+        
+        -- First reset the stack pointer
+        Reset <= '0';
+        wait for CLOCK_PERIOD;
+        Reset <= '1';
+        wait for CLOCK_PERIOD;
 
         -- End of stimulus events
         END_SIM <= TRUE;
