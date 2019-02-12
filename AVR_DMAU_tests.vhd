@@ -9,8 +9,9 @@
 --  The test bench entity is called DataMemory_Tester.
 --
 --  Revision History:
---     02/01/19  Daniel Xu and Kavya Sreedhar   Initial revision.
---     02/02/19  Daniel Xu and Kavya Sreedhar   Finished writing tests.
+--     02/9/19  Daniel Xu and Kavya Sreedhar   Initial revision.
+--     02/10/19  Daniel Xu and Kavya Sreedhar   Finished writing tests.
+--     02/11/19  Daniel Xu and Kavya Sreedhar   Added more tests
 ----------------------------------------------------------------------------
 
 library ieee;

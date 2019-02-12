@@ -29,6 +29,8 @@
 --	10 Feb 19	Kavya Sreedhar & Dan Xu	   	Added data memory access unit control
 --											signals, deleted ALU
 --  11 Feb 19	Kavya Sreedhar & Dan Xu		Updated comments
+--  11 Feb 19	Kavya Sreedhar & Dan Xu		Added the stack instructions and the
+--                                          direct memory instructions
 ----------------------------------------------------------------------------
 
 -- declaration of libraries used
