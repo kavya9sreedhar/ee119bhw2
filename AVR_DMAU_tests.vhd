@@ -572,8 +572,8 @@ begin
                         int_to_std_vector(65535, NUM_ADDRESS_BITS)
                         );
 
-        MEM_test_corr_rd := "111000"; 
-        MEM_test_corr_wr := "000111";
+        MEM_test_corr_rd := "000111"; 
+        MEM_test_corr_wr := "111000";
 
         -- Initialize signals
         ProgDB   <= (others => 'X');
@@ -874,6 +874,65 @@ begin
             -- Wait for next clock
             wait until clk = '1';
         end loop;
+
+        for i_MEM_TEST in 0 to NUM_MEM_TESTS-1 loop
+
+            wait for CLOCK_PERIOD/32;
+
+            IR_input <= MEM_test_opcodes(i_MEM_TEST);
+            
+            -- Wait for next clock
+            wait until clk = '1';
+
+            -- Get new ProgDB value
+            ProgDB <= MEM_test_progDB(i_MEM_TEST);
+
+            -- Wait a clock
+            wait for CLOCK_PERIOD;
+            -- Load in the DB
+            DataDB <= MEM_test_data_ld(i_MEM_TEST);
+            
+            -- Read at 1/2
+            wait for CLOCK_PERIOD/2;
+            -- Check Data AB
+            assert (std_match(DataAB, MEM_test_corr_addr(i_MEM_TEST)))
+            report  "Data Address Bus Failure" & 
+                    " Got: "                   & std_logic_vec_to_string(DataAB) &
+                    " Expected: "              & std_logic_vec_to_string(SP_test_corr_addr(i_MEM_TEST))&
+                    " For MEM Test: "           & integer'image(i_MEM_TEST)                                                         
+            severity  ERROR;
+            
+            -- Sample 7/8 into clock
+            wait for 3*(CLOCK_PERIOD/8);
+
+            -- Check DB
+            assert (std_match(DataDB, MEM_test_corr_data(i_MEM_TEST)))
+            report  "Data Data Bus Failure"    & 
+                    " Got: "                   & std_logic_vec_to_string(DataDB) &
+                    " Expected: "              & std_logic_vec_to_string(MEM_test_corr_data(i_MEM_TEST))&
+                    " For MEM Test: "           & integer'image(i_MEM_TEST)                                                          
+            severity  ERROR;
+
+            -- Check Rd/Wr
+
+            assert (DataRd = MEM_test_corr_rd(i_MEM_TEST))
+            report  "Read Line Failure"        & 
+                    " Got: "                   & std_logic'image(DataRd)(2) &
+                    " Expected: "              & std_logic'image(MEM_test_corr_rd(i_MEM_TEST))(2) &
+                    " For MEM Test: "           & integer'image(i_MEM_TEST)                                                       
+            severity  ERROR;    
+
+            assert (DataWr = MEM_test_corr_wr(i_MEM_TEST))
+            report  "Read Line Failure"        & 
+                    " Got: "                   & std_logic'image(DataWr)(2) &
+                    " Expected: "              & std_logic'image(MEM_test_corr_wr(i_MEM_TEST))(2) &
+                    " For MEM Test: "           & integer'image(i_MEM_TEST)                                                          
+            severity  ERROR;
+
+            -- Wait for next clock
+            wait until clk = '1';
+        end loop;
+
         -- End of stimulus events
         END_SIM <= TRUE;
         

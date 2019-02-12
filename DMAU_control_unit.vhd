@@ -188,6 +188,8 @@ begin
 		IO_Src_SelectA <= (others => '0');
 		IO_Src_SelectB <= (others => '0');
 
+		Store <= '0';
+
 		case state is
 
 			--
@@ -1062,6 +1064,74 @@ begin
 					IO_Src_SelectB <= (others => '0');
 				end if;
 
+				-- Direct Memory
+				if std_match(IR, OpLDS) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Imm register operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Imm_Addr;
+					-- not modifying X
+					Offset_Src_Sel <= Offset_Src_Sel_0;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- address is not changed
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- Need to wait
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;
+		
+				if std_match(IR, OpSTS) then
+					-- not a LDI operation
+					LDI_op <= '0';
+					-- not reading or writing data right now
+					DataRdOut <= '1';
+					DataWrOut <= '1';
+					-- Imm operation
+					Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Imm_Addr;
+					-- not changing X
+					Offset_Src_Sel <= Offset_Src_Sel_0;
+					-- value does not matter
+					unsigned_displacement <= (others => '0');
+					-- save current value of X, no change
+					Pre_Post_Sel <= Pre_Post_Sel_Pre;
+					-- Need to wait
+					Immediate_Data_Address <= (others => '0');
+					-- value does not matter
+					GP_Src_SelectA <= X_REG_HIGH_BYTE;
+					GP_Src_SelectB <= X_REG_LOW_BYTE;
+					X_register <= (others => '0');
+					-- value does not matter
+					Y_register <= (others => '0');
+					-- value does not matter
+					Z_register <= (others => '0');
+					-- value does not matter
+					SP_register <= (others => '0');
+					-- access data data bus
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- No writing
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+				end if;			
+
 			--
 			-- CLOCK 2
 			--
@@ -1329,8 +1399,52 @@ begin
 					
 				end if;
 
+				-- Direct Memory
+				if std_match(IR, OpLDS) then
+					-- Load proper address
+					Immediate_Data_Address <= Program_Data_Bus;
+				end if;
+	
+				if std_match(IR, OpSTS) then
+					-- Load proper address
+					Immediate_Data_Address <= Program_Data_Bus;
+				end if;			
+
 			when Clock3 =>
 
+				-- Direct Memory
+				if std_match(IR, OpLDS) then
+
+					DataRdOut <= '0';
+					DataWrOut <= '1';
+
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					GP_Dst_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- Not storing
+					Store <= '0';
+
+				end if;
+	
+				if std_match(IR, OpSTS) then
+					
+					DataRdOut <= '1';
+					DataWrOut <= '0';
+
+					GP_Write_EnableA <= '0';
+					GP_Write_EnableB <= '0';
+
+					GP_Src_SelectA <= 
+						IR(DMAU_Reg_high_bit downto DMAU_Reg_low_bit);
+					GP_Input_Select <= GP_IN_SEL_DATA_DATABUS;
+
+					-- Storing
+					Store <= '1';
+
+				end if;					
 		end case;
 	end process actions;
 
@@ -1413,7 +1527,13 @@ begin
 				if std_match(IR, OpPOP) then
 					next_state <= Clock2;
 				end if;
-
+				-- Direct Memory
+				if std_match(IR, OpLDS) then
+					next_state <= Clock2;
+				end if;
+				if std_match(IR, OpSTS) then
+					next_state <= Clock2;
+				end if;
 			when Clock2 =>
 				-- X Reg. Loads
 				if std_match(IR, OpLDX) then
@@ -1481,8 +1601,22 @@ begin
 				end if;
 				if std_match(IR, OpPOP) then
 					next_state <= Clock1;
-				end if;							
+				end if;
+				-- Direct Memory
+				if std_match(IR, OpLDS) then
+					next_state <= Clock3;
+				end if;
+				if std_match(IR, OpSTS) then
+					next_state <= Clock3;
+				end if;										
 			when Clock3 =>
+				-- Direct Memory
+				if std_match(IR, OpLDS) then
+					next_state <= Clock1;
+				end if;
+				if std_match(IR, OpSTS) then
+					next_state <= Clock1;
+				end if;			
 		end case;
 	end process state_transition;
 
