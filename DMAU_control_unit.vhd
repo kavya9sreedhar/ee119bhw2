@@ -112,6 +112,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				State <= Clock2;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
@@ -133,6 +134,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				State <= Clock2;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
@@ -154,6 +156,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				State <= Clock2;
 			end if;
 			
 --			if std_match(Program_Data_Bus, OpLDYI) then
@@ -284,6 +287,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				State <= Clock2;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
@@ -305,6 +309,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				State <= Clock2;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
@@ -326,6 +331,7 @@ begin
 				Z_register <= (others => '0');
 				-- value does not matter
 				SP_register <= (others => '0');
+				State <= Clock2;
 			end if;
 			
 --			if std_match(Program_Data_Bus, OpSTYI) then
@@ -436,16 +442,19 @@ begin
 			if std_match(Program_Data_Bus, OpLDX) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
+				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
+				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
 				DataRd <= not ('1' and not clk);
 				DataWr <= '1';
+				State <= Clock1;
 			end if;
 			
 --			if std_match(Program_Data_Bus, OpLDYI) then
@@ -498,16 +507,19 @@ begin
 			if std_match(Program_Data_Bus, OpSTX) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
+				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
+				State <= Clock1;
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
 				DataRd <= '1';
 				DataWr <= not ('1' and not clk);
+				State <= Clock1;
 			end if;
 			
 --			if std_match(Program_Data_Bus, OpSTYI) then
@@ -549,19 +561,19 @@ begin
 		
 --			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 3
 		
+			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpLDX) then
-				DataRd <= '1';
-				DataWr <= '1';
+		
 			end if;
 			
+			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpLDXI) then
-				DataRd <= '1';
-				DataWr <= '1';
+			
 			end if;
 			
+			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpLDXD) then
-				DataRd <= '1';
-				DataWr <= '1';
+			
 			end if;
 			
 --			if std_match(Program_Data_Bus, OpLDYI) then
@@ -610,19 +622,19 @@ begin
 --				DataWr <= '1';
 --			end if;
 			
+			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpSTX) then
-				DataRd <= '1';
-				DataWr <= '1';
+			
 			end if;
 			
+			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpSTXI) then
-				DataRd <= '1';
-				DataWr <= '1';
+				
 			end if;
 			
+			-- will never get here, instruction does not require 3 clocks
 			if std_match(Program_Data_Bus, OpSTXD) then
-				DataRd <= '1';
-				DataWr <= '1';
+				
 			end if;
 			
 --			if std_match(Program_Data_Bus, OpSTYI) then
