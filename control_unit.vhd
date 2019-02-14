@@ -82,7 +82,29 @@ entity Control_Unit is
     IO_Write_Enable         : out std_logic;
     IO_Dst_Select           : out std_logic_vector(NUM_IO_LOG-1 downto 0);
     IO_Src_SelectA          : out std_logic_vector(NUM_IO_LOG-1 downto 0);
-    IO_Src_SelectB          : out std_logic_vector(NUM_IO_LOG-1 downto 0)
+    IO_Src_SelectB          : out std_logic_vector(NUM_IO_LOG-1 downto 0);
+	
+	-- Data Memory Access Unit Control Signals and values
+	Data_Addr_Src_Sel		: out std_logic_vector(
+									num_bits_Data_Addr_Src_Sel - 1 downto 0);
+	Offset_Src_Sel			: out std_logic_vector(
+									num_bits_Offset_Src_Sel - 1 downto 0);
+	unsigned_displacement	: out std_logic_vector(
+									NUM_ADDRESS_BITS - 1 downto 0);
+	Pre_Post_Sel			: out std_logic;
+	
+	Immediate_Data_Address	: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	X_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	Y_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	Z_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	SP_register				: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	
+	-- active low control line indicating data memory is being read
+	-- active only during 2nd half of the clock in the 2nd cycle
+	DataRd					: out std_logic;
+	-- active low control line indicating data memory is being written
+	-- active only during 2nd half of the clock in the 2nd cycle
+	DataWr					: out std_logic;
     
     );
 end entity;
@@ -1871,6 +1893,21 @@ begin
 				Carry_Flag_Sel          <= C_HOLD_VALUE;
 			end if;
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 			-- DATA MEMORY ACCESS UNIT INSTRUCTIONS clock 1
 		
 			if std_match(Program_Data_Bus, OpLDX) then
@@ -1878,6 +1915,15 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_0;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				-- address is not changed
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
@@ -1885,6 +1931,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
@@ -1892,6 +1946,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
@@ -1899,6 +1961,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYD) then
@@ -1906,6 +1976,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDY) then
@@ -1918,6 +1996,12 @@ begin
 					Program_Data_Bus(11 downto 10) & 
 					Program_Data_Bus(2 downto 0), 
 					others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZI) then
@@ -1925,6 +2009,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDZD) then
@@ -1932,6 +2024,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDDZ) then
@@ -1944,6 +2044,12 @@ begin
 					Program_Data_Bus(11 downto 10) & 
 					Program_Data_Bus(2 downto 0), 
 					others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDI) then
@@ -1964,6 +2070,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_0;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
@@ -1971,6 +2085,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
@@ -1978,6 +2100,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_X;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYI) then
@@ -1985,6 +2115,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYD) then
@@ -1992,6 +2130,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Y;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDY) then
@@ -2004,6 +2150,12 @@ begin
 					Program_Data_Bus(11 downto 10) & 
 					Program_Data_Bus(2 downto 0), 
 					others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZI) then
@@ -2011,6 +2163,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTZD) then
@@ -2018,6 +2178,14 @@ begin
 				DataWr <= '1';
 				Data_Addr_Src_Sel <= Data_Addr_Src_Sel_Z;
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
+				-- value does not matter
+				unsigned_displacement <= (others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTDZ) then
@@ -2030,6 +2198,12 @@ begin
 					Program_Data_Bus(11 downto 10) & 
 					Program_Data_Bus(2 downto 0), 
 					others => '0');
+				Pre_Post_Sel <=
+				Immediate_Data_Address <=
+				X_register <=
+				Y_register <=
+				Z_register <= 
+				SP_register <=
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTS) then

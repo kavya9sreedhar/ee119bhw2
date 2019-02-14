@@ -19,6 +19,7 @@ use ieee.numeric_std.all;
 package DMAU_constants is 
     
 	-- possible offset select options to add to data address
+	constant num_bits_Offset_Src_Sel: integer := 3;
 	constant Offset_Src_Sel_pos_1: std_logic_vector(1 downto 0) := "000";
 	constant Offset_Src_Sel_neg_1: std_logic_vector(1 downto 0) := "001";
 	constant Offset_Src_Sel_0: std_logic_vector(1 downto 0) := "010";
@@ -27,6 +28,7 @@ package DMAU_constants is
 	
 	-- possible data address options to add offset to (immediate address, 
 	-- registers, stack pointer)
+	constant num_bits_Data_Addr_Src_Sel: integer := 3;
 	constant Data_Addr_Src_Sel_Imm_Addr: std_logic_vector(2 downto 0) := "000";
 	constant Data_Addr_Src_Sel_X: std_logic_vector(2 downto 0) := "001";
 	constant Data_Addr_Src_Sel_Y: std_logic_vector(2 downto 0) := "010";

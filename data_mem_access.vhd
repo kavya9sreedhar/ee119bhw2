@@ -28,18 +28,11 @@ entity Data_Memory_Access is
 	port(
 		-- control signal inputs
 		-- selects address source
-		-- 	000 selects instruction register
-		-- 	001 selects program data bus
-		-- 	010 selects register X
-		-- 	011 selects register Y
-		-- 	100 selects register Z
-		-- 	101 selects register SP
-		-- 	110 selects Y with a 6-bit unsigned offset
-		-- 	111 selects Z with a 6-bit unsigned offset
-		Data_Addr_Src_Sel: in std_logic_vector(2 downto 0);
+		Data_Addr_Src_Sel: in std_logic_vector(
+								num_bits_Data_Addr_Src_Sel - 1 downto 0);
 		-- selects offset source
-		Offset_Src_Sel: in std_logic_vector(2 downto 0);
-		unsigned_displacement: in std_logic_vector(15 downto 0);
+		Offset_Src_Sel: in std_logic_vector(num_bits_Offset_Src_Sel - 1 downto 0);
+		unsigned_displacement: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		-- indicates whether or not pre/post-increment/decrement was 
 		-- part of instruction
 		Pre_Post_Sel: in std_logic;
@@ -47,32 +40,25 @@ entity Data_Memory_Access is
 		-- other inputs
 		-- 8 bits of data, zero padded upper bits
 		Immediate_Data_Address: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
-		X_register: in std_logic_vector(15 downto 0);
-		Y_register: in std_logic_vector(15 downto 0);
-		Z_register: in std_logic_vector(15 downto 0);
-		SP_register: in std_logic_vector(15 downto 0);
+		X_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		Y_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		Z_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		SP_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		
 		-- outputs
-		Data_Address_Bus: out std_logic_vector(15 downto 0);
-		Data_Data_Bus: out std_logic_vector(7 downto 0);
-		-- active low control line indicating data memory is being read
-		-- active only during 2nd half of the clock in the 2nd cycle
-		Data_Read: out std_logic;
-		-- active low control line indicating data memory is being written
-		-- active only during 2nd half of the clock in the 2nd cycle
-		Data_Write: out std_logic
+		Data_Address_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
         );
 end entity;
 
 architecture Data_arch of Data_Memory_Access is
 
 	-- signal that contains the offset value to add to the data address to update
-	signal offset: std_logic_vector(15 downto 0);
+	signal offset: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	-- signal that contains the data address value to update with the offset value
-	signal data_addr_src: std_logic_vector(15 downto 0);
+	signal data_addr_src: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	-- contains the sum of the data address value and offset i.e. the updated data 
 	-- address value
-	signal adder_subtractor_result: std_logic_vector(15 downto 0);
+	signal adder_subtractor_result: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	
 begin
 	-- choose which data address to update (immediate address versus register value)
