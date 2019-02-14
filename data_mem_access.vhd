@@ -102,11 +102,11 @@ begin
 						(Subtract and (Operand1(0) xor (Operand2(0) xor Subtract)));
 	
 	-- calculate bits 1 through n - 1 bits for addition / subtraction result
-	get_adder_subtractor_bits: for i in range 1 to NUM_ADDRESS_BITS - 1 generate
+	get_adder_subtractor_bits: for i in 1 to NUM_ADDRESS_BITS - 1 generate
 		adder_subtractor_result(i) <=
 			Operand1(i) xor (Operand2(i) xor Subtract) xor carry_outs(i - 1);
-		-- calculate carry out from bits addition / subtraction for bits 1
-		-- through n - 1
+		 -- calculate carry out from bits addition / subtraction for bits 1
+		 -- through n - 1
 		carry_outs(i) <= 
 			(Operand1(i) and (Operand2(i) xor Subtract)) or 
 			(carry_outs(i - 1) and (Operand1(i) xor (Operand2(i) xor Subtract)));
