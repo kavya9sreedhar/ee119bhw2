@@ -60,11 +60,15 @@ architecture Data_arch of Data_Memory_Access is
 	-- contains the sum of the data address value and offset i.e. the updated data 
 	-- address value
 	signal adder_subtractor_result: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	signal Subtract: std_logic;
+	signal Operand1: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	signal Operand2: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+	signal carry_outs: std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 	
 begin
 	-- choose which data address to update (immediate address versus register value)
 	data_addr_src <= 	Immediate_Data_Address 
-							when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Imm_Addr
+							when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Imm_Addr else
 						X_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_X else
 						Y_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Y else
 						Z_register when Data_Addr_Src_Sel = Data_Addr_Src_Sel_Z else
@@ -81,7 +85,7 @@ begin
 	
 	-- depending on whether offset is positive or negative, add or subtract the
 	-- magnitude of the offset value to the data address
-	Subtract <= '1' when Offset_Src_Sel_neg_1 else
+	Subtract <= '1' when Offset_Src_Sel = Offset_Src_Sel_neg_1 else
 				'0';
 				
 	-- set operands for addition / subtraction operation between 
