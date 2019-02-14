@@ -104,7 +104,7 @@ entity Control_Unit is
 	DataRd					: out std_logic;
 	-- active low control line indicating data memory is being written
 	-- active only during 2nd half of the clock in the 2nd cycle
-	DataWr					: out std_logic;
+	DataWr					: out std_logic
     
     );
 end entity;
@@ -1919,11 +1919,17 @@ begin
 				unsigned_displacement <= (others => '0');
 				-- address is not changed
 				Pre_Post_Sel <= Pre_Post_Sel_Pre;
-				Immediate_Data_Address <=
-				X_register <=
-				Y_register <=
-				Z_register <= 
-				SP_register <=
+				-- value does not matter
+				Immediate_Data_Address <= (others => '0');
+				GP_Src_SelectA <= X_REG_HIGH_BYTE;
+				GP_Src_SelectB <= X_REG_LOW_BYTE;
+				X_register <= GP_outA & GP_outB;
+				-- value does not matter
+				Y_register <= (others => '0');
+				-- value does not matter
+				Z_register <= (others => '0');
+				-- value does not matter
+				SP_register <= (others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXI) then
@@ -1934,11 +1940,17 @@ begin
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
 				Pre_Post_Sel <= Pre_Post_Sel_Post;
-				Immediate_Data_Address <=
-				X_register <=
-				Y_register <=
-				Z_register <= 
-				SP_register <=
+				-- value does not matter
+				Immediate_Data_Address <= (others => '0');
+				GP_Src_SelectA <= X_REG_HIGH_BYTE;
+				GP_Src_SelectB <= X_REG_LOW_BYTE;
+				X_register <= GP_outA & GP_outB;
+				-- value does not matter
+				Y_register <= (others => '0');
+				-- value does not matter
+				Z_register <= (others => '0');
+				-- value does not matter
+				SP_register <= (others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDXD) then
@@ -1948,12 +1960,18 @@ begin
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
-				Pre_Post_Sel <=
-				Immediate_Data_Address <=
-				X_register <=
-				Y_register <=
-				Z_register <= 
-				SP_register <=
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				-- value does not matter
+				Immediate_Data_Address <= (others => '0');
+				GP_Src_SelectA <= X_REG_HIGH_BYTE;
+				GP_Src_SelectB <= X_REG_LOW_BYTE;
+				X_register <= GP_outA & GP_outB;
+				-- value does not matter
+				Y_register <= (others => '0');
+				-- value does not matter
+				Z_register <= (others => '0');
+				-- value does not matter
+				SP_register <= (others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpLDYI) then
@@ -2072,12 +2090,18 @@ begin
 				Offset_Src_Sel <= Offset_Src_Sel_0;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
-				Pre_Post_Sel <=
-				Immediate_Data_Address <=
-				X_register <=
-				Y_register <=
-				Z_register <= 
-				SP_register <=
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				-- value does not matter
+				Immediate_Data_Address <= (others => '0');
+				GP_Src_SelectA <= X_REG_HIGH_BYTE;
+				GP_Src_SelectB <= X_REG_LOW_BYTE;
+				X_register <= GP_outA & GP_outB;
+				-- value does not matter
+				Y_register <= (others => '0');
+				-- value does not matter
+				Z_register <= (others => '0');
+				-- value does not matter
+				SP_register <= (others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXI) then
@@ -2087,12 +2111,18 @@ begin
 				Offset_Src_Sel <= Offset_Src_Sel_pos_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
-				Pre_Post_Sel <=
-				Immediate_Data_Address <=
-				X_register <=
-				Y_register <=
-				Z_register <= 
-				SP_register <=
+				Pre_Post_Sel <= Pre_Post_Sel_Post;
+				-- value does not matter
+				Immediate_Data_Address <= (others => '0');
+				GP_Src_SelectA <= X_REG_HIGH_BYTE;
+				GP_Src_SelectB <= X_REG_LOW_BYTE;
+				X_register <= GP_outA & GP_outB;
+				-- value does not matter
+				Y_register <= (others => '0');
+				-- value does not matter
+				Z_register <= (others => '0');
+				-- value does not matter
+				SP_register <= (others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTXD) then
@@ -2102,12 +2132,18 @@ begin
 				Offset_Src_Sel <= Offset_Src_Sel_neg_1;
 				-- value does not matter
 				unsigned_displacement <= (others => '0');
-				Pre_Post_Sel <=
-				Immediate_Data_Address <=
-				X_register <=
-				Y_register <=
-				Z_register <= 
-				SP_register <=
+				Pre_Post_Sel <= Pre_Post_Sel_Pre;
+				-- value does not matter
+				Immediate_Data_Address <= (others => '0');
+				GP_Src_SelectA <= X_REG_HIGH_BYTE;
+				GP_Src_SelectB <= X_REG_LOW_BYTE;
+				X_register <= GP_outA & GP_outB;
+				-- value does not matter
+				Y_register <= (others => '0');
+				-- value does not matter
+				Z_register <= (others => '0');
+				-- value does not matter
+				SP_register <= (others => '0');
 			end if;
 			
 			if std_match(Program_Data_Bus, OpSTYI) then

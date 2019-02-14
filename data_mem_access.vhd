@@ -46,7 +46,8 @@ entity Data_Memory_Access is
 		SP_register: in std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
 		
 		-- outputs
-		Data_Address_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
+		Data_Address_Bus: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0);
+		Summed_Signal: out std_logic_vector(NUM_ADDRESS_BITS - 1 downto 0)
         );
 end entity;
 
@@ -111,5 +112,7 @@ begin
 	-- select was indicated as part of instruction
 	Data_Address_Bus <= data_addr_src when Pre_Post_Sel = Pre_Post_Sel_Pre else
 						adder_subtractor_result;
+						
+	Summed_Signal <= adder_subtractor_result;
 	
 end architecture;
