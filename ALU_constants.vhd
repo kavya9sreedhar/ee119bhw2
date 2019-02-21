@@ -18,6 +18,7 @@ use ieee.numeric_std.all;
 package ALU_constants is 
     
 	-- indicates various types of ALU operations
+	constant num_bits_ALU_result_select: integer := 2;
 	constant F_Block_Operation: std_logic_vector(1 downto 0) := "00";
 	constant Adder_Subtractor_Operation: std_logic_vector(1 downto 0) := "01";
 	constant Shifter_Rotater_Operation: std_logic_vector(1 downto 0) := "10";
@@ -26,6 +27,7 @@ package ALU_constants is
 	
 	-- indicates possibilities for update for lowest bit during a shift / rotate
 	-- operation
+	constant num_bits_Shifter_low_bit_select: integer := 2;
 	constant Shifter_low_bit_highest_bit: std_logic_vector(1 downto 0) := "00";
 	constant Shifter_low_bit_0: std_logic_vector(1 downto 0) := "01";
 	constant Shifter_low_bit_bit_1: std_logic_vector(1 downto 0) := "10";
@@ -38,6 +40,7 @@ package ALU_constants is
 	
 	-- indicates possibilities for update for highest bit during a shift / rotate
 	-- operation
+	constant num_bits_Shifter_high_bit_select: integer := 3;
 	constant Shifter_high_bit_select_second_highest_bit: std_logic_vector := "000";
 	constant Shifter_high_bit_select_highest_bit: std_logic_vector := "001";
 	constant Shifter_high_bit_select_lowest_bit: std_logic_vector := "010";
@@ -47,6 +50,7 @@ package ALU_constants is
 	-- F BLOCK CONSTANTS
 	
 	-- indicates possibilities for control signals for various F Block outputs
+	constant num_bits_F_Block_Select: integer := 4;
 	constant F_Block_Select_0: std_logic_vector(3 downto 0) := "0000";
 	constant F_Block_Select_nor: std_logic_vector(3 downto 0) := "0001";
 	constant F_Block_Select_not_A: std_logic_vector(3 downto 0) := "0011";
@@ -61,16 +65,18 @@ package ALU_constants is
 	-- ADDITION / SUBTRACTION CONSTANTS
 	
 	-- indicates subtraction versus addition for addition / subtraction operation
-	constant Subtraction: std_logic := '1';
 	constant Addition: std_logic := '0';
+	constant Subtraction: std_logic := '1';
 	
 	-- indicates possibilities for first operand for addition / subtraction operation
+	constant num_bits_AddSub_Op_1_Select: integer := 2;
 	constant AddSub_Op_1_Select_OperandA: std_logic_vector(1 downto 0) := "00";
 	constant AddSub_Op_1_Select_FF: std_logic_vector(1 downto 0) := "01";
 	constant AddSub_Op_1_Select_0: std_logic_vector(1 downto 0) := "10";
 	
 	-- indicates possibilities for second operand for addition / subtraction operation
-	constant AddSub_Op_2_Select_0: std_logic_vector(1 downto 0) := "00";
+	constant num_bits_AddSub_Op_2_Select: integer := 2;
+	constant AddSub_Op_2_Select_OperandB: std_logic_vector(1 downto 0) := "00";
 	constant AddSub_Op_2_Select_1: std_logic_vector(1 downto 0) := "01";
-	constant AddSub_Op_2_Select_OperandB: std_logic_vector(1 downto 0) := "10";
+	constant AddSub_Op_2_Select_0: std_logic_vector(1 downto 0) := "10";
 end package;

@@ -43,45 +43,30 @@ entity ALU is
 	
 		-- control signal inputs
 		-- selects ALU operation to perform
-		-- 	00 F Block operation
-		-- 	01 Adder/Subtractor operation
-		-- 	10 Shifter/Rotater operation
-		ALU_result_select: in std_logic_vector(1 downto 0);
+		ALU_result_select: 
+			in std_logic_vector(num_bits_ALU_result_select - 1 downto 0);
 		-- selects what to update lowest bit of shifter / rotater with
-		--	00 select current highest bit
-		-- 	01 select 0
-		-- 	10 select current bit 1
-		-- 	11 select current carry flag bit
-		Shifter_low_bit_select: in std_logic_vector(1 downto 0);
-		-- when ALU_result_select indicates Adder/Subtractor operation
-		--	lowest bit of this vector is the Subtract control signal (all others
-		-- 	bits are ignored)
+		Shifter_low_bit_select: 
+			in std_logic_vector(num_bits_Shifter_low_bit_select - 1 downto 0);
 		-- when ALU_result_select indicates Shifter/Rotater operation
-		--	bit 0 selects value for middle bits:
-		--		0 select bit to the immediate right
-		--		1 select bit to the immediate left
 		Shifter_middle_bits_select: in std_logic;
 		-- 	bits 3 downto 1 selects high bit value:
-		--		000 select current second highest bit
-		--		001	select current highest bit
-		--		010	select current lowest bit
-		--		011	select 0
-		--		100	select current carry flag bit
-		Shifter_high_bit_select: in std_logic_vector(2 downto 0);
+		Shifter_high_bit_select: 
+			in std_logic_vector(num_bits_Shifter_high_bit_select - 1 downto 0);
 		-- when ALU_result_select indicates F Block operation
 		--	F Block inputs to mux for F Block operations
-		F_Block_Select: in std_logic_vector(3 downto 0);
+		F_Block_Select: in std_logic_vector(num_bits_F_Block_Select - 1 downto 0);
 		-- indicates whether an addition or subtraction operation should occur
 		Subtract: in std_logic;
 		-- indicating whether performing ALU operation involving current carry / 
 		-- borrow bit
 		ALU_op_with_carry: in std_logic;
-		AddSub_Op_1_Select: in std_logic;
+		AddSub_Op_1_Select: 
+			in std_logic_vector(num_bits_AddSub_Op_1_Select - 1 downto 0;
 		-- chooses value of second operand for addition / subtraction
-		-- 	00 select 0
-		--  01 select 1
-		--  10 select OperandB
-		AddSub_Op_2_Select: in std_logic_vector(1 downto 0);
+		AddSub_Op_2_Select: 
+			in std_logic_vector(num_bits_AddSub_Op_2_Select downto 0);
+		
 		-- flag source controls indicating what and how to update after ALU operation
 		-- Descriptions of the selection line meanings ca be found in the constants.vhd file.
         TBit_Select             : in std_logic_vector(DATA_BITS_LOG-1 downto 0);
