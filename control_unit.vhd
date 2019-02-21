@@ -562,7 +562,7 @@ begin
 				end if;
 				
 				-- DEC decrement a register
-				if std_match(Program_Data_Bus, OpDEC) then
+				if std_match(IR, OpDEC) then
 				
 					Regd := IR(8 downto 4);;
 					GP_Src_SelectA <= Regd;
@@ -946,7 +946,7 @@ begin
 				end if;
 				
 				-- SWAP swap nibbles of a register
-				if std_match(Program_Data_Bus, OpSWAP) then
+				if std_match(IR, OpSWAP) then
 					
 					Regd := '1' & IR(7 downto 4);
 					GP_Src_SelectA <= Regd;
@@ -956,6 +956,104 @@ begin
 					
 					-- indicate nibbles of register should not be swapped
 					GP_Swap_Nibbles <= SWAP_EN;
+					
+				end if;
+				
+				-- ADIW add immediate to word
+				if std_match(IR, OpADIW) then
+					-- choose which register to use depending on instruction decoding
+					if IR(5 downto 4) = "00" then
+						Regd := "11000";
+					end if;
+					
+					if IR(5 downto 4) = "01" then
+						Regd := "11010";
+					end if;
+					
+					if IR(5 downto 4) = "10" then
+						Regd := "11100";
+					end if;
+					
+					if IR(5 downto 4) = "11" then
+						Regd := "11110";
+					end if;
+					
+					GP_Src_SelectA <= Regd;
+					
+					-- Control signals to ALU
+					-- addition operation
+					ALU_result_select <= Adder_Subtractor_Operation;
+					-- addition
+					Subtract <= Addition;
+					-- no add with carry
+					ALU_op_with_carry <= '0';
+					-- use operands passed in as arguments from Control Unit
+					AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+					AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
+				
+					-- Register d contents
+					OperandA <= GP_outA;
+					-- K, immediate value from IR
+					OperandB <= "00" & IR(7 downto 6) & IR(3 downto 0);
+					
+					-- Control signals to Register to store result
+					-- indicate register input is from ALU
+					GP_Input_Select <= GP_IN_SEL_ALU;
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					-- indicate nibbles of register should not be swapped
+					GP_Swap_Nibbles <= '0';
+					-- store result in Register d
+					GP_Dst_SelectA <= Regd;
+					
+				end if;
+			
+				-- SBIW subtract immediate to word
+				if std_match(IR, OpSBIW) then
+					-- choose which register to use depending on instruction decoding
+					if IR(5 downto 4) = "00" then
+						Regd := "11000";
+					end if;
+					
+					if IR(5 downto 4) = "01" then
+						Regd := "11010";
+					end if;
+					
+					if IR(5 downto 4) = "10" then
+						Regd := "11100";
+					end if;
+					
+					if IR(5 downto 4) = "11" then
+						Regd := "11110";
+					end if;
+					
+					GP_Src_SelectA <= Regd;
+					
+					-- Control signals to ALU
+					-- addition operation
+					ALU_result_select <= Adder_Subtractor_Operation;
+					-- subtract operation
+					Subtract <= Subtraction;
+					-- no add with carry
+					ALU_op_with_carry <= '0';
+					-- use operands passed in as arguments from Control Unit
+					AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+					AddSub_Op_2_Select <= AddSub_Op_2_Select_OperandB;
+				
+					-- Register d contents
+					OperandA <= GP_outA;
+					-- K, immediate value from IR
+					OperandB <= "00" & IR(7 downto 6) & IR(3 downto 0);
+					
+					-- Control signals to Register to store result
+					-- indicate register input is from ALU
+					GP_Input_Select <= GP_IN_SEL_ALU;
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					-- indicate nibbles of register should not be swapped
+					GP_Swap_Nibbles <= '0';
+					-- store result in Register d
+					GP_Dst_SelectA <= Regd;
 					
 				end if;
 				
@@ -1905,6 +2003,106 @@ begin
 
 			when Clock2 =>
 			
+				--------------------------------------------------------------
+				--------------------------------------------------------------
+				-- ALU --
+				--------------------------------------------------------------
+				--------------------------------------------------------------
+				
+				-- ADIW add immediate to word
+				if std_match(IR, OpADIW) then
+					-- choose which register to use depending on instruction decoding
+					if IR(5 downto 4) = "00" then
+						Regd := "11001";
+					end if;
+					
+					if IR(5 downto 4) = "01" then
+						Regd := "11011";
+					end if;
+					
+					if IR(5 downto 4) = "10" then
+						Regd := "11101";
+					end if;
+					
+					if IR(5 downto 4) = "11" then
+						Regd := "11111";
+					end if;
+					
+					GP_Src_SelectA <= Regd;
+					
+					-- Control signals to ALU
+					-- addition operation
+					ALU_result_select <= Adder_Subtractor_Operation;
+					-- addition
+					Subtract <= Addition;
+					-- add with carry
+					ALU_op_with_carry <= '1';
+					-- use operands passed in as arguments from Control Unit
+					AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+					AddSub_Op_2_Select <= AddSub_Op_2_Select_0;
+				
+					-- Register d + 1 contents
+					OperandA <= GP_outA;
+					
+					-- Control signals to Register to store result
+					-- indicate register input is from ALU
+					GP_Input_Select <= GP_IN_SEL_ALU;
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					-- indicate nibbles of register should not be swapped
+					GP_Swap_Nibbles <= '0';
+					-- store result in Register d + 1
+					GP_Dst_SelectA <= Regd;
+					
+				end if;
+			
+				-- SBIW subtract immediate to word
+				if std_match(IR, OpSBIW) then
+					-- choose which register to use depending on instruction decoding
+					if IR(5 downto 4) = "00" then
+						Regd := "11001";
+					end if;
+					
+					if IR(5 downto 4) = "01" then
+						Regd := "11011";
+					end if;
+					
+					if IR(5 downto 4) = "10" then
+						Regd := "11101";
+					end if;
+					
+					if IR(5 downto 4) = "11" then
+						Regd := "11111";
+					end if;
+					
+					GP_Src_SelectA <= Regd;
+					
+					-- Control signals to ALU
+					-- addition operation
+					ALU_result_select <= Adder_Subtractor_Operation;
+					-- subtract operation
+					Subtract <= Subtraction;
+					-- no add with carry
+					ALU_op_with_carry <= '1';
+					-- use operands passed in as arguments from Control Unit
+					AddSub_Op_1_Select <= AddSub_Op_1_Select_OperandA;
+					AddSub_Op_2_Select <= AddSub_Op_2_Select_Operand0;
+				
+					-- Register d contents
+					OperandA <= GP_outA;
+					
+					-- Control signals to Register to store result
+					-- indicate register input is from ALU
+					GP_Input_Select <= GP_IN_SEL_ALU;
+					GP_Write_EnableA <= '1';
+					GP_Write_EnableB <= '0';
+					-- indicate nibbles of register should not be swapped
+					GP_Swap_Nibbles <= '0';
+					-- store result in Register d
+					GP_Dst_SelectA <= Regd;
+					
+				end if;
+				
 				--------------------------------------------------------------
 				--------------------------------------------------------------
 				-- DATA MEMORY ACCESS UNIT --
