@@ -79,4 +79,5 @@ package ALU_constants is
 	constant AddSub_Op_2_Select_OperandB: std_logic_vector(1 downto 0) := "00";
 	constant AddSub_Op_2_Select_1: std_logic_vector(1 downto 0) := "01";
 	constant AddSub_Op_2_Select_0: std_logic_vector(1 downto 0) := "10";
+	
 end package;
